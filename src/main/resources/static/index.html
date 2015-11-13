@@ -68,21 +68,29 @@
 
       <aside class="right-off-canvas-menu">
         <ul class="off-canvas-list">
-          <li><label>Users</label></li>
-          <li><a href="#">Hari Seldon</a></li>
-          <li class="has-submenu"><a href="#">R. Giskard Reventlov</a>
+          <li><label>Relationships</label></li>
+          <li><a href="#">University of Arkansas (employer)</a></li>
+          <li class="has-submenu"><a href="#">Occupations</a>
             <ul class="right-submenu">
               <li class="back"><a href="#">Back</a></li>
-              <li><label>Level 1</label></li>
-              <li><a href="#">Link 1</a></li>
-              <li class="has-submenu"><a href="#">Link 2 w/ submenu</a>
-                <ul class="right-submenu">
-                  <li class="back"><a href="#">Back</a></li>
-                  <li><label>Level 2</label></li>
-                  <li><a href="#">...</a></li>
-                </ul>
-              </li>
-              <li><a href="#">...</a></li>
+              <li><a href="#">Jurist</a></li>
+              <li><a href="#">Politician</a></li>
+              <li><a href="#">Lawyer</a></li>
+              <li><a href="#">Diplomat</a></li>
+              <li><a href="#">Saxophonist</a></li>
+              <li><a href="#">Autobiographer</a></li>
+            </ul>
+          </li>
+          <li class="has-submenu"><a href="#">Relatives</a>
+            <ul class="right-submenu">
+              <li class="back"><a href="#">Back</a></li>
+              <li><a href="#">Hillary Rodham Clinton (spouse)</a></li>
+              <li><a href="#">Chelsea Victoria Clinton (child)</a></li>
+              <li><a href="#">Virginia Clinton Kelley (mother)</a></li>
+              <li><a href="#">William Jefferson Blythe, Jr. (father)</a></li>
+              <li><a href="#">Roger Clinton, Sr. (stepfather)</a></li>
+              <li><a href="#">Jeff Dwire (stepfather)</a></li>
+              <li><a href="#">Roger Clinton, Jr. (brother)</a></li>
             </ul>
           </li>
           <li><a href="#">...</a></li>
@@ -90,7 +98,7 @@
       </aside>
 
       <section class="main-section">
-        <iframe id="counterpointRulesDialogScroll" src="//en.m.wikipedia.org/wiki/Bill_Clinton" frameborder="0" scrolling="yes"></iframe>
+        <iframe id="counterpointRulesDialogScroll" src="//en.m.wikipedia.org/wiki/Bill_Clinton" frameborder="0" scrolling="yes" width="1000"></iframe>
 
       </section>
 
@@ -103,7 +111,7 @@
     //var midiAccess=null;	// the MIDIAccess object.
 
     window.addEventListener('load', function() {
-      //
+      $( "#counterpointRulesDialogScroll" ).attr("width",window.innerWidth - 0).attr("height",window.innerHeight - 60);
     } );
 
     function hookUpMIDIInput() {
