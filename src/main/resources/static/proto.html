@@ -75,7 +75,6 @@
           <li><a href="#">born August 19, 1946<br/>William Jefferson Blythe III<br/>Hope, Arkansas, United States</a></li>
           <li><a href="#">saxophone<br/>(instrument)</a></li>
           <li><a href="#">vegetarian<br/>(lifestyle)</a></li>
-          <li><a href="#">vegetarian<br/>(lifestyle)</a></li>
           <li class="has-submenu"><a href="#">occupation</a>
             <ul class="right-submenu">
               <li class="back"><a href="#">Back</a></li>
@@ -146,7 +145,7 @@
       </aside>
 
       <section class="main-section">
-        <iframe id="counterpointRulesDialogScroll" src="//en.m.wikipedia.org/wiki/Bill_Clinton" frameborder="0" scrolling="yes" width="1000"></iframe>
+        <iframe id="wikipediaInnerFrame" src="//en.m.wikipedia.org/wiki/Bill_Clinton" frameborder="0" scrolling="yes" width="1000"></iframe>
 
       </section>
 
@@ -159,7 +158,7 @@
     //var midiAccess=null;	// the MIDIAccess object.
 
     window.addEventListener('load', function() {
-      $( "#counterpointRulesDialogScroll" ).attr("width",window.innerWidth - 0).attr("height",window.innerHeight - 60);
+      $( "#wikipediaInnerFrame" ).attr("width",window.innerWidth - 0).attr("height",window.innerHeight - 60);
     } );
 
     function hookUpMIDIInput() {
@@ -176,7 +175,7 @@
   <script>
     // Throttled resize function
     $(window).on('resize', Foundation.utils.throttle(function(e){
-      $( "#counterpointRulesDialogScroll" ).attr("width",window.innerWidth - 0).attr("height",window.innerHeight - 60);
+      $( "#wikipediaInnerFrame" ).attr("width",window.innerWidth - 0).attr("height",window.innerHeight - 60);
     }, 300));
 
   </script>
