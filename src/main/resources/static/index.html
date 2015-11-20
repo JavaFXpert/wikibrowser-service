@@ -21,14 +21,18 @@
 
   - Wikidata API call for returning information about properties, for example this one returns info for P1 - P10 in english.
   https://www.wikidata.org/w/api.php?action=wbgetentities&ids=P1|P2|P3|P4|P5|P6|P7|P8|P9|P10&languages=en
-  There are 2300+ properties, and it is possible to get 50 at a time.  Perhaps create the following REST service that
-  returns the name of a property given a property number (e.g. "P1477") and language (e.g. "en" and "pt-br").
+  There are 2300+ properties, and it is possible to get 50 at a time.
+  [] Perhaps create the following REST service that returns the name of a property given a property number (e.g. "P1477")
+  and language (e.g. "en" and "pt-br").
   http://wikibrowserservice.cfapps.io/propertyName?id=P1477&language=en
   The service could cache the necessary information when it starts up, by using the Wikidata REST call shown above that
-  gets names for properties.  Questions about this approach:
+  gets names for properties.
 
 
-  - Should the REST services
+  [] Create REST services for the following:
+  - Given a Wikipedia subject name (e.g. Ada_Lovelace), return the Wikidata ID (e.g. Q7259)
+  - Given a Wikidata ID (e.g. Q7259), return the Wikipedia subject name (e.g. Ada_Lovelace)
+  - Should these REST services be in a separate microservice from the REST service that returns the name of a property?
 -->
 
 <!doctype html>
