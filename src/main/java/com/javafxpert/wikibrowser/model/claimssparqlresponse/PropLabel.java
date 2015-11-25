@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.javafxpert.wikibrowser;
+package com.javafxpert.wikibrowser.model.claimssparqlresponse;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -23,14 +23,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author James Weaver
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ValLabel {
+public class PropLabel {
   private String type;
   private String value;
 
   @JsonProperty("xml:lang")
   private String lang;
 
-  public ValLabel() {
+  public PropLabel() {
   }
 
   public String getType() {

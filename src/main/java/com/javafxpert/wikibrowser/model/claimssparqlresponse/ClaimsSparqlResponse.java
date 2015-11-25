@@ -14,30 +14,43 @@
  * limitations under the License.
  */
 
-package com.javafxpert.wikibrowser;
+package com.javafxpert.wikibrowser.model.claimssparqlresponse;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author James Weaver
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Head {
-  private List <String> vars = new ArrayList<>();
+public class ClaimsSparqlResponse {
+  private Head head;
+  private Results results;
 
-  public Head() {
+  public ClaimsSparqlResponse() {
   }
 
-  public List<String> getVars() {
-    return vars;
+  public Head getHead() {
+    return head;
   }
 
-  public void setVars(List<String> vars) {
-    this.vars = vars;
+  public void setHead(Head head) {
+    this.head = head;
+  }
+
+  public Results getResults() {
+    return results;
+  }
+
+  public void setResults(Results results) {
+    this.results = results;
+  }
+
+  @Override
+  public String toString() {
+    return "ClaimsSparqlResponse{" +
+        "head=" + head +
+        ", results=" + results +
+        '}';
   }
 }
-
 

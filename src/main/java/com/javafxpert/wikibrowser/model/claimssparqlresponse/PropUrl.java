@@ -14,23 +14,19 @@
  * limitations under the License.
  */
 
-package com.javafxpert.wikibrowser;
+package com.javafxpert.wikibrowser.model.claimssparqlresponse;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author James Weaver
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PropLabel {
+public class PropUrl {
   private String type;
   private String value;
 
-  @JsonProperty("xml:lang")
-  private String lang;
-
-  public PropLabel() {
+  public PropUrl() {
   }
 
   public String getType() {
@@ -47,6 +43,14 @@ public class PropLabel {
 
   public void setValue(String value) {
     this.value = value;
+  }
+
+  @Override
+  public String toString() {
+    return "PropUrl{" +
+        "type='" + type + '\'' +
+        ", value='" + value + '\'' +
+        '}';
   }
 }
 

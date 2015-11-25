@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.javafxpert.wikibrowser;
+package com.javafxpert.wikibrowser.model.claimssparqlresponse;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -25,18 +25,25 @@ import java.util.List;
  * @author James Weaver
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Results {
-  private List<Bindings> bindings = new ArrayList<>();
+public class Head {
+  private List <String> vars = new ArrayList<>();
 
-  public Results() {
+  public Head() {
   }
 
-  public List<Bindings> getBindings() {
-    return bindings;
+  public List<String> getVars() {
+    return vars;
   }
 
-  public void setBindings(List<Bindings> bindings) {
-    this.bindings = bindings;
+  public void setVars(List<String> vars) {
+    this.vars = vars;
+  }
+
+  @Override
+  public String toString() {
+    return "Head{" +
+        "vars=" + vars +
+        '}';
   }
 }
 

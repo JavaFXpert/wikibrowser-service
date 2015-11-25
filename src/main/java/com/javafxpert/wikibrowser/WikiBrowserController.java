@@ -16,6 +16,8 @@
 
 package com.javafxpert.wikibrowser;
 
+import com.javafxpert.wikibrowser.model.claimsresponse.ClaimsResponse;
+import com.javafxpert.wikibrowser.model.claimssparqlresponse.ClaimsSparqlResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpStatus;
@@ -50,15 +52,14 @@ public class WikiBrowserController {
   private String wdql = "?property%20rdfs:label%20?propLabel%20FILTER%20(lang(?propLabel)%20=%20'";
   private String wdqm = ""; // Some language code e.g. en
   private String wdqn = "')%20%7D%20LIMIT%20100";
-  //private String wdqn = "')%20%7D%20ORDER%20BY%20?propUrl%20?valUrl%20LIMIT%20100";
 
-  private ClaimsResponse claimsResponse;
   @RequestMapping("/claims")
   public ResponseEntity<Object> callAndMarshallClaimsSparqlQuery(@RequestParam(value = "id", defaultValue="Q7259")
                                                                    String itemId,
                                                                  @RequestParam(value = "lang", defaultValue="en")
                                                                    String language) {
-    claimsResponse = null;
+    ClaimsSparqlResponse claimsSparqlResponse = null;
+    ClaimsResponse claimsResponse = null;
 
     wdqh = itemId;
     wdqj = language;
@@ -66,35 +67,31 @@ public class WikiBrowserController {
     String wdQuery = wdqa + wdqb + wdqc + wdqd + wdqe + wdqf + wdqg + wdqh + wdqi + wdqj + wdqk + wdql + wdqm + wdqn;
     log.info("wdQuery: " + wdQuery);
 
-    //String randomQuery = "https://query.wikidata.org/bigdata/namespace/wdq/sparql?format=json&query=PREFIX%20wd:%20%3Chttp://www.wikidata.org/entity/%3E%20PREFIX%20wdt:%20%3Chttp://www.wikidata.org/prop/direct/%3E%20PREFIX%20wikibase:%20%3Chttp://wikiba.se/ontology%23%3E%20PREFIX%20p:%20%3Chttp://www.wikidata.org/prop/%3E%20PREFIX%20v:%20%3Chttp://www.wikidata.org/prop/statement/%3E%20PREFIX%20q:%20%3Chttp://www.wikidata.org/prop/qualifier/%3E%20PREFIX%20rdfs:%20%3Chttp://www.w3.org/2000/01/rdf-schema%23%3E%20SELECT%20?catLabel%20WHERE%20%7B%20?cat%20wdt:P31%20wd:Q146%20.%20SERVICE%20wikibase:label%20%7B%20bd:serviceParam%20wikibase:language%20%22en%22%20.%20%7D%20%7D";
-    //log.info("randomQuery: " + randomQuery);
-
     try {
 
-      ClaimsSparqlResponse claimsSparqlResponse = new RestTemplate().getForObject(new URI(wdQuery),
+      claimsSparqlResponse = new RestTemplate().getForObject(new URI(wdQuery),
           ClaimsSparqlResponse.class);
 
-      //log.info(claimsSparqlResponse.toString());
-
-      /*
-      ClaimsSparqlResponse claimsSparqlResponse =
-          restTemplate.getForObject(randomQuery, ClaimsSparqlResponse.class);
-
       log.info(claimsSparqlResponse.toString());
-
-      Quote quote = restTemplate.getForObject("http://gturnquist-quoters.cfapps.io/api/random", Quote.class);
-      log.info(quote.toString());
-      */
 
     }
     catch (Exception e) {
       e.printStackTrace();
       log.info("Caught exception when calling wikidata sparql query " + e);
     }
+
+    claimsResponse = convertSparqlResponse(claimsSparqlResponse);
+
     return Optional.ofNullable(claimsResponse)
         .map(cr -> new ResponseEntity<>((Object)cr, HttpStatus.OK))
         .orElse(new ResponseEntity<>("Wikidata query unsuccessful", HttpStatus.INTERNAL_SERVER_ERROR));
 
+  }
+
+  private ClaimsResponse convertSparqlResponse(ClaimsSparqlResponse claimsSparqlResponse) {
+    ClaimsResponse claimsResponse = null;
+
+    return claimsResponse;
   }
 
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.javafxpert.wikibrowser;
+package com.javafxpert.wikibrowser.model.claimssparqlresponse;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -22,11 +22,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * @author James Weaver
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PropUrl {
+public class ValUrl {
   private String type;
   private String value;
 
-  public PropUrl() {
+  public ValUrl() {
   }
 
   public String getType() {
@@ -43,6 +43,14 @@ public class PropUrl {
 
   public void setValue(String value) {
     this.value = value;
+  }
+
+  @Override
+  public String toString() {
+    return "ValUrl{" +
+        "type='" + type + '\'' +
+        ", value='" + value + '\'' +
+        '}';
   }
 }
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.javafxpert.wikibrowser;
+package com.javafxpert.wikibrowser.model.claimsresponse;
 
 import com.fasterxml.jackson.annotation.JsonRootName;
 

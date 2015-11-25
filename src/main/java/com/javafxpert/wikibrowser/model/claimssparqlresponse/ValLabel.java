@@ -14,56 +14,48 @@
  * limitations under the License.
  */
 
-package com.javafxpert.wikibrowser;
+package com.javafxpert.wikibrowser.model.claimssparqlresponse;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author James Weaver
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Bindings {
-  private PropUrl propUrl;
-  private PropLabel propLabel;
-  private ValUrl valUrl;
-  private ValLabel valLabel;
+public class ValLabel {
+  private String type;
+  private String value;
 
-  public Bindings() {
+  @JsonProperty("xml:lang")
+  private String lang;
+
+  public ValLabel() {
   }
 
-  public PropUrl getPropUrl() {
-    return propUrl;
+  public String getType() {
+    return type;
   }
 
-  public PropLabel getPropLabel() {
-    return propLabel;
+  public String getValue() {
+    return value;
   }
 
-  public ValUrl getValUrl() {
-    return valUrl;
+  public void setType(String type) {
+    this.type = type;
   }
 
-  public ValLabel getValLabel() {
-    return valLabel;
+  public void setValue(String value) {
+    this.value = value;
   }
 
-  public void setPropUrl(PropUrl propUrl) {
-    this.propUrl = propUrl;
-  }
-
-  public void setPropLabel(PropLabel propLabel) {
-    this.propLabel = propLabel;
-  }
-
-  public void setValUrl(ValUrl valUrl) {
-    this.valUrl = valUrl;
-  }
-
-  public void setValLabel(ValLabel valLabel) {
-    this.valLabel = valLabel;
+  @Override
+  public String toString() {
+    return "ValLabel{" +
+        "type='" + type + '\'' +
+        ", value='" + value + '\'' +
+        ", lang='" + lang + '\'' +
+        '}';
   }
 }
 
