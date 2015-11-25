@@ -26,17 +26,44 @@ import java.util.List;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Bindings {
-  private CatLabel catLabel;
+  private PropUrl propUrl;
+  private PropLabel propLabel;
+  private ValUrl valUrl;
+  private ValLabel valLabel;
 
   public Bindings() {
   }
 
-  public CatLabel getCatLabel() {
-    return catLabel;
+  public PropUrl getPropUrl() {
+    return propUrl;
   }
 
-  public void setCatLabel(CatLabel catLabel) {
-    this.catLabel = catLabel;
+  public PropLabel getPropLabel() {
+    return propLabel;
+  }
+
+  public ValUrl getValUrl() {
+    return valUrl;
+  }
+
+  public ValLabel getValLabel() {
+    return valLabel;
+  }
+
+  public void setPropUrl(PropUrl propUrl) {
+    this.propUrl = propUrl;
+  }
+
+  public void setPropLabel(PropLabel propLabel) {
+    this.propLabel = propLabel;
+  }
+
+  public void setValUrl(ValUrl valUrl) {
+    this.valUrl = valUrl;
+  }
+
+  public void setValLabel(ValLabel valLabel) {
+    this.valLabel = valLabel;
   }
 }
 

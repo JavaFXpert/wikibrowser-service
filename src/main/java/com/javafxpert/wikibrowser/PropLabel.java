@@ -17,6 +17,7 @@
 package com.javafxpert.wikibrowser;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author James Weaver
@@ -25,6 +26,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class PropLabel {
   private String type;
   private String value;
+
+  @JsonProperty("xml:lang")
+  private String lang;
 
   public PropLabel() {
   }
