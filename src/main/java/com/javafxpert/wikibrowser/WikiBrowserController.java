@@ -16,11 +16,14 @@
 
 package com.javafxpert.wikibrowser;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
 
@@ -29,28 +32,64 @@ import java.util.Optional;
  */
 @RestController
 public class WikiBrowserController {
+  private Log log = LogFactory.getLog(getClass());
+
+  //TODO: Implement better way of creating the query represented by the following variables
+  private String wdqa = "https://query.wikidata.org/bigdata/namespace/wdq/sparql?format=json&query=";
+  private String wdqb = "PREFIX%20rdfs:%20<http://www.w3.org/2000/01/rdf-schema%23>%20";
+  private String wdqc = "PREFIX%20wikibase:%20<http://wikiba.se/ontology%23>%20";
+  private String wdqd = "PREFIX%20entity:%20<http://www.wikidata.org/entity/>%20";
+  private String wdqe = "PREFIX%20p:%20<http://www.wikidata.org/prop/direct/>%20";
+  private String wdqf = "SELECT%20?propUrl%20?propLabel%20?valUrl%20?valLabel%20";
+  private String wdqg = "WHERE%20%7B%20hint:Query%20hint:optimizer%20'None'%20.%20entity:";
+  private String wdqh = ""; // Some item ID e.g. Q7259
+  private String wdqi = "%20?propUrl%20?valUrl%20.%20?valUrl%20rdfs:label%20?valLabel%20FILTER%20(LANG(?valLabel)%20=%20'";
+  private String wdqj = ""; // Some language code e.g. en
+  private String wdqk = "')%20.%20?property%20?ref%20?propUrl%20.%20?property%20a%20wikibase:Property%20.%20";
+  private String wdql = "?property%20rdfs:label%20?propLabel%20FILTER%20(lang(?propLabel)%20=%20'";
+  private String wdqm = ""; // Some language code e.g. en
+  private String wdqn = "')%20%7D%20LIMIT%20100";
+  //private String wdqn = "')%20%7D%20ORDER%20BY%20?propUrl%20?valUrl%20LIMIT%20100";
+
+  private ClaimsResponse claimsResponse;
+  @RequestMapping("/claims")
+  public ResponseEntity<Object> callAndMarshallClaimsSparqlQuery(@RequestParam(value = "id", defaultValue="Q7259")
+                                                                   String itemId,
+                                                                 @RequestParam(value = "lang", defaultValue="en")
+                                                                   String language) {
+    claimsResponse = null;
 
 
-  private MusicChord musicChord;
-  @RequestMapping("/analyze")
-  public ResponseEntity<Object> identifyChordByNotes(@RequestParam(value = "notes") String notes) {
-    musicChord = null;
+    // Call the Chord Analyzer service
+    RestTemplate restTemplate = new RestTemplate();
+    wdqh = itemId;
+    wdqj = language;
+    wdqm = language;
+    String wdQuery = wdqa + wdqb + wdqc + wdqd + wdqe + wdqf + wdqg + wdqh + wdqi + wdqj + wdqk + wdql + wdqm + wdqn;
+    log.info("wdQuery: " + wdQuery);
+
     try {
-      musicChord = new MusicChord("C",
-                                  "maj",
-                                  "G",
-                                  2,
-                                  true,
-                                  false,
-                                  "fred");
+
+      /*
+      ClaimsSparqlResponse claimsSparqlResponse =
+          restTemplate.getForObject(wdQuery, ClaimsSparqlResponse.class);
+
+      log.info(claimsSparqlResponse.toString());
+      */
+
+      Quote quote = restTemplate.getForObject("http://gturnquist-quoters.cfapps.io/api/random", Quote.class);
+      log.info(quote.toString());
+
     }
     catch (Exception e) {
-      System.out.println("Exception encountered in WikiBrowserController#identifyChordByNotes: " + e);
+      e.printStackTrace();
+      log.info("Caught exception when calling wikidata sparql query " + e);
     }
-    return Optional.ofNullable(musicChord)
-        .map(mc -> new ResponseEntity<>((Object)mc, HttpStatus.OK))
-        .orElse(new ResponseEntity<>("Could not analyze the chord", HttpStatus.INTERNAL_SERVER_ERROR));
+    return Optional.ofNullable(claimsResponse)
+        .map(cr -> new ResponseEntity<>((Object)cr, HttpStatus.OK))
+        .orElse(new ResponseEntity<>("Wikidata query unsuccessful", HttpStatus.INTERNAL_SERVER_ERROR));
 
   }
+
 }
 
