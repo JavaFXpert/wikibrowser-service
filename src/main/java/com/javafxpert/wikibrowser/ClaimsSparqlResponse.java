@@ -23,9 +23,18 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ClaimsSparqlResponse {
+  private Head head;
   private Results results;
 
   public ClaimsSparqlResponse() {
+  }
+
+  public Head getHead() {
+    return head;
+  }
+
+  public void setHead(Head head) {
+    this.head = head;
   }
 
   public Results getResults() {

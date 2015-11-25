@@ -66,7 +66,10 @@ public class WikiBrowserController {
     wdqj = language;
     wdqm = language;
     String wdQuery = wdqa + wdqb + wdqc + wdqd + wdqe + wdqf + wdqg + wdqh + wdqi + wdqj + wdqk + wdql + wdqm + wdqn;
-    log.info("wdQuery: " + wdQuery);
+    //log.info("wdQuery: " + wdQuery);
+
+    String randomQuery = "https://query.wikidata.org/bigdata/namespace/wdq/sparql?format=json&query=PREFIX%20wd:%20%3Chttp://www.wikidata.org/entity/%3E%20PREFIX%20wdt:%20%3Chttp://www.wikidata.org/prop/direct/%3E%20PREFIX%20wikibase:%20%3Chttp://wikiba.se/ontology%23%3E%20PREFIX%20p:%20%3Chttp://www.wikidata.org/prop/%3E%20PREFIX%20v:%20%3Chttp://www.wikidata.org/prop/statement/%3E%20PREFIX%20q:%20%3Chttp://www.wikidata.org/prop/qualifier/%3E%20PREFIX%20rdfs:%20%3Chttp://www.w3.org/2000/01/rdf-schema%23%3E%20SELECT%20?catLabel%20WHERE%20%7B%20?cat%20wdt:P31%20wd:Q146%20.%20SERVICE%20wikibase:label%20%7B%20bd:serviceParam%20wikibase:language%20%22en%22%20.%20%7D%20%7D";
+    log.info("randomQuery: " + randomQuery);
 
     try {
 
@@ -77,8 +80,15 @@ public class WikiBrowserController {
       log.info(claimsSparqlResponse.toString());
       */
 
+      ClaimsSparqlResponse claimsSparqlResponse =
+          restTemplate.getForObject(randomQuery, ClaimsSparqlResponse.class);
+
+      log.info(claimsSparqlResponse.toString());
+
+      /*
       Quote quote = restTemplate.getForObject("http://gturnquist-quoters.cfapps.io/api/random", Quote.class);
       log.info(quote.toString());
+      */
 
     }
     catch (Exception e) {

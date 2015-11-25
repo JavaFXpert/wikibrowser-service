@@ -25,18 +25,18 @@ import java.util.List;
  * @author James Weaver
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Bindings {
-  private CatLabel catLabel;
+public class Head {
+  private List <String> vars = new ArrayList<>();
 
-  public Bindings() {
+  public Head() {
   }
 
-  public CatLabel getCatLabel() {
-    return catLabel;
+  public List<String> getVars() {
+    return vars;
   }
 
-  public void setCatLabel(CatLabel catLabel) {
-    this.catLabel = catLabel;
+  public void setVars(List<String> vars) {
+    this.vars = vars;
   }
 }
 

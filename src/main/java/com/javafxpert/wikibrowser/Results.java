@@ -35,7 +35,7 @@ public class Results {
     return bindings;
   }
 
-  public void setBindings(List <Bindings> bindings) {
+  public void setBindings(List<Bindings> bindings) {
     this.bindings = bindings;
   }
 }

@@ -18,25 +18,24 @@ package com.javafxpert.wikibrowser;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author James Weaver
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Bindings {
-  private CatLabel catLabel;
+public class OldVars {
+  private String dummy;
 
-  public Bindings() {
+  public OldVars() {
   }
 
-  public CatLabel getCatLabel() {
-    return catLabel;
+  public String getDummy() {
+    return dummy;
   }
 
-  public void setCatLabel(CatLabel catLabel) {
-    this.catLabel = catLabel;
+  public void setDummy(String dummy) {
+    this.dummy = dummy;
   }
 }
 
