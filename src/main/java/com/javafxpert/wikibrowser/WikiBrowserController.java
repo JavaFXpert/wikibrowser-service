@@ -17,7 +17,12 @@
 package com.javafxpert.wikibrowser;
 
 import com.javafxpert.wikibrowser.model.claimsresponse.ClaimsResponse;
+import com.javafxpert.wikibrowser.model.claimsresponse.WikidataClaim;
+import com.javafxpert.wikibrowser.model.claimsresponse.WikidataItem;
+import com.javafxpert.wikibrowser.model.claimsresponse.WikidataProperty;
+import com.javafxpert.wikibrowser.model.claimssparqlresponse.Bindings;
 import com.javafxpert.wikibrowser.model.claimssparqlresponse.ClaimsSparqlResponse;
+import com.javafxpert.wikibrowser.model.claimssparqlresponse.Results;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpStatus;
@@ -28,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
+import java.util.Iterator;
 import java.util.Optional;
 
 /**
@@ -35,6 +41,11 @@ import java.util.Optional;
  */
 @RestController
 public class WikiBrowserController {
+  private static String WIKIDATA_ITEM_BASE = "http://www.wikidata.org/entity/";
+  private static String WIKIDATA_PROP_BASE = "http://www.wikidata.org/prop/direct/";
+  private static String WIKIPEDIA_BASE_TEMPLATE = "http://www.%s.wikipedia.org/";
+  private static String WIKIPEDIA_MOBILE_BASE_TEMPLATE = "http://www.%s.m.wikipedia.org/";
+
   private Log log = LogFactory.getLog(getClass());
 
   //TODO: Implement better way of creating the query represented by the following variables
@@ -57,13 +68,13 @@ public class WikiBrowserController {
   public ResponseEntity<Object> callAndMarshallClaimsSparqlQuery(@RequestParam(value = "id", defaultValue="Q7259")
                                                                    String itemId,
                                                                  @RequestParam(value = "lang", defaultValue="en")
-                                                                   String language) {
+                                                                   String lang) {
     ClaimsSparqlResponse claimsSparqlResponse = null;
     ClaimsResponse claimsResponse = null;
 
     wdqh = itemId;
-    wdqj = language;
-    wdqm = language;
+    wdqj = lang;
+    wdqm = lang;
     String wdQuery = wdqa + wdqb + wdqc + wdqd + wdqe + wdqf + wdqg + wdqh + wdqi + wdqj + wdqk + wdql + wdqm + wdqn;
     log.info("wdQuery: " + wdQuery);
 
@@ -80,7 +91,7 @@ public class WikiBrowserController {
       log.info("Caught exception when calling wikidata sparql query " + e);
     }
 
-    claimsResponse = convertSparqlResponse(claimsSparqlResponse);
+    claimsResponse = convertSparqlResponse(claimsSparqlResponse, lang, itemId);
 
     return Optional.ofNullable(claimsResponse)
         .map(cr -> new ResponseEntity<>((Object)cr, HttpStatus.OK))
@@ -88,11 +99,47 @@ public class WikiBrowserController {
 
   }
 
-  private ClaimsResponse convertSparqlResponse(ClaimsSparqlResponse claimsSparqlResponse) {
-    ClaimsResponse claimsResponse = null;
+  private ClaimsResponse convertSparqlResponse(ClaimsSparqlResponse claimsSparqlResponse, String lang, String itemId) {
+    ClaimsResponse claimsResponse = new ClaimsResponse();
+    claimsResponse.setLang(lang);
+    claimsResponse.setWdItem(itemId);
+    claimsResponse.setWdItemBase(WIKIDATA_ITEM_BASE);
+    claimsResponse.setWdPropBase(WIKIDATA_PROP_BASE);
 
+    //TODO: Implement setting the language-specific article title
+    claimsResponse.setArticleTitle("");
+
+    //TODO: Implement setting the language-specific article ID
+    claimsResponse.setArticleId("");
+
+    //TODO: Implement fallback to "en" if Wikipedia article doesn't exist in requested language
+    claimsResponse.setWpBase(String.format(WIKIPEDIA_BASE_TEMPLATE, lang));
+
+    //TODO: Implement fallback to "en" if mobile Wikipedia article doesn't exist in requested language
+    claimsResponse.setWpMobileBase(String.format(WIKIPEDIA_MOBILE_BASE_TEMPLATE, lang));
+
+    Results results = claimsSparqlResponse.getResults();
+    Iterator bindingsIter = results.getBindings().iterator();
+
+    String lastPropId = "";
+    WikidataClaim wikidataClaim = null; //TODO: Consider using exception handling to make null assignment unnecessary
+    while (bindingsIter.hasNext()) {
+      Bindings bindings = (Bindings)bindingsIter.next(); //TODO: Consider renaming Bindings to Binding
+
+      // There is a 1:many relationship between property IDs and related values
+      String nextPropUrl = bindings.getPropUrl().getValue();
+      String nextPropId = nextPropUrl.substring(nextPropUrl.lastIndexOf("/"));
+      String nextValUrl = bindings.getValUrl().getValue();
+      String nextValId = nextValUrl.substring(nextValUrl.lastIndexOf("/"));
+      log.info("nextPropId: " + nextPropId + ", nextPropId: " + nextPropId);
+      if (!nextPropId.equals(lastPropId)) {
+        wikidataClaim = new WikidataClaim();
+      }
+      wikidataClaim.setProp(new WikidataProperty(nextPropId, bindings.getPropLabel().getValue()));
+      wikidataClaim.addItem(new WikidataItem(nextValId, bindings.getValLabel().getValue()));
+      claimsResponse.getClaims().add(wikidataClaim);
+    }
     return claimsResponse;
   }
-
 }
 

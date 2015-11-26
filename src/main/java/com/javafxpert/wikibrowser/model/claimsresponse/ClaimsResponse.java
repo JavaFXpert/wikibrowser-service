@@ -16,47 +16,129 @@
 
 package com.javafxpert.wikibrowser.model.claimsresponse;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonRootName;
-
-import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author James Weaver
  */
-@JsonRootName("claims")
-public class ClaimsResponse implements Serializable {
+@JsonRootName("claimsResponse")
+@JsonPropertyOrder({"lang", "wdItem", "wdItemBase", "wdPropBase", "articleTitle", "articleId", "wpBase",
+                    "wpMobileBase", "claims"})
+public class ClaimsResponse {
 
-  /*
-  @JacksonXmlProperty(localName = "version", isAttribute = true)
-  private final String version = "3.0";
+  private String lang;
+  private String wdItem;
+  private String wdItemBase;
+  private String wdPropBase;
+  private String articleTitle;
+  private String articleId;
+  private String wpBase;
+  private String wpMobileBase;
+  private List<WikidataClaim> claims = new ArrayList<>();
 
-  @JacksonXmlElementWrapper(localName = "part-list")
-  @JsonProperty("score-part")
-  private List<ScorePart> scoreParts = new ArrayList<>();
-
-  @JacksonXmlElementWrapper(useWrapping = false)
-  @JsonProperty("part")
-  private List<Part> parts = new ArrayList<>();
-
-  public String getVersion() {
-    return version;
+  public ClaimsResponse(String lang, String wdItem, String wdItemBase, String wdPropBase, String articleTitle, String articleId, String wpMobileBase, String wpBase, List<WikidataClaim> claims) {
+    this.lang = lang;
+    this.wdItem = wdItem;
+    this.wdItemBase = wdItemBase;
+    this.wdPropBase = wdPropBase;
+    this.articleTitle = articleTitle;
+    this.articleId = articleId;
+    this.wpMobileBase = wpMobileBase;
+    this.wpBase = wpBase;
+    this.claims = claims;
   }
 
-  public List<ScorePart> getScoreParts() {
-    return scoreParts;
+  public ClaimsResponse() {
   }
 
-  public void setScoreParts(List<ScorePart> scoreParts) {
-    this.scoreParts = scoreParts;
+  public String getLang() {
+    return lang;
   }
 
-  public List<Part> getParts() {
-    return parts;
+  public void setLang(String lang) {
+    this.lang = lang;
   }
 
-  public void setParts(List<Part> parts) {
-    this.parts = parts;
+  public String getWdItem() {
+    return wdItem;
   }
-  */
+
+  public void setWdItem(String wdItem) {
+    this.wdItem = wdItem;
+  }
+
+  public String getWdItemBase() {
+    return wdItemBase;
+  }
+
+  public void setWdItemBase(String wdItemBase) {
+    this.wdItemBase = wdItemBase;
+  }
+
+  public String getWdPropBase() {
+    return wdPropBase;
+  }
+
+  public void setWdPropBase(String wdPropBase) {
+    this.wdPropBase = wdPropBase;
+  }
+
+  public String getArticleTitle() {
+    return articleTitle;
+  }
+
+  public void setArticleTitle(String articleTitle) {
+    this.articleTitle = articleTitle;
+  }
+
+  public String getArticleId() {
+    return articleId;
+  }
+
+  public void setArticleId(String articleId) {
+    this.articleId = articleId;
+  }
+
+  public String getWpBase() {
+    return wpBase;
+  }
+
+  public void setWpBase(String wpBase) {
+    this.wpBase = wpBase;
+  }
+
+  public String getWpMobileBase() {
+    return wpMobileBase;
+  }
+
+  public void setWpMobileBase(String wpMobileBase) {
+    this.wpMobileBase = wpMobileBase;
+  }
+
+  public List<WikidataClaim> getClaims() {
+    return claims;
+  }
+
+  public void setClaims(List<WikidataClaim> claims) {
+    this.claims = claims;
+  }
+
+  @Override
+  public String toString() {
+    return "ClaimsResponse{" +
+        "lang='" + lang + '\'' +
+        ", wdItem='" + wdItem + '\'' +
+        ", wdItemBase='" + wdItemBase + '\'' +
+        ", wdPropBase='" + wdPropBase + '\'' +
+        ", articleTitle='" + articleTitle + '\'' +
+        ", articleId='" + articleId + '\'' +
+        ", wpBase='" + wpBase + '\'' +
+        ", wpMobileBase='" + wpMobileBase + '\'' +
+        ", claims=" + claims +
+        '}';
+  }
 }
 
