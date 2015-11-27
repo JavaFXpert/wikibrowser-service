@@ -131,13 +131,14 @@ public class WikiBrowserController {
       String nextPropId = nextPropUrl.substring(nextPropUrl.lastIndexOf("/") + 1);
       String nextValUrl = bindings.getValUrl().getValue();
       String nextValId = nextValUrl.substring(nextValUrl.lastIndexOf("/") + 1);
-      log.info("nextPropId: " + nextPropId + ", nextPropId: " + nextPropId);
+      log.info("lastPropId: " + lastPropId + ", nextPropId: " + nextPropId);
       if (!nextPropId.equals(lastPropId)) {
         wikidataClaim = new WikidataClaim();
+        wikidataClaim.setProp(new WikidataProperty(nextPropId, bindings.getPropLabel().getValue()));
+        claimsResponse.getClaims().add(wikidataClaim);
+        lastPropId = nextPropId;
       }
-      wikidataClaim.setProp(new WikidataProperty(nextPropId, bindings.getPropLabel().getValue()));
       wikidataClaim.addItem(new WikidataItem(nextValId, bindings.getValLabel().getValue()));
-      claimsResponse.getClaims().add(wikidataClaim);
     }
     return claimsResponse;
   }
