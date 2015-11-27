@@ -62,7 +62,7 @@ public class WikiBrowserController {
   private String wdqk = "')%20.%20?property%20?ref%20?propUrl%20.%20?property%20a%20wikibase:Property%20.%20";
   private String wdql = "?property%20rdfs:label%20?propLabel%20FILTER%20(lang(?propLabel)%20=%20'";
   private String wdqm = ""; // Some language code e.g. en
-  private String wdqn = "'%20)%20%7D%20ORDER%20BY%20?propUrl%20LIMIT%20100";
+  private String wdqn = "'%20)%20%7D%20ORDER%20BY%20?propUrl%20?valUrl%20LIMIT%20100";
 
   @RequestMapping("/claims")
   public ResponseEntity<Object> callAndMarshallClaimsSparqlQuery(@RequestParam(value = "id", defaultValue="Q7259")
