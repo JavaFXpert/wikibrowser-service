@@ -43,8 +43,10 @@ import java.util.Optional;
 public class WikiBrowserController {
   private static String WIKIDATA_ITEM_BASE = "http://www.wikidata.org/entity/";
   private static String WIKIDATA_PROP_BASE = "http://www.wikidata.org/prop/direct/";
-  private static String WIKIPEDIA_BASE_TEMPLATE = "http://www.%s.wikipedia.org/";
-  private static String WIKIPEDIA_MOBILE_BASE_TEMPLATE = "http://www.%s.m.wikipedia.org/";
+  public static String WIKIPEDIA_BASE_TEMPLATE = "https://%s.wikipedia.org/";
+  public static String WIKIPEDIA_MOBILE_BASE_TEMPLATE = "https://%s.m.wikipedia.org/";
+  private static String WIKIPEDIA_TEMPLATE = "https://%s.wikipedia.org/wiki/";
+  public static String WIKIPEDIA_MOBILE_TEMPLATE = "https://%s.m.wikipedia.org/wiki/";
 
   private Log log = LogFactory.getLog(getClass());
 
@@ -113,10 +115,10 @@ public class WikiBrowserController {
     claimsResponse.setArticleId("");
 
     //TODO: Implement fallback to "en" if Wikipedia article doesn't exist in requested language
-    claimsResponse.setWpBase(String.format(WIKIPEDIA_BASE_TEMPLATE, lang));
+    claimsResponse.setWpBase(String.format(WIKIPEDIA_TEMPLATE, lang));
 
     //TODO: Implement fallback to "en" if mobile Wikipedia article doesn't exist in requested language
-    claimsResponse.setWpMobileBase(String.format(WIKIPEDIA_MOBILE_BASE_TEMPLATE, lang));
+    claimsResponse.setWpMobileBase(String.format(WIKIPEDIA_MOBILE_TEMPLATE, lang));
 
     Results results = claimsSparqlResponse.getResults();
     Iterator bindingsIter = results.getBindings().iterator();
