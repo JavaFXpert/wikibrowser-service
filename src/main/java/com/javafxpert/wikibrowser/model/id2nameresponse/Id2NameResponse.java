@@ -20,22 +20,24 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.javafxpert.wikibrowser.model.claimssparqlresponse.Head;
 import com.javafxpert.wikibrowser.model.claimssparqlresponse.Results;
 
+import java.util.Map;
+
 /**
  * @author James Weaver
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Id2NameResponse {
-  private Entities entities;
+  private Map<String, Item> entities;
   private String success;
 
   public Id2NameResponse() {
   }
 
-  public Entities getEntities() {
+  public Map<String, Item> getEntities() {
     return entities;
   }
 
-  public void setEntities(Entities entities) {
+  public void setEntities(Map<String, Item> entities) {
     this.entities = entities;
   }
 

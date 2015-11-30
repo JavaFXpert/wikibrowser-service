@@ -24,6 +24,8 @@ import com.javafxpert.wikibrowser.model.claimssparqlresponse.Bindings;
 import com.javafxpert.wikibrowser.model.claimssparqlresponse.ClaimsSparqlResponse;
 import com.javafxpert.wikibrowser.model.claimssparqlresponse.Results;
 import com.javafxpert.wikibrowser.model.id2nameresponse.Id2NameResponse;
+import com.javafxpert.wikibrowser.model.id2nameresponse.Item;
+import com.javafxpert.wikibrowser.model.id2nameresponse.Sitelinks;
 import com.javafxpert.wikibrowser.model.nameresponse.NameResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,6 +38,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -76,61 +79,29 @@ public class WikiNameIdController {
       log.info("Caught exception when calling wikidata ID to name service " + e);
     }
 
-    /*
-    claimsResponse = convertSparqlResponse(claimsSparqlResponse, lang, itemId);
-    */
+    nameResponse = convertId2NameResponse(id2NameResponse, lang, itemId);
 
-    nameResponse = new NameResponse("Article_Name", "enwiki", "http://foo.com", "Q0");
+    //nameResponse = new NameResponse("Article_Name", "enwiki", "http://foo.com", "Q0");
 
     return Optional.ofNullable(nameResponse)
         .map(cr -> new ResponseEntity<>((Object)cr, HttpStatus.OK))
         .orElse(new ResponseEntity<>("Wikidata query unsuccessful", HttpStatus.INTERNAL_SERVER_ERROR));
   }
 
-  /*
-  private ClaimsResponse convertSparqlResponse(ClaimsSparqlResponse claimsSparqlResponse, String lang, String itemId) {
-    ClaimsResponse claimsResponse = new ClaimsResponse();
-    claimsResponse.setLang(lang);
-    claimsResponse.setWdItem(itemId);
-    claimsResponse.setWdItemBase(WIKIDATA_ITEM_BASE);
-    claimsResponse.setWdPropBase(WIKIDATA_PROP_BASE);
+  private NameResponse convertId2NameResponse(Id2NameResponse id2NameResponse, String lang, String itemId) {
+    NameResponse nameResponse = new NameResponse();
+    Map<String, Item> itemMap = id2NameResponse.getEntities();
+    Map<String, Sitelinks> sitelinksMap = itemMap.get(itemId).getSitelinks();
+    Sitelinks sitelink = sitelinksMap.get(sitelinksMap.keySet().toArray()[0]);
+    String urlStr = sitelink.getUrl();
+    String nameStr = urlStr.substring(urlStr.lastIndexOf("/") + 1);
 
-    //TODO: Implement setting the language-specific article title
-    claimsResponse.setArticleTitle("");
-
-    //TODO: Implement setting the language-specific article ID
-    claimsResponse.setArticleId("");
-
-    //TODO: Implement fallback to "en" if Wikipedia article doesn't exist in requested language
-    claimsResponse.setWpBase(String.format(WIKIPEDIA_TEMPLATE, lang));
-
-    //TODO: Implement fallback to "en" if mobile Wikipedia article doesn't exist in requested language
-    claimsResponse.setWpMobileBase(String.format(WIKIPEDIA_MOBILE_TEMPLATE, lang));
-
-    Results results = claimsSparqlResponse.getResults();
-    Iterator bindingsIter = results.getBindings().iterator();
-
-    String lastPropId = "";
-    WikidataClaim wikidataClaim = null; //TODO: Consider using exception handling to make null assignment unnecessary
-    while (bindingsIter.hasNext()) {
-      Bindings bindings = (Bindings)bindingsIter.next(); //TODO: Consider renaming Bindings to Binding
-
-      // There is a 1:many relationship between property IDs and related values
-      String nextPropUrl = bindings.getPropUrl().getValue();
-      String nextPropId = nextPropUrl.substring(nextPropUrl.lastIndexOf("/") + 1);
-      String nextValUrl = bindings.getValUrl().getValue();
-      String nextValId = nextValUrl.substring(nextValUrl.lastIndexOf("/") + 1);
-      log.info("lastPropId: " + lastPropId + ", nextPropId: " + nextPropId);
-      if (!nextPropId.equals(lastPropId)) {
-        wikidataClaim = new WikidataClaim();
-        wikidataClaim.setProp(new WikidataProperty(nextPropId, bindings.getPropLabel().getValue()));
-        claimsResponse.getClaims().add(wikidataClaim);
-        lastPropId = nextPropId;
-      }
-      wikidataClaim.addItem(new WikidataItem(nextValId, bindings.getValLabel().getValue()));
-    }
-    return claimsResponse;
+    nameResponse.setArticleUrl(urlStr);
+    nameResponse.setArticleName(nameStr);
+    nameResponse.setSite(sitelink.getSite());
+    nameResponse.setLang(lang);
+    nameResponse.setItemId(itemId);
+    return nameResponse;
   }
-  */
 }
 

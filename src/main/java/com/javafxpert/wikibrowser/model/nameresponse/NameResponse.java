@@ -25,22 +25,25 @@ import java.util.List;
 
 /**
  * @author James Weaver
+ *
+ * TODO: Remove some fields when more is known about which ones will be utilized by clients
  */
 @JsonRootName("claimsResponse")
-@JsonPropertyOrder({"lang", "wdItem", "wdItemBase", "wdPropBase", "articleTitle", "articleId", "wpBase",
-                    "wpMobileBase", "claims"})
+@JsonPropertyOrder({"articleName", "site", "articleUrl", "itemId", "lang"})
 public class NameResponse {
 
   private String articleName;
   private String site;
   private String articleUrl;
   private String itemId;
+  private String lang;
 
-  public NameResponse(String articleName, String site, String articleUrl, String itemId) {
+  public NameResponse(String articleName, String site, String articleUrl, String itemId, String lang) {
     this.articleName = articleName;
     this.site = site;
     this.articleUrl = articleUrl;
     this.itemId = itemId;
+    this.lang = lang;
   }
 
   public NameResponse() {
@@ -78,6 +81,14 @@ public class NameResponse {
     this.itemId = itemId;
   }
 
+  public String getLang() {
+    return lang;
+  }
+
+  public void setLang(String lang) {
+    this.lang = lang;
+  }
+
   @Override
   public String toString() {
     return "NameResponse{" +
@@ -85,6 +96,7 @@ public class NameResponse {
         ", site='" + site + '\'' +
         ", articleUrl='" + articleUrl + '\'' +
         ", itemId='" + itemId + '\'' +
+        ", lang='" + lang + '\'' +
         '}';
   }
 }

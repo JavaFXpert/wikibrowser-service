@@ -17,32 +17,49 @@
 package com.javafxpert.wikibrowser.model.id2nameresponse;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.sun.javafx.collections.MappingChange;
-
-import java.util.Map;
 
 /**
  * @author James Weaver
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Entities {
-  private Map<String, Item> itemMap;
+public class Sitelinks {
+  private String site;
+  private String title;
+  private String url;
 
-  public Entities() {
+  public Sitelinks() {
   }
 
-  public Map<String, Item> getItemMap() {
-    return itemMap;
+  public String getSite() {
+    return site;
   }
 
-  public void setItemMap(Map<String, Item> itemMap) {
-    this.itemMap = itemMap;
+  public void setSite(String site) {
+    this.site = site;
+  }
+
+  public String getTitle() {
+    return title;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
+  public String getUrl() {
+    return url;
+  }
+
+  public void setUrl(String url) {
+    this.url = url;
   }
 
   @Override
   public String toString() {
-    return "Entities{" +
-        "itemMap=" + itemMap +
+    return "Sitelinks{" +
+        "site='" + site + '\'' +
+        ", title='" + title + '\'' +
+        ", url='" + url + '\'' +
         '}';
   }
 }

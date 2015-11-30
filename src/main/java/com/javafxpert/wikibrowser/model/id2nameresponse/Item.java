@@ -22,6 +22,8 @@ import com.javafxpert.wikibrowser.model.claimssparqlresponse.PropUrl;
 import com.javafxpert.wikibrowser.model.claimssparqlresponse.ValLabel;
 import com.javafxpert.wikibrowser.model.claimssparqlresponse.ValUrl;
 
+import java.util.Map;
+
 /**
  * @author James Weaver
  */
@@ -29,6 +31,7 @@ import com.javafxpert.wikibrowser.model.claimssparqlresponse.ValUrl;
 public class Item {
   private String type;
   private String id;
+  private Map<String, Sitelinks> sitelinks;
 
   public Item() {
   }
@@ -49,11 +52,20 @@ public class Item {
     this.id = id;
   }
 
+  public Map<String, Sitelinks> getSitelinks() {
+    return sitelinks;
+  }
+
+  public void setSitelinks(Map<String, Sitelinks> sitelinks) {
+    this.sitelinks = sitelinks;
+  }
+
   @Override
   public String toString() {
     return "Item{" +
         "type='" + type + '\'' +
         ", id='" + id + '\'' +
+        ", sitelinks=" + sitelinks +
         '}';
   }
 }
