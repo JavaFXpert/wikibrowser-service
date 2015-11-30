@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.javafxpert.wikibrowser.model.nameresponse;
+package com.javafxpert.wikibrowser.model.locator;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonRootName;
@@ -30,7 +30,7 @@ import java.util.List;
  */
 @JsonRootName("claimsResponse")
 @JsonPropertyOrder({"articleName", "site", "articleUrl", "itemId", "lang"})
-public class NameResponse {
+public class ItemInfo {
 
   private String articleName;
   private String site;
@@ -38,7 +38,7 @@ public class NameResponse {
   private String itemId;
   private String lang;
 
-  public NameResponse(String articleName, String site, String articleUrl, String itemId, String lang) {
+  public ItemInfo(String articleName, String site, String articleUrl, String itemId, String lang) {
     this.articleName = articleName;
     this.site = site;
     this.articleUrl = articleUrl;
@@ -46,7 +46,7 @@ public class NameResponse {
     this.lang = lang;
   }
 
-  public NameResponse() {
+  public ItemInfo() {
   }
 
   public String getArticleName() {
@@ -91,7 +91,7 @@ public class NameResponse {
 
   @Override
   public String toString() {
-    return "NameResponse{" +
+    return "ItemInfo{" +
         "articleName='" + articleName + '\'' +
         ", site='" + site + '\'' +
         ", articleUrl='" + articleUrl + '\'' +

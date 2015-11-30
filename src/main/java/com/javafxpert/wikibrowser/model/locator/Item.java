@@ -14,13 +14,9 @@
  * limitations under the License.
  */
 
-package com.javafxpert.wikibrowser.model.id2nameresponse;
+package com.javafxpert.wikibrowser.model.locator;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.javafxpert.wikibrowser.model.claimssparqlresponse.PropLabel;
-import com.javafxpert.wikibrowser.model.claimssparqlresponse.PropUrl;
-import com.javafxpert.wikibrowser.model.claimssparqlresponse.ValLabel;
-import com.javafxpert.wikibrowser.model.claimssparqlresponse.ValUrl;
 
 import java.util.Map;
 

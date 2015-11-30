@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.javafxpert.wikibrowser.model.id2nameresponse;
+package com.javafxpert.wikibrowser.model.locator;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

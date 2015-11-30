@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package com.javafxpert.wikibrowser.model.id2nameresponse;
+package com.javafxpert.wikibrowser.model.locator;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.javafxpert.wikibrowser.model.claimssparqlresponse.Head;
-import com.javafxpert.wikibrowser.model.claimssparqlresponse.Results;
 
 import java.util.Map;
 
@@ -26,11 +24,11 @@ import java.util.Map;
  * @author James Weaver
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Id2NameResponse {
+public class LocatorResponse {
   private Map<String, Item> entities;
   private String success;
 
-  public Id2NameResponse() {
+  public LocatorResponse() {
   }
 
   public Map<String, Item> getEntities() {
@@ -51,7 +49,7 @@ public class Id2NameResponse {
 
   @Override
   public String toString() {
-    return "Id2NameResponse{" +
+    return "LocatorResponse{" +
         "entities=" + entities +
         ", success='" + success + '\'' +
         '}';

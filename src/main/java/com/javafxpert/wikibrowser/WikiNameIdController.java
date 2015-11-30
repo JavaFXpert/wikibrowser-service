@@ -16,17 +16,10 @@
 
 package com.javafxpert.wikibrowser;
 
-import com.javafxpert.wikibrowser.model.claimsresponse.ClaimsResponse;
-import com.javafxpert.wikibrowser.model.claimsresponse.WikidataClaim;
-import com.javafxpert.wikibrowser.model.claimsresponse.WikidataItem;
-import com.javafxpert.wikibrowser.model.claimsresponse.WikidataProperty;
-import com.javafxpert.wikibrowser.model.claimssparqlresponse.Bindings;
-import com.javafxpert.wikibrowser.model.claimssparqlresponse.ClaimsSparqlResponse;
-import com.javafxpert.wikibrowser.model.claimssparqlresponse.Results;
-import com.javafxpert.wikibrowser.model.id2nameresponse.Id2NameResponse;
-import com.javafxpert.wikibrowser.model.id2nameresponse.Item;
-import com.javafxpert.wikibrowser.model.id2nameresponse.Sitelinks;
-import com.javafxpert.wikibrowser.model.nameresponse.NameResponse;
+import com.javafxpert.wikibrowser.model.locator.LocatorResponse;
+import com.javafxpert.wikibrowser.model.locator.Item;
+import com.javafxpert.wikibrowser.model.locator.Sitelinks;
+import com.javafxpert.wikibrowser.model.locator.ItemInfo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpStatus;
@@ -37,7 +30,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 
@@ -60,8 +52,8 @@ public class WikiNameIdController {
                                                                    String itemId,
                                                                  @RequestParam(value = "lang", defaultValue="en")
                                                                    String lang) {
-    Id2NameResponse id2NameResponse = null;
-    NameResponse nameResponse = null;
+    LocatorResponse locatorResponse = null;
+    ItemInfo itemInfo = null;
 
     i2nqb = itemId;
     i2nqd = lang;
@@ -69,39 +61,39 @@ public class WikiNameIdController {
     log.info("wdQuery: " + wdQuery);
 
     try {
-      id2NameResponse = new RestTemplate().getForObject(new URI(wdQuery),
-          Id2NameResponse.class);
+      locatorResponse = new RestTemplate().getForObject(new URI(wdQuery),
+          LocatorResponse.class);
 
-      log.info(id2NameResponse.toString());
+      log.info(locatorResponse.toString());
     }
     catch (Exception e) {
       e.printStackTrace();
       log.info("Caught exception when calling wikidata ID to name service " + e);
     }
 
-    nameResponse = convertId2NameResponse(id2NameResponse, lang, itemId);
+    itemInfo = convertId2NameResponse(locatorResponse, lang, itemId);
 
-    //nameResponse = new NameResponse("Article_Name", "enwiki", "http://foo.com", "Q0");
+    //itemInfo = new ItemInfo("Article_Name", "enwiki", "http://foo.com", "Q0");
 
-    return Optional.ofNullable(nameResponse)
+    return Optional.ofNullable(itemInfo)
         .map(cr -> new ResponseEntity<>((Object)cr, HttpStatus.OK))
         .orElse(new ResponseEntity<>("Wikidata query unsuccessful", HttpStatus.INTERNAL_SERVER_ERROR));
   }
 
-  private NameResponse convertId2NameResponse(Id2NameResponse id2NameResponse, String lang, String itemId) {
-    NameResponse nameResponse = new NameResponse();
-    Map<String, Item> itemMap = id2NameResponse.getEntities();
+  private ItemInfo convertId2NameResponse(LocatorResponse locatorResponse, String lang, String itemId) {
+    ItemInfo itemInfo = new ItemInfo();
+    Map<String, Item> itemMap = locatorResponse.getEntities();
     Map<String, Sitelinks> sitelinksMap = itemMap.get(itemId).getSitelinks();
     Sitelinks sitelink = sitelinksMap.get(sitelinksMap.keySet().toArray()[0]);
     String urlStr = sitelink.getUrl();
     String nameStr = urlStr.substring(urlStr.lastIndexOf("/") + 1);
 
-    nameResponse.setArticleUrl(urlStr);
-    nameResponse.setArticleName(nameStr);
-    nameResponse.setSite(sitelink.getSite());
-    nameResponse.setLang(lang);
-    nameResponse.setItemId(itemId);
-    return nameResponse;
+    itemInfo.setArticleUrl(urlStr);
+    itemInfo.setArticleName(nameStr);
+    itemInfo.setSite(sitelink.getSite());
+    itemInfo.setLang(lang);
+    itemInfo.setItemId(itemId);
+    return itemInfo;
   }
 }
 
