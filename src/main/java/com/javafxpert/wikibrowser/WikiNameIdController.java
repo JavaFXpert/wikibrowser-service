@@ -48,10 +48,28 @@ public class WikiNameIdController {
   private String i2nqe = "wiki";
 
   @RequestMapping("/locator")
-  public ResponseEntity<Object> callAndMarshallId2NameQuery(@RequestParam(value = "id", defaultValue="Q7259")
-                                                                   String itemId,
-                                                                 @RequestParam(value = "lang", defaultValue="en")
-                                                                   String lang) {
+  public ResponseEntity<Object> locatorEndpoint(@RequestParam(value = "id", defaultValue="")
+                                                String itemId,
+                                                @RequestParam(value = "name", defaultValue="")
+                                                String articleName,
+                                                @RequestParam(value = "lang", defaultValue="en")
+                                                String lang) {
+
+    ItemInfo itemInfo = null;
+    if (!itemId.equals("")) {
+      itemInfo = id2Name(itemId, lang);
+    }
+    else if (!articleName.equals("")) {
+      //itemInfo = name2Id(articleName, lang);
+    }
+
+    return Optional.ofNullable(itemInfo)
+        .map(cr -> new ResponseEntity<>((Object)cr, HttpStatus.OK))
+        .orElse(new ResponseEntity<>("Wikidata query unsuccessful", HttpStatus.INTERNAL_SERVER_ERROR));
+  }
+
+
+  public ItemInfo id2Name(String itemId, String lang) {
     LocatorResponse locatorResponse = null;
     ItemInfo itemInfo = null;
 
@@ -72,12 +90,7 @@ public class WikiNameIdController {
     }
 
     itemInfo = convertId2NameResponse(locatorResponse, lang, itemId);
-
-    //itemInfo = new ItemInfo("Article_Name", "enwiki", "http://foo.com", "Q0");
-
-    return Optional.ofNullable(itemInfo)
-        .map(cr -> new ResponseEntity<>((Object)cr, HttpStatus.OK))
-        .orElse(new ResponseEntity<>("Wikidata query unsuccessful", HttpStatus.INTERNAL_SERVER_ERROR));
+    return itemInfo;
   }
 
   private ItemInfo convertId2NameResponse(LocatorResponse locatorResponse, String lang, String itemId) {
@@ -96,4 +109,3 @@ public class WikiNameIdController {
     return itemInfo;
   }
 }
-
