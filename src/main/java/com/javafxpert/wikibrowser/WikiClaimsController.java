@@ -53,29 +53,39 @@ public class WikiClaimsController {
 
   private Log log = LogFactory.getLog(getClass());
 
-  //TODO: Implement better way of creating the query represented by the following variables
-  private String wdqa = "https://query.wikidata.org/bigdata/namespace/wdq/sparql?format=json&query=";
-  private String wdqb = "PREFIX%20rdfs:%20%3Chttp://www.w3.org/2000/01/rdf-schema%23%3E%20";
-  private String wdqc = "PREFIX%20wikibase:%20%3Chttp://wikiba.se/ontology%23%3E%20";
-  private String wdqd = "PREFIX%20entity:%20%3Chttp://www.wikidata.org/entity/%3E%20";
-  private String wdqe = "PREFIX%20p:%20%3Chttp://www.wikidata.org/prop/direct/%3E%20";
-  private String wdqf = "SELECT%20?propUrl%20?propLabel%20?valUrl%20?valLabel%20";
-  private String wdqg = "WHERE%20%7B%20hint:Query%20hint:optimizer%20'None'%20.%20entity:";
-  private String wdqh = ""; // Some item ID e.g. Q7259
-  private String wdqi = "%20?propUrl%20?valUrl%20.%20?valUrl%20rdfs:label%20?valLabel%20FILTER%20(LANG(?valLabel)%20=%20'";
-  private String wdqj = ""; // Some language code e.g. en
-  private String wdqk = "')%20.%20?property%20?ref%20?propUrl%20.%20?property%20a%20wikibase:Property%20.%20";
-  private String wdql = "?property%20rdfs:label%20?propLabel%20FILTER%20(lang(?propLabel)%20=%20'";
-  private String wdqm = ""; // Some language code e.g. en
-  private String wdqn = "'%20)%20%7D%20ORDER%20BY%20?propUrl%20?valUrl%20LIMIT%20100";
-
-  @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
   public ResponseEntity<Object> callAndMarshallClaimsSparqlQuery(@RequestParam(value = "id", defaultValue="Q7259")
                                                                    String itemId,
                                                                  @RequestParam(value = "lang", defaultValue="en")
                                                                    String lang) {
+
+    ClaimsSparqlResponse claimsSparqlResponse = callClaimsSparqlQuery(itemId, lang);
+    ClaimsResponse claimsResponse = convertSparqlResponse(claimsSparqlResponse, lang, itemId);
+
+    return Optional.ofNullable(claimsResponse)
+        .map(cr -> new ResponseEntity<>((Object)cr, HttpStatus.OK))
+        .orElse(new ResponseEntity<>("Wikidata query unsuccessful", HttpStatus.INTERNAL_SERVER_ERROR));
+
+  }
+
+  private ClaimsSparqlResponse callClaimsSparqlQuery(String itemId, String lang) {
+    //TODO: Implement better way of creating the query represented by the following variables
+    String wdqa = "https://query.wikidata.org/bigdata/namespace/wdq/sparql?format=json&query=";
+    String wdqb = "PREFIX%20rdfs:%20%3Chttp://www.w3.org/2000/01/rdf-schema%23%3E%20";
+    String wdqc = "PREFIX%20wikibase:%20%3Chttp://wikiba.se/ontology%23%3E%20";
+    String wdqd = "PREFIX%20entity:%20%3Chttp://www.wikidata.org/entity/%3E%20";
+    String wdqe = "PREFIX%20p:%20%3Chttp://www.wikidata.org/prop/direct/%3E%20";
+    String wdqf = "SELECT%20?propUrl%20?propLabel%20?valUrl%20?valLabel%20";
+    String wdqg = "WHERE%20%7B%20hint:Query%20hint:optimizer%20'None'%20.%20entity:";
+    String wdqh = ""; // Some item ID e.g. Q7259
+    String wdqi = "%20?propUrl%20?valUrl%20.%20?valUrl%20rdfs:label%20?valLabel%20FILTER%20(LANG(?valLabel)%20=%20'";
+    String wdqj = ""; // Some language code e.g. en
+    String wdqk = "')%20.%20?property%20?ref%20?propUrl%20.%20?property%20a%20wikibase:Property%20.%20";
+    String wdql = "?property%20rdfs:label%20?propLabel%20FILTER%20(lang(?propLabel)%20=%20'";
+    String wdqm = ""; // Some language code e.g. en
+    String wdqn = "'%20)%20%7D%20ORDER%20BY%20?propUrl%20?valUrl%20LIMIT%20100";
+
     ClaimsSparqlResponse claimsSparqlResponse = null;
-    ClaimsResponse claimsResponse = null;
 
     wdqh = itemId;
     wdqj = lang;
@@ -96,12 +106,7 @@ public class WikiClaimsController {
       log.info("Caught exception when calling wikidata sparql query " + e);
     }
 
-    claimsResponse = convertSparqlResponse(claimsSparqlResponse, lang, itemId);
-
-    return Optional.ofNullable(claimsResponse)
-        .map(cr -> new ResponseEntity<>((Object)cr, HttpStatus.OK))
-        .orElse(new ResponseEntity<>("Wikidata query unsuccessful", HttpStatus.INTERNAL_SERVER_ERROR));
-
+    return claimsSparqlResponse;
   }
 
   private ClaimsResponse convertSparqlResponse(ClaimsSparqlResponse claimsSparqlResponse, String lang, String itemId) {
