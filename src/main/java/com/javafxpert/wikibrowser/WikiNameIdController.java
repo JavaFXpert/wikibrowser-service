@@ -40,13 +40,6 @@ import java.util.Optional;
 public class WikiNameIdController {
   private Log log = LogFactory.getLog(getClass());
 
-  //TODO: Implement better way of creating the query represented by the following variables
-  private String i2nqa = "https://www.wikidata.org/w/api.php?action=wbgetentities&format=json&ids=";
-  private String i2nqb = ""; // Some item ID e.g. Q7259
-  private String i2nqc = "&props=sitelinks%7Csitelinks/urls&sitefilter=";
-  private String i2nqd = ""; // Some language code e.g. en
-  private String i2nqe = "wiki";
-
   @RequestMapping("/locator")
   public ResponseEntity<Object> locatorEndpoint(@RequestParam(value = "id", defaultValue="")
                                                 String itemId,
@@ -60,7 +53,7 @@ public class WikiNameIdController {
       itemInfo = id2Name(itemId, lang);
     }
     else if (!articleName.equals("")) {
-      //itemInfo = name2Id(articleName, lang);
+      itemInfo = name2Id(articleName, lang);
     }
 
     return Optional.ofNullable(itemInfo)
@@ -72,6 +65,13 @@ public class WikiNameIdController {
   public ItemInfo id2Name(String itemId, String lang) {
     LocatorResponse locatorResponse = null;
     ItemInfo itemInfo = null;
+
+    //TODO: Implement better way of creating the query represented by the following variables
+    String i2nqa = "https://www.wikidata.org/w/api.php?action=wbgetentities&format=json&ids=";
+    String i2nqb = ""; // Some item ID e.g. Q7259
+    String i2nqc = "&props=sitelinks%7Csitelinks/urls&sitefilter=";
+    String i2nqd = ""; // Some language code e.g. en
+    String i2nqe = "wiki";
 
     i2nqb = itemId;
     i2nqd = lang;
@@ -89,14 +89,50 @@ public class WikiNameIdController {
       log.info("Caught exception when calling wikidata ID to name service " + e);
     }
 
-    itemInfo = convertId2NameResponse(locatorResponse, lang, itemId);
+    itemInfo = convertLocatorResponse(locatorResponse, lang);
     return itemInfo;
   }
 
-  private ItemInfo convertId2NameResponse(LocatorResponse locatorResponse, String lang, String itemId) {
+  public ItemInfo name2Id(String articleName, String lang) {
+    LocatorResponse locatorResponse = null;
+    ItemInfo itemInfo = null;
+
+    //TODO: Implement better way of creating the query represented by the following variables
+    String n2iqa = "https://www.wikidata.org/w/api.php?action=wbgetentities&format=json&titles=";
+    String n2iqb = ""; // Some article name e.g. Ada_Lovelace
+    String n2iqc = "&props=sitelinks%7Csitelinks/urls&sitefilter=";
+    String n2iqd = ""; // Some language code e.g. en
+    String n2iqe = "wiki";
+    String n2iqf = "&sites=";
+    String n2iqg = ""; // Some language code e.g. en
+    String n2iqh = "wiki";
+
+    n2iqb = articleName;
+    n2iqd = n2iqg = lang;
+
+    String wdQuery = n2iqa + n2iqb + n2iqc + n2iqd + n2iqe + n2iqf + n2iqg + n2iqh;
+    log.info("wdQuery: " + wdQuery);
+
+    try {
+      locatorResponse = new RestTemplate().getForObject(new URI(wdQuery),
+          LocatorResponse.class);
+
+      log.info(locatorResponse.toString());
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+      log.info("Caught exception when calling wikidata name to ID service " + e);
+    }
+
+    itemInfo = convertLocatorResponse(locatorResponse, lang);
+    return itemInfo;
+  }
+
+  private ItemInfo convertLocatorResponse(LocatorResponse locatorResponse, String lang) {
     ItemInfo itemInfo = new ItemInfo();
     Map<String, Item> itemMap = locatorResponse.getEntities();
-    Map<String, Sitelinks> sitelinksMap = itemMap.get(itemId).getSitelinks();
+    Item item = itemMap.get(itemMap.keySet().toArray()[0]);
+    Map<String, Sitelinks> sitelinksMap = itemMap.get(item.getId()).getSitelinks();
     Sitelinks sitelink = sitelinksMap.get(sitelinksMap.keySet().toArray()[0]);
     String urlStr = sitelink.getUrl();
     String nameStr = urlStr.substring(urlStr.lastIndexOf("/") + 1);
@@ -105,7 +141,8 @@ public class WikiNameIdController {
     itemInfo.setArticleName(nameStr);
     itemInfo.setSite(sitelink.getSite());
     itemInfo.setLang(lang);
-    itemInfo.setItemId(itemId);
+    itemInfo.setItemId(item.getId());
     return itemInfo;
   }
+
 }
