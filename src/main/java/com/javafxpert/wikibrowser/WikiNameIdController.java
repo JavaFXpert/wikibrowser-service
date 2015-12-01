@@ -61,7 +61,6 @@ public class WikiNameIdController {
         .orElse(new ResponseEntity<>("Wikidata query unsuccessful", HttpStatus.INTERNAL_SERVER_ERROR));
   }
 
-
   public ItemInfo id2Name(String itemId, String lang) {
     LocatorResponse locatorResponse = null;
     ItemInfo itemInfo = null;
@@ -76,26 +75,11 @@ public class WikiNameIdController {
     i2nqb = itemId;
     i2nqd = lang;
     String wdQuery = i2nqa + i2nqb + i2nqc + i2nqd + i2nqe;
-    log.info("wdQuery: " + wdQuery);
 
-    try {
-      locatorResponse = new RestTemplate().getForObject(new URI(wdQuery),
-          LocatorResponse.class);
-
-      log.info(locatorResponse.toString());
-    }
-    catch (Exception e) {
-      e.printStackTrace();
-      log.info("Caught exception when calling wikidata ID to name service " + e);
-    }
-
-    itemInfo = convertLocatorResponse(locatorResponse, lang);
-    return itemInfo;
+    return queryProcessLocatorResponse(wdQuery, lang);
   }
 
   public ItemInfo name2Id(String articleName, String lang) {
-    LocatorResponse locatorResponse = null;
-    ItemInfo itemInfo = null;
 
     //TODO: Implement better way of creating the query represented by the following variables
     String n2iqa = "https://www.wikidata.org/w/api.php?action=wbgetentities&format=json&titles=";
@@ -111,10 +95,15 @@ public class WikiNameIdController {
     n2iqd = n2iqg = lang;
 
     String wdQuery = n2iqa + n2iqb + n2iqc + n2iqd + n2iqe + n2iqf + n2iqg + n2iqh;
-    log.info("wdQuery: " + wdQuery);
 
+    return queryProcessLocatorResponse(wdQuery, lang);
+  }
+
+  private ItemInfo queryProcessLocatorResponse(String query, String lang) {
+    log.info("query: " + query);
+    LocatorResponse locatorResponse = null;
     try {
-      locatorResponse = new RestTemplate().getForObject(new URI(wdQuery),
+      locatorResponse = new RestTemplate().getForObject(new URI(query),
           LocatorResponse.class);
 
       log.info(locatorResponse.toString());
@@ -124,11 +113,6 @@ public class WikiNameIdController {
       log.info("Caught exception when calling wikidata name to ID service " + e);
     }
 
-    itemInfo = convertLocatorResponse(locatorResponse, lang);
-    return itemInfo;
-  }
-
-  private ItemInfo convertLocatorResponse(LocatorResponse locatorResponse, String lang) {
     ItemInfo itemInfo = new ItemInfo();
     Map<String, Item> itemMap = locatorResponse.getEntities();
     Item item = itemMap.get(itemMap.keySet().toArray()[0]);
