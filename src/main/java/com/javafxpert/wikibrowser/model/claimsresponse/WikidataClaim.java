@@ -18,6 +18,7 @@ package com.javafxpert.wikibrowser.model.claimsresponse;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -26,9 +27,12 @@ import java.util.List;
 /**
  * Created by jamesweaver on 11/25/15.
  */
-@JsonRootName("property")
 public class WikidataClaim implements Serializable {
+  @JsonProperty("prop")
   private WikidataProperty prop;
+
+  @JacksonXmlElementWrapper(localName = "vals")
+  @JsonProperty("val")
   private List<WikidataItem> values = new ArrayList<>();
 
   public WikidataClaim(WikidataProperty url, List<WikidataItem> values) {

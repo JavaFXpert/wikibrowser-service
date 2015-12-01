@@ -30,8 +30,8 @@ public class WikiPageController {
               String wikipediaPageName,
               @RequestParam(value = "lang", defaultValue="en")
               String lang) throws Exception {
-    String mWikipediaBase = String.format(WikiBrowserController.WIKIPEDIA_MOBILE_BASE_TEMPLATE, lang);
-    String mWikipedia = String.format(WikiBrowserController.WIKIPEDIA_MOBILE_TEMPLATE, lang);
+    String mWikipediaBase = String.format(WikiClaimsController.WIKIPEDIA_MOBILE_BASE_TEMPLATE, lang);
+    String mWikipedia = String.format(WikiClaimsController.WIKIPEDIA_MOBILE_TEMPLATE, lang);
     String mWikipediaPage = mWikipedia + wikipediaPageName;
 
     URL url = new URL(mWikipediaPage);

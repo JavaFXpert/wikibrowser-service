@@ -17,13 +17,13 @@
 package com.javafxpert.wikibrowser.model.claimsresponse;
 
 import com.fasterxml.jackson.annotation.JsonRootName;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 import java.io.Serializable;
 
 /**
  * Created by jamesweaver on 11/25/15.
  */
-@JsonRootName("val")
 public class WikidataItem implements Serializable {
   private String id;
   private String label;

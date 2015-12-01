@@ -16,15 +16,18 @@
 
 package com.javafxpert.wikibrowser.model.claimsresponse;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonRootName;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author James Weaver
  */
-@JsonRootName("claimsResponse")
+@JsonRootName("itemClaims")
 @JsonPropertyOrder({"lang", "wdItem", "wdItemBase", "wdPropBase", "articleTitle", "articleId", "wpBase",
                     "wpMobileBase", "claims"})
 public class ClaimsResponse {
@@ -37,6 +40,9 @@ public class ClaimsResponse {
   private String articleId;
   private String wpBase;
   private String wpMobileBase;
+
+  @JacksonXmlElementWrapper(localName = "claims")
+  @JsonProperty("claim")
   private List<WikidataClaim> claims = new ArrayList<>();
 
   public ClaimsResponse(String lang, String wdItem, String wdItemBase, String wdPropBase, String articleTitle, String articleId, String wpMobileBase, String wpBase, List<WikidataClaim> claims) {

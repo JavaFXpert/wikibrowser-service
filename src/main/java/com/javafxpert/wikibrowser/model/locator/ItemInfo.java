@@ -28,7 +28,7 @@ import java.util.List;
  *
  * TODO: Remove some fields when more is known about which ones will be utilized by clients
  */
-@JsonRootName("claimsResponse")
+@JsonRootName("itemInfo")
 @JsonPropertyOrder({"articleName", "site", "articleUrl", "itemId", "lang"})
 public class ItemInfo {
 

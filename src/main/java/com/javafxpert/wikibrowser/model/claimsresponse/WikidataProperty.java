@@ -23,7 +23,6 @@ import java.io.Serializable;
 /**
  * Created by jamesweaver on 11/25/15.
  */
-@JsonRootName("prop")
 public class WikidataProperty implements Serializable {
   private String id;
   private String label;

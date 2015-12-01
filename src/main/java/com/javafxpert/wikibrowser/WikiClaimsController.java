@@ -26,8 +26,10 @@ import com.javafxpert.wikibrowser.model.claimssparqlresponse.Results;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -40,7 +42,8 @@ import java.util.Optional;
  * Created by jamesweaver on 10/13/15.
  */
 @RestController
-public class WikiBrowserController {
+@RequestMapping("/claims")
+public class WikiClaimsController {
   private static String WIKIDATA_ITEM_BASE = "http://www.wikidata.org/entity/";
   private static String WIKIDATA_PROP_BASE = "http://www.wikidata.org/prop/direct/";
   public static String WIKIPEDIA_BASE_TEMPLATE = "https://%s.wikipedia.org/";
@@ -66,7 +69,7 @@ public class WikiBrowserController {
   private String wdqm = ""; // Some language code e.g. en
   private String wdqn = "'%20)%20%7D%20ORDER%20BY%20?propUrl%20?valUrl%20LIMIT%20100";
 
-  @RequestMapping("/claims")
+  @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Object> callAndMarshallClaimsSparqlQuery(@RequestParam(value = "id", defaultValue="Q7259")
                                                                    String itemId,
                                                                  @RequestParam(value = "lang", defaultValue="en")

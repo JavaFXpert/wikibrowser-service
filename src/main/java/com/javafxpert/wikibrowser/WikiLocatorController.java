@@ -23,8 +23,10 @@ import com.javafxpert.wikibrowser.model.locator.ItemInfo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -37,10 +39,11 @@ import java.util.Optional;
  * Created by jamesweaver on 10/13/15.
  */
 @RestController
-public class WikiNameIdController {
+@RequestMapping("/locator")
+public class WikiLocatorController {
   private Log log = LogFactory.getLog(getClass());
 
-  @RequestMapping("/locator")
+  @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Object> locatorEndpoint(@RequestParam(value = "id", defaultValue="")
                                                 String itemId,
                                                 @RequestParam(value = "name", defaultValue="")
