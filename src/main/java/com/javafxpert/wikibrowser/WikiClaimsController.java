@@ -42,7 +42,6 @@ import java.util.Optional;
  * Created by jamesweaver on 10/13/15.
  */
 @RestController
-@RequestMapping("/claims")
 public class WikiClaimsController {
   private static String WIKIDATA_ITEM_BASE = "http://www.wikidata.org/entity/";
   private static String WIKIDATA_PROP_BASE = "http://www.wikidata.org/prop/direct/";
@@ -53,11 +52,26 @@ public class WikiClaimsController {
 
   private Log log = LogFactory.getLog(getClass());
 
-  @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
-  public ResponseEntity<Object> callAndMarshallClaimsSparqlQuery(@RequestParam(value = "id", defaultValue="Q7259")
+  @RequestMapping(value = "/claimsmenu", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
+  public ResponseEntity<Object> renderClaimsAsFoundationMenu(@RequestParam(value = "id", defaultValue="Q7259")
                                                                    String itemId,
                                                                  @RequestParam(value = "lang", defaultValue="en")
                                                                    String lang) {
+
+    ClaimsSparqlResponse claimsSparqlResponse = callClaimsSparqlQuery(itemId, lang);
+    ClaimsResponse claimsResponse = convertSparqlResponse(claimsSparqlResponse, lang, itemId);
+
+    return Optional.ofNullable(claimsResponse)
+        .map(cr -> new ResponseEntity<>((Object)cr, HttpStatus.OK))
+        .orElse(new ResponseEntity<>("Wikidata query unsuccessful", HttpStatus.INTERNAL_SERVER_ERROR));
+
+  }
+
+  @RequestMapping(value = "/claims", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Object> renderClaims(@RequestParam(value = "id", defaultValue="Q7259")
+                                                                 String itemId,
+                                                                 @RequestParam(value = "lang", defaultValue="en")
+                                                                 String lang) {
 
     ClaimsSparqlResponse claimsSparqlResponse = callClaimsSparqlQuery(itemId, lang);
     ClaimsResponse claimsResponse = convertSparqlResponse(claimsSparqlResponse, lang, itemId);
