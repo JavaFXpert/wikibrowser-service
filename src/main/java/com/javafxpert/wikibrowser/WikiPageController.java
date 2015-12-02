@@ -52,10 +52,31 @@ public class WikiPageController {
     pageText = pageText.replaceAll("\\\"href\\\":\\\"/w/", "\"href\":\"" + mWikipediaBase + "w/");
     pageText = pageText.replaceAll("\\\"href\\\":\\\"/wiki/", "\"href\":\"" + mWikipedia);
 
-    String articleName = "Earth";
-    pageText = pageText.replaceAll("href=\\\"/wiki/", "onclick=\'window.parent.refreshClaims(\"" + articleName + "\", \"" + lang + "\")" + "\' href=\"" + "/wikipage?name=");
-
-    //pageText = pageText.replaceAll("href=\\\"/wiki/", "href=\"" + "/wikipage?name=");
-    return pageText;
+    pageText = pageText.replaceAll("href=\\\"/wiki/", "href=\"" + "/wikipage?name=");
+    StringBuilder pageTextSb = new StringBuilder(pageText);
+    boolean finished = false;
+    int prevFoundPos = 0;
+    String matchStr = "/wikipage?name=";
+    String templateStr = "onclick='window.parent.refreshClaims(\"%s\", \"en\")'";
+    while (!finished) {
+      int curFoundPos = pageTextSb.indexOf("/wikipage?name=", prevFoundPos + matchStr.length());
+      if (curFoundPos > prevFoundPos) {
+        prevFoundPos = curFoundPos;
+        int nameStartPos = curFoundPos + matchStr.length();
+        int nameEndPosExc = pageTextSb.indexOf("\"", nameStartPos + 1);
+        if (nameEndPosExc > nameStartPos) {
+          String articleName = pageTextSb.substring(nameStartPos, nameEndPosExc);
+          String.format(templateStr, articleName);
+          pageTextSb.insert(nameEndPosExc + 2, String.format(templateStr, articleName));
+        }
+        else {
+          finished = true;
+        }
+      }
+      else {
+        finished = true;
+      }
+    }
+    return pageTextSb.toString();
   }
 }
