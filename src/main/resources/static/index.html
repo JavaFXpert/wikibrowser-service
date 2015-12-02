@@ -23,6 +23,109 @@
   <title>WikiBrowser</title>
   <link rel="stylesheet" href="css/foundation.css" />
   <script src="js/vendor/modernizr.js"></script>
+
+  <script>
+    window.addEventListener('load', function() {
+      //alert("iframe loaded");
+      retrieveClaimsByItemId("Q1", "en");
+
+      $( "#wikipediaInnerFrame" ).attr("width",window.innerWidth - 0).attr("height",window.innerHeight - 60);
+    } );
+
+    /**
+     * Convenience method to call multiple functions
+     */
+    function retrieveClaimsAndLoadPage(id, lang) {
+      retrieveClaimsByItemId(id, lang);
+      loadWikipediaPageByItemId(id, lang);
+    }
+
+    function retrieveClaimsByArticleName (name, lang) {
+      //alert("Retrieving claims for: article name: " + name);
+      $.ajax({
+            url: '/locator',
+            data: "name=" + name + "&lang=" + lang + "",
+            dataType: 'json',
+          })
+          .done(function(itemInfo) { // Variable data contains the data we get from serverside
+            retrieveClaimsByItemId (itemInfo.itemId, lang);
+          })
+          .error(function(err) {
+            alert("error: " + err);
+          });
+    }
+
+    function retrieveClaimsByItemId (id, lang) {
+      //alert("Retrieving claims for: " + id);
+      $.ajax({
+            url: '/claims',
+            data: "id=" + id + "&lang=" + lang + "",
+            dataType: 'json',
+          })
+          .done(function(data) { // Variable data contains the data we get from serverside
+            populateOffCanvasList(data)
+          })
+          .error(function(err) {
+            alert("error: " + err);
+          });
+    }
+
+    // Supply id and lang
+    function loadWikipediaPageByItemId(id, lang) {
+      $.ajax({
+            url: '/locator',
+            data: "id=" + id + "&lang=" + lang + "",
+            dataType: 'json',
+          })
+          .done(function(itemInfo) { // Variable data contains the data we get from serverside
+            $( "#wikipediaInnerFrame" ).attr("src", "/wikipage?name=" + itemInfo.articleName + "&lang=" + lang);
+          })
+          .error(function(err) {
+            alert("error: " + err);
+          });
+
+    }
+
+    function populateOffCanvasList(resp) {
+      $('#offCanvasList').html(''); // Clear out off-canvas list
+      var title = resp.articleTitle;
+      var language = resp.lang;
+      var itemId = ""
+      var isProperty;
+
+      $('#offCanvasTitle').text(title);
+      for (var cIdx in resp.claim) {
+        if (resp.claim[cIdx].val.length == 1) {
+          itemId = resp.claim[cIdx].val[0].id;
+          isProperty = itemId.substring(0, 1).toUpperCase() === "P";
+          $('#offCanvasList').append("<li><a href='#' onclick='retrieveClaimsAndLoadPage(\"" + itemId + "\", \"" + language + "\")'><label>" +
+              resp.claim[cIdx].prop.label +
+              ":</label><br/>" +
+              (isProperty ? ("<i>" + itemId + ": ") : "") +
+              resp.claim[cIdx].val[0].label +
+              (isProperty ? ("</i>") : "") +
+              "</a></li>");
+        }
+        else {
+          $('#offCanvasList').append("<li><label>" + resp.claim[cIdx].prop.label + ":</label></li>");
+          var vals = resp.claim[cIdx].val;
+          for (var vIdx in vals) {
+            itemId = vals[vIdx].id;
+            isProperty = itemId.substring(0, 1).toUpperCase() === "P";
+            $('#offCanvasList').append("  <li><a href='#' onclick='retrieveClaimsAndLoadPage(\"" + itemId + "\", \"" + language + "\")'>" +
+                (isProperty ? ("<i>" + itemId + ": ") : "") +
+                vals[vIdx].label +
+                (isProperty ? ("</i>") : "") +
+                "</a></li>");
+          }
+          $('#offCanvasList').append("  </ul>");
+          $('#offCanvasList').append("</li>");
+        }
+      }
+      $('#offCanvasList').append("</ul>");
+    }
+  </script>
+
 </head>
 
 <body>
@@ -56,92 +159,6 @@
   </div>
 
 
-  <script>
-      window.addEventListener('load', function() {
-        //alert("iframe loaded");
-        retrieveClaims("Q1", "en");
-
-        $( "#wikipediaInnerFrame" ).attr("width",window.innerWidth - 0).attr("height",window.innerHeight - 60);
-      } );
-
-      function retrieveClaims(id, lang) {
-        //alert("Retrieving claims for: " + id);
-        $.ajax({
-              url: '/claims',
-              data: "id=" + id + "&lang=" + lang + "",
-              dataType: 'json',
-            })
-            .done(function(data) { // Variable data contains the data we get from serverside
-              populateOffCanvasList(data)
-            })
-            .error(function(err) {
-              alert("error: " + err);
-            });
-      }
-
-      // Supply either id or name, and lang
-      function loadWikipediaPage(id, name, lang) {
-        $.ajax({
-              url: '/locator',
-              data: "id=" + id + "&name=" + name + "&lang=" + lang + "",
-              dataType: 'json',
-            })
-            .done(function(itemInfo) { // Variable data contains the data we get from serverside
-              $( "#wikipediaInnerFrame" ).attr("src", "/wikipage?name=" + itemInfo.articleName + "&lang=" + lang);
-            })
-            .error(function(err) {
-              alert("error: " + err);
-            });
-
-      }
-
-      /**
-       * Convenience method to call multiple functions from an onclick handler
-       */
-      function retrieveClaimsAndLoadPage(id, lang) {
-        retrieveClaims(id, lang);
-        loadWikipediaPage(id, "", lang);
-      }
-
-      function populateOffCanvasList(resp) {
-        $('#offCanvasList').html(''); // Clear out off-canvas list
-        var title = resp.articleTitle;
-        var language = resp.lang;
-        var itemId = ""
-        var isProperty;
-
-        $('#offCanvasTitle').text(title);
-        for (var cIdx in resp.claim) {
-          if (resp.claim[cIdx].val.length == 1) {
-            itemId = resp.claim[cIdx].val[0].id;
-            isProperty = itemId.substring(0, 1).toUpperCase() === "P";
-            $('#offCanvasList').append("<li><a href='#' onclick='retrieveClaimsAndLoadPage(\"" + itemId + "\", \"" + language + "\")'><label>" +
-                resp.claim[cIdx].prop.label +
-                ":</label><br/>" +
-                (isProperty ? ("<i>" + itemId + ": ") : "") +
-                resp.claim[cIdx].val[0].label +
-                (isProperty ? ("</i>") : "") +
-                "</a></li>");
-          }
-          else {
-            $('#offCanvasList').append("<li><label>" + resp.claim[cIdx].prop.label + ":</label></li>");
-            var vals = resp.claim[cIdx].val;
-            for (var vIdx in vals) {
-              itemId = vals[vIdx].id;
-              isProperty = itemId.substring(0, 1).toUpperCase() === "P";
-              $('#offCanvasList').append("  <li><a href='#' onclick='retrieveClaimsAndLoadPage(\"" + itemId + "\", \"" + language + "\")'>" +
-                  (isProperty ? ("<i>" + itemId + ": ") : "") +
-                  vals[vIdx].label +
-                  (isProperty ? ("</i>") : "") +
-                  "</a></li>");
-            }
-            $('#offCanvasList').append("  </ul>");
-            $('#offCanvasList').append("</li>");
-          }
-        }
-        $('#offCanvasList').append("</ul>");
-      }
-    </script>
 
     <script src="js/vendor/jquery.js"></script>
     <script src="js/foundation.min.js"></script>
