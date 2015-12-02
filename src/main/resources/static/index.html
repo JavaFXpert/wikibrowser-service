@@ -58,12 +58,14 @@
 
   <script>
       window.addEventListener('load', function() {
-        retrieveClaims("Q7777", "en");
+        //alert("iframe loaded");
+        retrieveClaims("Q42", "en");
 
         $( "#wikipediaInnerFrame" ).attr("width",window.innerWidth - 0).attr("height",window.innerHeight - 60);
       } );
 
       function retrieveClaims(id, lang) {
+        //alert("Retrieving claims for: " + id);
         $.ajax({ // ajax call starts
               url: '/claims',
               data: "id=" + id + "&lang=" + lang + "",
@@ -87,7 +89,7 @@
         $('#offCanvasTitle').text(title);
         for (var cIdx in resp.claim) {
           if (resp.claim[cIdx].val.length == 1) {
-            itemId = resp.claim[cIdx].prop.id;
+            itemId = resp.claim[cIdx].val[0].id;
             $('#offCanvasList').append("<li><a href='#' onclick='retrieveClaims(\"" + itemId + "\", \"" + language + "\")'><label>" + resp.claim[cIdx].prop.label + ":</label><br/>" + resp.claim[cIdx].val[0].label + "</a></li>");
           }
           else {

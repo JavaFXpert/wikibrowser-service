@@ -115,7 +115,7 @@ public class WikiClaimsController {
       claimsSparqlResponse = new RestTemplate().getForObject(new URI(wdQuery),
           ClaimsSparqlResponse.class);
 
-      log.info(claimsSparqlResponse.toString());
+      //log.info(claimsSparqlResponse.toString());
 
     }
     catch (Exception e) {
@@ -135,7 +135,6 @@ public class WikiClaimsController {
 
     ItemInfoResponse itemInfoResponse = null;
 
-    /*
     try {
       //TODO: Make URL configurable
       itemInfoResponse = new RestTemplate().getForObject(new URI("http://127.0.0.1:8080/locator?id=" + itemId + "&lang=" + lang),
@@ -147,7 +146,6 @@ public class WikiClaimsController {
       e.printStackTrace();
       log.info("Caught exception when calling /locator?id=" + itemId + " : " + e);
     }
-    */
 
     if (itemInfoResponse != null) {
       claimsResponse.setArticleTitle(itemInfoResponse.getArticleTitle());
@@ -173,7 +171,7 @@ public class WikiClaimsController {
       String nextPropId = nextPropUrl.substring(nextPropUrl.lastIndexOf("/") + 1);
       String nextValUrl = bindings.getValUrl().getValue();
       String nextValId = nextValUrl.substring(nextValUrl.lastIndexOf("/") + 1);
-      log.info("lastPropId: " + lastPropId + ", nextPropId: " + nextPropId);
+      //log.info("lastPropId: " + lastPropId + ", nextPropId: " + nextPropId);
       if (!nextPropId.equals(lastPropId)) {
         wikidataClaim = new WikidataClaim();
         wikidataClaim.setProp(new WikidataProperty(nextPropId, bindings.getPropLabel().getValue()));

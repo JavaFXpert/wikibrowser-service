@@ -52,9 +52,7 @@ public class WikiPageController {
     pageText = pageText.replaceAll("\\\"href\\\":\\\"/w/", "\"href\":\"" + mWikipediaBase + "w/");
     pageText = pageText.replaceAll("\\\"href\\\":\\\"/wiki/", "\"href\":\"" + mWikipedia);
     pageText = pageText.replaceAll("href=\\\"/wiki/", "href=\"" + "/wikipage?name=");
-    //pageText = pageText.replaceAll("href=\\\"/wiki/", "href=\"" + mWikipedia);
-    log.info(pageText);
+    //log.info(pageText);
     return pageText;
-    //return "<h1>Hello World!<br/>" + mWikipedia + "</h1>";
   }
 }

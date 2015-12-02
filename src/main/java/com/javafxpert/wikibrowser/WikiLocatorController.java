@@ -34,6 +34,7 @@ import org.springframework.web.client.RestTemplate;
 import java.net.URI;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Created by jamesweaver on 10/13/15.
@@ -120,15 +121,21 @@ public class WikiLocatorController {
     Map<String, Item> itemMap = locatorResponse.getEntities();
     Item item = itemMap.get(itemMap.keySet().toArray()[0]);
     Map<String, Sitelinks> sitelinksMap = itemMap.get(item.getId()).getSitelinks();
-    Sitelinks sitelink = sitelinksMap.get(sitelinksMap.keySet().toArray()[0]);
-    String urlStr = sitelink.getUrl();
-    String titleStr = sitelink.getTitle();
-    String nameStr = urlStr.substring(urlStr.lastIndexOf("/") + 1);
 
-    itemInfo.setArticleUrl(urlStr);
-    itemInfo.setArticleTitle(titleStr);
-    itemInfo.setArticleName(nameStr);
-    itemInfo.setSite(sitelink.getSite());
+    Set keySet = sitelinksMap.keySet();
+
+    //TODO: Investigate why this is occasionally empty when called by a WikiClaimsController method
+    if (!keySet.isEmpty()) {
+      Sitelinks sitelink = sitelinksMap.get(sitelinksMap.keySet().toArray()[0]);
+      String urlStr = sitelink.getUrl();
+      String titleStr = sitelink.getTitle();
+      String nameStr = urlStr.substring(urlStr.lastIndexOf("/") + 1);
+      itemInfo.setArticleUrl(urlStr);
+      itemInfo.setArticleTitle(titleStr);
+      itemInfo.setArticleName(nameStr);
+      itemInfo.setSite(sitelink.getSite());
+    }
+
     itemInfo.setLang(lang);
     itemInfo.setItemId(item.getId());
     return itemInfo;
