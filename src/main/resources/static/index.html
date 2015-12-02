@@ -40,7 +40,7 @@
       loadWikipediaPageByItemId(id, lang);
     }
 
-    function retrieveClaimsByArticleName (name, lang) {
+    function refreshClaims (name, lang) {
       //alert("Retrieving claims for: article name: " + name);
       $.ajax({
             url: '/locator',

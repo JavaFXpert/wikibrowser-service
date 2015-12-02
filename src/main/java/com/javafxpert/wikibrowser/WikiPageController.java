@@ -53,7 +53,7 @@ public class WikiPageController {
     pageText = pageText.replaceAll("\\\"href\\\":\\\"/wiki/", "\"href\":\"" + mWikipedia);
 
     String articleName = "Earth";
-    pageText = pageText.replaceAll("href=\\\"/wiki/", "onclick=\'window.parent.retrieveClaimsByArticleName(\"" + articleName + "\", \"" + lang + "\")" + "\' href=\"" + "/wikipage?name=");
+    pageText = pageText.replaceAll("href=\\\"/wiki/", "onclick=\'window.parent.refreshClaims(\"" + articleName + "\", \"" + lang + "\")" + "\' href=\"" + "/wikipage?name=");
 
     //pageText = pageText.replaceAll("href=\\\"/wiki/", "href=\"" + "/wikipage?name=");
     return pageText;
