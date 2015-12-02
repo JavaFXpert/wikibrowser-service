@@ -137,7 +137,7 @@ public class WikiClaimsController {
 
     try {
       //TODO: Make URL configurable
-      itemInfoResponse = new RestTemplate().getForObject(new URI("http://127.0.0.1:8080/locator?id=" + itemId + "&lang=" + lang),
+      itemInfoResponse = new RestTemplate().getForObject(new URI("http://wikibrowserservice.cfapps.io/locator?id=" + itemId + "&lang=" + lang),
           ItemInfoResponse.class);
 
       log.info(itemInfoResponse.toString());
