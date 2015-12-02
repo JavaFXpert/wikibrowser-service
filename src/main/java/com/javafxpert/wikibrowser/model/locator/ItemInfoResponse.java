@@ -16,21 +16,14 @@
 
 package com.javafxpert.wikibrowser.model.locator;
 
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonRootName;
-import com.javafxpert.wikibrowser.model.claimsresponse.WikidataClaim;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * @author James Weaver
  *
- * TODO: Remove some fields when more is known about which ones will be utilized by clients
  */
-@JsonRootName("itemInfo")
-@JsonPropertyOrder({"articleTitle", "articleName", "site", "articleUrl", "itemId", "lang"})
-public class ItemInfo {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class ItemInfoResponse {
 
   private String articleTitle;
   private String articleName;
@@ -39,16 +32,7 @@ public class ItemInfo {
   private String itemId;
   private String lang;
 
-  public ItemInfo(String articleTitle, String articleName, String site, String articleUrl, String itemId, String lang) {
-    this.articleTitle = articleTitle;
-    this.articleName = articleName;
-    this.site = site;
-    this.articleUrl = articleUrl;
-    this.itemId = itemId;
-    this.lang = lang;
-  }
-
-  public ItemInfo() {
+  public ItemInfoResponse() {
   }
 
   public String getArticleTitle() {
@@ -101,7 +85,7 @@ public class ItemInfo {
 
   @Override
   public String toString() {
-    return "ItemInfo{" +
+    return "ItemInfoResponse{" +
         "articleTitle='" + articleTitle + '\'' +
         ", articleName='" + articleName + '\'' +
         ", site='" + site + '\'' +

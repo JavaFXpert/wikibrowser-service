@@ -122,9 +122,11 @@ public class WikiLocatorController {
     Map<String, Sitelinks> sitelinksMap = itemMap.get(item.getId()).getSitelinks();
     Sitelinks sitelink = sitelinksMap.get(sitelinksMap.keySet().toArray()[0]);
     String urlStr = sitelink.getUrl();
+    String titleStr = sitelink.getTitle();
     String nameStr = urlStr.substring(urlStr.lastIndexOf("/") + 1);
 
     itemInfo.setArticleUrl(urlStr);
+    itemInfo.setArticleTitle(titleStr);
     itemInfo.setArticleName(nameStr);
     itemInfo.setSite(sitelink.getSite());
     itemInfo.setLang(lang);

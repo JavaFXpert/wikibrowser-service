@@ -14,34 +14,6 @@
  limitations under the License.
 -->
 
-<!--
-  Design considerations for pair programming with Kenny Bastini:
-  - API call for returning Wikidata statements to populate off-canvas menus for Ada Lovelace (Q7259):
-    https://www.wikidata.org/w/api.php?action=wbgetentities&ids=Q7259&languages=en&props=labels|sitelinks|descriptions|claims
-    [] Perhaps create a REST service for this for three reasons:
-       - Simplify/reduce verbosity of the response
-       - Fill out relationships not present in the response
-       - Potentially do some caching
-    [?] Either way, will need to populate a graph of objects in the web client, and I have only had experience populating
-       a single POJO at that level.  What would be the best approach?
-
-  - Wikidata API call for returning information about properties, for example this one returns info for P1 - P10 in english.
-  https://www.wikidata.org/w/api.php?action=wbgetentities&ids=P1|P2|P3|P4|P5|P6|P7|P8|P9|P10&languages=en
-  There are 2300+ properties, and it is possible to get 50 at a time.
-  [] Perhaps create the following REST service that returns the name of a property given a property number (e.g. "P1477")
-     and language (e.g. "en" and "pt-br").  Properties used could be cached in the web client, rather than loading and
-     caching all of them.
-  http://wikibrowserservice.cfapps.io/propertyName?id=P1477&language=en
-  The service could cache the necessary information when it starts up, by using the Wikidata REST call shown above that
-  gets names for properties.
-
-
-  [] Create REST services for the following:
-     - Given a Wikipedia subject name (e.g. Ada_Lovelace), return the Wikidata ID (e.g. Q7259)
-     - Given a Wikidata ID (e.g. Q7259), return the Wikipedia subject name (e.g. Ada_Lovelace)
-  [?] Should these REST services be in a separate microservice from other REST services that returns the name of a property?
--->
-
 <!doctype html>
 
 <html class="no-js" lang="en">
@@ -59,7 +31,7 @@
     <div class="inner-wrap">
       <nav class="tab-bar">
         <section class="middle tab-bar-section">
-          <h1 class="title">Ada Lovelace</h1>
+          <h1 id="offCanvasTitle" class="title">Ada Lovelace</h1>
         </section>
 
         <section class="right-small">
@@ -68,38 +40,13 @@
       </nav>
 
       <aside class="right-off-canvas-menu">
-        <ul class="off-canvas-list" id="offCanvasList">
-          <!--li><label>WikiData statements</label></li>
-
-          <li class="has-submenu"><a href="#"><i>occupation:</i></a>
-            <ul class="right-submenu">
-              <li class="back"><a href="#">Back</a></li>
-              <li><a href="Mathematician.html">mathematician</a></li>
-              <li><a href="#">programmer</a></li>
-              <li><a href="#">poet</a></li>
-              <li><a href="#">computer scientist</a></li>
-              <li><a href="#">engineer</a></li>
-            </ul>
-          </li>
-          <li><a href="Charles_Babbage.html"><i>influenced by:</i><br/>Charles Babbage</a></li>
-
-          <li class="has-submenu"><a href="#"><i>children:</i></a>
-            <ul class="right-submenu">
-              <li class="back"><a href="#">Back</a></li>
-              <li><a href="#">Byron King-Noel, Viscount Ockham</a></li>
-              <li><a href="#">Anne Blunt, 15th Baroness Wentworth</a></li>
-              <li><a href="#">Ralph King-Milbanke, 2nd Earl of Lovelace</a></li>
-            </ul>
-          </li>
-          <li><a href="#"><i>mother:</i><br/>Anne Isabella Byron </a></li>
-          <li><a href="#"><i>father:</i><br/>Lord Byron</a></li>
-          <li><a href="#"><i>sister:</i><br/>Allegra Byron</a></li>
-          <li><a href="#"><i>instance of:</i><br/>human</a></li-->
+        <ul id="offCanvasList" class="off-canvas-list">
+          <!--li><a href="Charles_Babbage.html"><i>influenced by:</i><br/>Charles Babbage</a></li-->
         </ul>
       </aside>
 
       <section class="main-section">
-        <iframe id="wikipediaInnerFrame" src="https://en.m.wikipedia.org/wiki/Earth" frameborder="0" scrolling="yes" width="1000"></iframe>
+        <iframe id="wikipediaInnerFrame" src="/wikipage?name=Mars&lang=en" frameborder="0" scrolling="yes" width="1000"></iframe>
 
       </section>
 
@@ -108,61 +55,67 @@
     </div>
   </div>
 
+
   <script>
-    window.addEventListener('load', function() {
+      window.addEventListener('load', function() {
+        retrieveClaims("Q7777", "en");
 
-      $.ajax({ // ajax call starts
-            url: '/claims', // JQuery loads serverside.php
-            data: 'id=Q2&lang=en', // Send value of the clicked button
-            dataType: 'json', // Choosing a JSON datatype
-          })
-          .done(function(data) { // Variable data contains the data we get from serverside
-            //$('#offCanvasList').html(''); // Clear #wines div
-            populateOffCanvasList(data)
-          })
-          .error(function(err) {
-            alert("error: " + err);
-          });
+        $( "#wikipediaInnerFrame" ).attr("width",window.innerWidth - 0).attr("height",window.innerHeight - 60);
+      } );
 
-      $( "#wikipediaInnerFrame" ).attr("width",window.innerWidth - 0).attr("height",window.innerHeight - 60);
-    } );
+      function retrieveClaims(id, lang) {
+        $.ajax({ // ajax call starts
+              url: '/claims',
+              data: "id=" + id + "&lang=" + lang + "",
+              dataType: 'json', // Choosing a JSON datatype
+            })
+            .done(function(data) { // Variable data contains the data we get from serverside
+              populateOffCanvasList(data)
+            })
+            .error(function(err) {
+              alert("error: " + err);
+            });
 
-    function populateOffCanvasList(resp) {
-      //$('#offCanvasList').append("<li><label>WikiData Statements</label></li>");
-      for (var cIdx in resp.claim) {
-        if (resp.claim[cIdx].val.length == 1) {
-          $('#offCanvasList').append("<li><a href='#'><label>" + resp.claim[cIdx].prop.label + ":</label><br/>" + resp.claim[cIdx].val[0].label + "</a></li>");
-          //$('#offCanvasList').append("<li><a href='#'><i>" + resp.claim[cIdx].prop.label + ":</i><br/>" + resp.claim[cIdx].val[0].label + "</a></li>");
-        }
-        else {
-          $('#offCanvasList').append("<li><label>" + resp.claim[cIdx].prop.label + ":</label></li>");
-          //$('#offCanvasList').append("<li class='has-submenu'><a href='#'><i>" + resp.claim[cIdx].prop.label + ":</i></a>");
-          //$('#offCanvasList').append("  <ul class='right-submenu'>");
-          //$('#offCanvasList').append("    <li class='back'><a href='#'>Back</a></li>");
-          var vals = resp.claim[cIdx].val;
-          for (var vIdx in vals) {
-            $('#offCanvasList').append("  <li><a href='#'>" + vals[vIdx].label + "</a></li>");
-          }
-          $('#offCanvasList').append("  </ul>");
-          $('#offCanvasList').append("</li>");
-        }
       }
-      //$('#offCanvasList').append("</ul>");
-    }
-  </script>
 
+      function populateOffCanvasList(resp) {
+        $('#offCanvasList').html(''); // Clear out off-canvas list
+        var title = resp.articleTitle;
+        var language = resp.lang;
+        var itemId = "Q1"
 
-  <script src="js/vendor/jquery.js"></script>
-  <script src="js/foundation.min.js"></script>
-  <script>
-    $(document).foundation();
-  </script>
-  <script>
-    // Throttled resize function
-    $(window).on('resize', Foundation.utils.throttle(function(e){
-      $( "#wikipediaInnerFrame" ).attr("width",window.innerWidth - 0).attr("height",window.innerHeight - 60);
-    }, 300));
-  </script>
+        $('#offCanvasTitle').text(title);
+        for (var cIdx in resp.claim) {
+          if (resp.claim[cIdx].val.length == 1) {
+            itemId = resp.claim[cIdx].prop.id;
+            $('#offCanvasList').append("<li><a href='#' onclick='retrieveClaims(\"" + itemId + "\", \"" + language + "\")'><label>" + resp.claim[cIdx].prop.label + ":</label><br/>" + resp.claim[cIdx].val[0].label + "</a></li>");
+          }
+          else {
+            $('#offCanvasList').append("<li><label>" + resp.claim[cIdx].prop.label + ":</label></li>");
+            var vals = resp.claim[cIdx].val;
+            for (var vIdx in vals) {
+              itemId = vals[vIdx].id;
+              $('#offCanvasList').append("  <li><a href='#' onclick='retrieveClaims(\"" + itemId + "\", \"" + language + "\")'>" + vals[vIdx].label + "</a></li>");
+            }
+            $('#offCanvasList').append("  </ul>");
+            $('#offCanvasList').append("</li>");
+          }
+        }
+        $('#offCanvasList').append("</ul>");
+      }
+    </script>
 
-</body>
+    <script src="js/vendor/jquery.js"></script>
+    <script src="js/foundation.min.js"></script>
+    <script>
+      $(document).foundation();
+    </script>
+    <script>
+      // Throttled resize function
+      $(window).on('resize', Foundation.utils.throttle(function(e){
+        $( "#wikipediaInnerFrame" ).attr("width",window.innerWidth - 0).attr("height",window.innerHeight - 60);
+      }, 300));
+    </script>
+
+  </body>
 </html>

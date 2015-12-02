@@ -23,6 +23,7 @@ import com.javafxpert.wikibrowser.model.claimsresponse.WikidataProperty;
 import com.javafxpert.wikibrowser.model.claimssparqlresponse.Bindings;
 import com.javafxpert.wikibrowser.model.claimssparqlresponse.ClaimsSparqlResponse;
 import com.javafxpert.wikibrowser.model.claimssparqlresponse.Results;
+import com.javafxpert.wikibrowser.model.locator.ItemInfoResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpStatus;
@@ -69,8 +70,8 @@ public class WikiClaimsController {
   }
 
 
-  @RequestMapping(value = "/claimsmenu", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
-  public ResponseEntity<Object> renderClaimsAsFoundationMenu(@RequestParam(value = "id", defaultValue="Q7259")
+  @RequestMapping(value = "/claimsxml", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
+  public ResponseEntity<Object> renderClaimsXml(@RequestParam(value = "id", defaultValue="Q7259")
                                                              String itemId,
                                                              @RequestParam(value = "lang", defaultValue="en")
                                                              String lang) {
@@ -132,11 +133,26 @@ public class WikiClaimsController {
     claimsResponse.setWdItemBase(WIKIDATA_ITEM_BASE);
     claimsResponse.setWdPropBase(WIKIDATA_PROP_BASE);
 
-    //TODO: Implement setting the language-specific article title
-    claimsResponse.setArticleTitle("");
+    ItemInfoResponse itemInfoResponse = null;
 
-    //TODO: Implement setting the language-specific article ID
-    claimsResponse.setArticleId("");
+    /*
+    try {
+      //TODO: Make URL configurable
+      itemInfoResponse = new RestTemplate().getForObject(new URI("http://127.0.0.1:8080/locator?id=" + itemId + "&lang=" + lang),
+          ItemInfoResponse.class);
+
+      log.info(itemInfoResponse.toString());
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+      log.info("Caught exception when calling /locator?id=" + itemId + " : " + e);
+    }
+    */
+
+    if (itemInfoResponse != null) {
+      claimsResponse.setArticleTitle(itemInfoResponse.getArticleTitle());
+      claimsResponse.setArticleId(itemInfoResponse.getItemId());
+    }
 
     //TODO: Implement fallback to "en" if Wikipedia article doesn't exist in requested language
     claimsResponse.setWpBase(String.format(WIKIPEDIA_TEMPLATE, lang));
