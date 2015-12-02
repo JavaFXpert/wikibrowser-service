@@ -52,11 +52,12 @@ public class WikiClaimsController {
 
   private Log log = LogFactory.getLog(getClass());
 
-  @RequestMapping(value = "/claimsmenu", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
-  public ResponseEntity<Object> renderClaimsAsFoundationMenu(@RequestParam(value = "id", defaultValue="Q7259")
-                                                                   String itemId,
+
+  @RequestMapping(value = "/claims", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Object> renderClaims(@RequestParam(value = "id", defaultValue="Q7259")
+                                                                 String itemId,
                                                                  @RequestParam(value = "lang", defaultValue="en")
-                                                                   String lang) {
+                                                                 String lang) {
 
     ClaimsSparqlResponse claimsSparqlResponse = callClaimsSparqlQuery(itemId, lang);
     ClaimsResponse claimsResponse = convertSparqlResponse(claimsSparqlResponse, lang, itemId);
@@ -67,11 +68,12 @@ public class WikiClaimsController {
 
   }
 
-  @RequestMapping(value = "/claims", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Object> renderClaims(@RequestParam(value = "id", defaultValue="Q7259")
-                                                                 String itemId,
-                                                                 @RequestParam(value = "lang", defaultValue="en")
-                                                                 String lang) {
+
+  @RequestMapping(value = "/claimsmenu", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
+  public ResponseEntity<Object> renderClaimsAsFoundationMenu(@RequestParam(value = "id", defaultValue="Q7259")
+                                                             String itemId,
+                                                             @RequestParam(value = "lang", defaultValue="en")
+                                                             String lang) {
 
     ClaimsSparqlResponse claimsSparqlResponse = callClaimsSparqlQuery(itemId, lang);
     ClaimsResponse claimsResponse = convertSparqlResponse(claimsSparqlResponse, lang, itemId);

@@ -68,8 +68,9 @@
       </nav>
 
       <aside class="right-off-canvas-menu">
-        <ul class="off-canvas-list">
-          <li><label>WikiData statements</label></li>
+        <ul class="off-canvas-list" id="offCanvasList">
+          <!--li><label>WikiData statements</label></li>
+
           <li class="has-submenu"><a href="#"><i>occupation:</i></a>
             <ul class="right-submenu">
               <li class="back"><a href="#">Back</a></li>
@@ -81,6 +82,7 @@
             </ul>
           </li>
           <li><a href="Charles_Babbage.html"><i>influenced by:</i><br/>Charles Babbage</a></li>
+
           <li class="has-submenu"><a href="#"><i>children:</i></a>
             <ul class="right-submenu">
               <li class="back"><a href="#">Back</a></li>
@@ -92,33 +94,12 @@
           <li><a href="#"><i>mother:</i><br/>Anne Isabella Byron </a></li>
           <li><a href="#"><i>father:</i><br/>Lord Byron</a></li>
           <li><a href="#"><i>sister:</i><br/>Allegra Byron</a></li>
-          <li><a href="#"><i>spouse:</i><br/>William King-Noel, 1st Earl of Lovelace</a></li>
-          <li><a href="#"><i>field of work:</i><br/>computer science</a></li>
-          <li><a href="#"><i>birth name:</i><br/>Augusta Ada Byron</a></li>
-          <li><a href="#"><i>given name:</i><br/>Ada</a></li>
-          <li><a href="#"><i>sex or gender:</i><br/>female</a></li>
-          <li><a href="#"><i>date of birth:</i><br/>10 December 1815</a></li>
-          <li><a href="#"><i>date of death:</i><br/>27 November 1852</a></li>
-          <li><a href="#"><i>place of birth:</i><br/>London</a></li>
-          <li><a href="#"><i>place of death:</i><br/>Marylebone</a></li>
-          <li><a href="#"><i>cause of death:</i><br/>uterine cancer</a></li>
-          <li><a href="#"><i>manner of death:</i><br/>natural causes</a></li>
-          <li><a href="#"><i>place of burial:</i><br/>Church of St. Mary Magdalene, Hucknall</a></li>
-          <li><a href="#"><i>country of citizenship:</i><br/>United Kingdom of Great Britain and Ireland</a></li>
-          <li><a href="#"><i>languages spoken or written:</i><br/>English</a></li>
-          <li><a href="https://commons.m.wikimedia.org/wiki/Category:Ada_Lovelace" target="_blank"><i>Wikimedia:</i><br/>Ada Lovelace</a></li>
-          <li><a href="http://www-gap.dcs.st-and.ac.uk/~history/Biographies/Lovelace.html" target="_blank"><i>MacTutor id (biographies):</i><br/>Lovelace</a></li>
-          <li><a href="https://viaf.org/viaf/61632881/" target="_blank"><i>VAIF identifier:</i><br/>61632881</a></li>
-          <li><a href="http://d-nb.info/gnd/119232022" target="_blank"><i>GND identifier:</i><br/>119232022</a></li>
-          <li><a href="http://id.loc.gov/authorities/n78030997" target="_blank"><i>Library of Congress ID:</i><br/>n78030997</a></li>
-          <li><a href="http://id.ndl.go.jp/auth/ndlna/01237915" target="_blank"><i>NDL identifier:</i><br/>01237915</a></li>
-          <li><a href="http://isni.org/0000000076897871" target="_blank"><i>ISNI:</i><br/>0000 0000 7689 7871</a></li>
-          <li><a href="#"><i>instance of:</i><br/>human</a></li>
+          <li><a href="#"><i>instance of:</i><br/>human</a></li-->
         </ul>
       </aside>
 
       <section class="main-section">
-        <iframe id="wikipediaInnerFrame" src="//en.m.wikipedia.org/wiki/Ada_Lovelace" frameborder="0" scrolling="yes" width="1000"></iframe>
+        <iframe id="wikipediaInnerFrame" src="https://en.m.wikipedia.org/wiki/Earth" frameborder="0" scrolling="yes" width="1000"></iframe>
 
       </section>
 
@@ -129,9 +110,47 @@
 
   <script>
     window.addEventListener('load', function() {
+
+      $.ajax({ // ajax call starts
+            url: '/claims', // JQuery loads serverside.php
+            data: 'id=Q2&lang=en', // Send value of the clicked button
+            dataType: 'json', // Choosing a JSON datatype
+          })
+          .done(function(data) { // Variable data contains the data we get from serverside
+            //$('#offCanvasList').html(''); // Clear #wines div
+            populateOffCanvasList(data)
+          })
+          .error(function(err) {
+            alert("error: " + err);
+          });
+
       $( "#wikipediaInnerFrame" ).attr("width",window.innerWidth - 0).attr("height",window.innerHeight - 60);
     } );
+
+    function populateOffCanvasList(resp) {
+      //$('#offCanvasList').append("<li><label>WikiData Statements</label></li>");
+      for (var cIdx in resp.claim) {
+        if (resp.claim[cIdx].val.length == 1) {
+          $('#offCanvasList').append("<li><a href='#'><label>" + resp.claim[cIdx].prop.label + ":</label><br/>" + resp.claim[cIdx].val[0].label + "</a></li>");
+          //$('#offCanvasList').append("<li><a href='#'><i>" + resp.claim[cIdx].prop.label + ":</i><br/>" + resp.claim[cIdx].val[0].label + "</a></li>");
+        }
+        else {
+          $('#offCanvasList').append("<li><label>" + resp.claim[cIdx].prop.label + ":</label></li>");
+          //$('#offCanvasList').append("<li class='has-submenu'><a href='#'><i>" + resp.claim[cIdx].prop.label + ":</i></a>");
+          //$('#offCanvasList').append("  <ul class='right-submenu'>");
+          //$('#offCanvasList').append("    <li class='back'><a href='#'>Back</a></li>");
+          var vals = resp.claim[cIdx].val;
+          for (var vIdx in vals) {
+            $('#offCanvasList').append("  <li><a href='#'>" + vals[vIdx].label + "</a></li>");
+          }
+          $('#offCanvasList').append("  </ul>");
+          $('#offCanvasList').append("</li>");
+        }
+      }
+      //$('#offCanvasList').append("</ul>");
+    }
   </script>
+
 
   <script src="js/vendor/jquery.js"></script>
   <script src="js/foundation.min.js"></script>
