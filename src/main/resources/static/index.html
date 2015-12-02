@@ -31,7 +31,7 @@
     <div class="inner-wrap">
       <nav class="tab-bar">
         <section class="middle tab-bar-section">
-          <h1 id="offCanvasTitle" class="title">Ada Lovelace</h1>
+          <h1 id="offCanvasTitle" class="title">WikiBrowser</h1>
         </section>
 
         <section class="right-small">
@@ -41,12 +41,12 @@
 
       <aside class="right-off-canvas-menu">
         <ul id="offCanvasList" class="off-canvas-list">
-          <!--li><a href="Charles_Babbage.html"><i>influenced by:</i><br/>Charles Babbage</a></li-->
+          <!-- This menu is dynamically populated with JQuery -->
         </ul>
       </aside>
 
       <section class="main-section">
-        <iframe id="wikipediaInnerFrame" src="/wikipage?name=Mars&lang=en" frameborder="0" scrolling="yes" width="1000"></iframe>
+        <iframe id="wikipediaInnerFrame" src="/wikipage?name=universe&lang=en" frameborder="0" scrolling="yes" width="1000"></iframe>
 
       </section>
 
@@ -59,17 +59,17 @@
   <script>
       window.addEventListener('load', function() {
         //alert("iframe loaded");
-        retrieveClaims("Q42", "en");
+        retrieveClaims("Q1", "en");
 
         $( "#wikipediaInnerFrame" ).attr("width",window.innerWidth - 0).attr("height",window.innerHeight - 60);
       } );
 
       function retrieveClaims(id, lang) {
         //alert("Retrieving claims for: " + id);
-        $.ajax({ // ajax call starts
+        $.ajax({
               url: '/claims',
               data: "id=" + id + "&lang=" + lang + "",
-              dataType: 'json', // Choosing a JSON datatype
+              dataType: 'json',
             })
             .done(function(data) { // Variable data contains the data we get from serverside
               populateOffCanvasList(data)
@@ -77,27 +77,63 @@
             .error(function(err) {
               alert("error: " + err);
             });
+      }
 
+      // Supply either id or name, and lang
+      function loadWikipediaPage(id, name, lang) {
+        $.ajax({
+              url: '/locator',
+              data: "id=" + id + "&name=" + name + "&lang=" + lang + "",
+              dataType: 'json',
+            })
+            .done(function(itemInfo) { // Variable data contains the data we get from serverside
+              $( "#wikipediaInnerFrame" ).attr("src", "/wikipage?name=" + itemInfo.articleName + "&lang=" + lang);
+            })
+            .error(function(err) {
+              alert("error: " + err);
+            });
+
+      }
+
+      /**
+       * Convenience method to call multiple functions from an onclick handler
+       */
+      function retrieveClaimsAndLoadPage(id, lang) {
+        retrieveClaims(id, lang);
+        loadWikipediaPage(id, "", lang);
       }
 
       function populateOffCanvasList(resp) {
         $('#offCanvasList').html(''); // Clear out off-canvas list
         var title = resp.articleTitle;
         var language = resp.lang;
-        var itemId = "Q1"
+        var itemId = ""
+        var isProperty;
 
         $('#offCanvasTitle').text(title);
         for (var cIdx in resp.claim) {
           if (resp.claim[cIdx].val.length == 1) {
             itemId = resp.claim[cIdx].val[0].id;
-            $('#offCanvasList').append("<li><a href='#' onclick='retrieveClaims(\"" + itemId + "\", \"" + language + "\")'><label>" + resp.claim[cIdx].prop.label + ":</label><br/>" + resp.claim[cIdx].val[0].label + "</a></li>");
+            isProperty = itemId.substring(0, 1).toUpperCase() === "P";
+            $('#offCanvasList').append("<li><a href='#' onclick='retrieveClaimsAndLoadPage(\"" + itemId + "\", \"" + language + "\")'><label>" +
+                resp.claim[cIdx].prop.label +
+                ":</label><br/>" +
+                (isProperty ? ("<i>" + itemId + ": ") : "") +
+                resp.claim[cIdx].val[0].label +
+                (isProperty ? ("</i>") : "") +
+                "</a></li>");
           }
           else {
             $('#offCanvasList').append("<li><label>" + resp.claim[cIdx].prop.label + ":</label></li>");
             var vals = resp.claim[cIdx].val;
             for (var vIdx in vals) {
               itemId = vals[vIdx].id;
-              $('#offCanvasList').append("  <li><a href='#' onclick='retrieveClaims(\"" + itemId + "\", \"" + language + "\")'>" + vals[vIdx].label + "</a></li>");
+              isProperty = itemId.substring(0, 1).toUpperCase() === "P";
+              $('#offCanvasList').append("  <li><a href='#' onclick='retrieveClaimsAndLoadPage(\"" + itemId + "\", \"" + language + "\")'>" +
+                  (isProperty ? ("<i>" + itemId + ": ") : "") +
+                  vals[vIdx].label +
+                  (isProperty ? ("</i>") : "") +
+                  "</a></li>");
             }
             $('#offCanvasList').append("  </ul>");
             $('#offCanvasList').append("</li>");

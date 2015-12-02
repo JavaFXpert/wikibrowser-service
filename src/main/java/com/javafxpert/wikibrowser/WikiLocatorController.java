@@ -122,10 +122,8 @@ public class WikiLocatorController {
     Item item = itemMap.get(itemMap.keySet().toArray()[0]);
     Map<String, Sitelinks> sitelinksMap = itemMap.get(item.getId()).getSitelinks();
 
-    Set keySet = sitelinksMap.keySet();
-
     //TODO: Investigate why this is occasionally empty when called by a WikiClaimsController method
-    if (!keySet.isEmpty()) {
+    if (sitelinksMap!= null && !sitelinksMap.isEmpty() && !sitelinksMap.keySet().isEmpty()) {
       Sitelinks sitelink = sitelinksMap.get(sitelinksMap.keySet().toArray()[0]);
       String urlStr = sitelink.getUrl();
       String titleStr = sitelink.getTitle();
