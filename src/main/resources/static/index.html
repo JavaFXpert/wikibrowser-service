@@ -126,7 +126,7 @@
       var itemId = ""
       var isProperty;
 
-      $('#offCanvasTitle').text(title);
+      $('#offCanvasTitle').text(title + " :" + resp.articleId);
       for (var cIdx in resp.claim) {
         if (resp.claim[cIdx].val.length == 1) {
           itemId = resp.claim[cIdx].val[0].id;
