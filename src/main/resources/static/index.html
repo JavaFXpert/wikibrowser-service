@@ -40,19 +40,52 @@
       loadWikipediaPageByItemId(id, lang);
     }
 
+    /**
+     * Parses the
+     * @param wikipageEndpointWithParams
+     *
+     * Examples of input include:
+     * http://localhost:8080/wikipage?name=Earth&lang=en
+     * http://localhost:8080/wikipage?name=Earth
+     * http://localhost:8080/wikipage?name=Terre&lang=fr
+     */
+    function refreshClaimsWikipageEndpoint (endpointUrl) {
+      var endpointUrlArray = endpointUrl.split(/&|\?/);
+
+      var articleName = "";
+      var language = "";
+      for (idx in endpointUrlArray) {
+        var paramValueArray = endpointUrlArray[idx].split("=");
+        if (paramValueArray.length == 2 && paramValueArray[0].toLowerCase() === "name") {
+          articleName = paramValueArray[1];
+        }
+        else if (paramValueArray.length == 2 && paramValueArray[0].toLowerCase() === "lang") {
+          language = paramValueArray[1];
+        }
+      }
+      if (articleName != "") {
+        refreshClaims(articleName, language);
+      }
+    }
+
+    var lastArticleNameRefreshed = "";
+    var lastLangRefreshed = "";
     function refreshClaims (name, lang) {
-      //alert("Retrieving claims for: article name: " + name);
-      $.ajax({
-            url: '/locator',
-            data: "name=" + name + "&lang=" + lang + "",
-            dataType: 'json',
-          })
-          .done(function(itemInfo) { // Variable data contains the data we get from serverside
-            retrieveClaimsByItemId (itemInfo.itemId, lang);
-          })
-          .error(function(err) {
-            //alert("error: " + err);
-          });
+      if (name != lastArticleNameRefreshed || lang != lastLangRefreshed) {
+        lastArticleNameRefreshed = name;
+        lastLangRefreshed = lang;
+        $.ajax({
+              url: '/locator',
+              data: "name=" + name + "&lang=" + lang + "",
+              dataType: 'json',
+            })
+            .done(function (itemInfo) {
+              retrieveClaimsByItemId(itemInfo.itemId, lang);
+            })
+            .error(function (err) {
+              //alert("error: " + err);
+            });
+      }
     }
 
     function retrieveClaimsByItemId (id, lang) {
@@ -149,7 +182,7 @@
       </aside>
 
       <section class="main-section">
-        <iframe id="wikipediaInnerFrame" src="/wikipage?name=universe&lang=en" frameborder="0" scrolling="yes" width="1000"></iframe>
+        <iframe id="wikipediaInnerFrame" src="/wikipage?name=universe&lang=en" frameborder="0" scrolling="yes" width="1000" onload="refreshClaimsWikipageEndpoint(this.contentWindow.location.href)"></iframe>
 
       </section>
 

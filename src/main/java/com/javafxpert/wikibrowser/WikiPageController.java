@@ -49,6 +49,8 @@ public class WikiPageController {
 
     String pageText = reader.lines().collect(Collectors.joining("\n"));
     pageText = pageText.replaceAll("\\\"/w/", "\"" + mWikipediaBase + "w/");
+    pageText = pageText.replaceAll("\\\"/images/", "\"" + mWikipediaBase + "images/");
+
     pageText = pageText.replaceAll("\\\"href\\\":\\\"/w/", "\"href\":\"" + mWikipediaBase + "w/");
     pageText = pageText.replaceAll("\\\"href\\\":\\\"/wiki/", "\"href\":\"" + mWikipedia);
 
@@ -57,7 +59,7 @@ public class WikiPageController {
     boolean finished = false;
     int prevFoundPos = 0;
     String matchStr = "/wikipage?name=";
-    String templateStr = "onclick='window.parent.refreshClaims(\"%s\", \"en\")'";
+    String templateStr = " onclick='window.parent.refreshClaims(\"%s\", \"en\")' ";
     while (!finished) {
       int curFoundPos = pageTextSb.indexOf("/wikipage?name=", prevFoundPos + matchStr.length());
       if (curFoundPos > prevFoundPos) {
@@ -67,7 +69,7 @@ public class WikiPageController {
         if (nameEndPosExc > nameStartPos) {
           String articleName = pageTextSb.substring(nameStartPos, nameEndPosExc);
           String.format(templateStr, articleName);
-          pageTextSb.insert(nameEndPosExc + 2, String.format(templateStr, articleName));
+          pageTextSb.insert(nameEndPosExc + 1, String.format(templateStr, articleName));
         }
         else {
           finished = true;
