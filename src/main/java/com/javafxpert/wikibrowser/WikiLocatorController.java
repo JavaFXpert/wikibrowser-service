@@ -112,7 +112,7 @@ public class WikiLocatorController {
 
       log.info(locatorResponse.toString());
     }
-    catch (Exception e) {
+    catch (Exception e) { //TODO: Consider moving catch down further in simlar method for all Controller classes
       e.printStackTrace();
       log.info("Caught exception when calling wikidata name to ID service " + e);
     }
@@ -123,6 +123,7 @@ public class WikiLocatorController {
     Map<String, Sitelinks> sitelinksMap = itemMap.get(item.getId()).getSitelinks();
 
     //TODO: Investigate why this is occasionally empty when called by a WikiClaimsController method
+    //      and when called by WikiLocatorController#Name2Id() on Eleatics
     if (sitelinksMap!= null && !sitelinksMap.isEmpty() && !sitelinksMap.keySet().isEmpty()) {
       Sitelinks sitelink = sitelinksMap.get(sitelinksMap.keySet().toArray()[0]);
       String urlStr = sitelink.getUrl();
