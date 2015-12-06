@@ -87,6 +87,11 @@ public class WikiSearchController {
           SearchResponseFar.class);
       log.info(searchResponseFar.toString());
 
+      String suggestion = searchResponseFar.getQueryFar().getSearchinfoFar().getSuggestion();
+      if (suggestion != null && suggestion.length() > 0) {
+        searchResponseNear.getTitles().add(suggestion);
+      }
+
       Iterator iterator = searchResponseFar.getQueryFar().getSearchFar().iterator();
       while (iterator.hasNext()) {
         SearchFar searchFar = (SearchFar)iterator.next();

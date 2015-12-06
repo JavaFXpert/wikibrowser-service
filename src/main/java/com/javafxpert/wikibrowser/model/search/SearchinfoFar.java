@@ -26,42 +26,29 @@ import java.util.List;
  * Created by jamesweaver on 11/25/15.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class QueryFar {
-  @JsonProperty("searchinfo")
-  private SearchinfoFar searchinfoFar;
+public class SearchinfoFar {
+  @JsonProperty("suggestion")
+  private String suggestion;
 
-  @JsonProperty("search")
-  private List<SearchFar> searchFar = new ArrayList<>();
-
-  public QueryFar(SearchinfoFar searchinfoFar, List<SearchFar> searchFar) {
-    this.searchinfoFar = searchinfoFar;
-    this.searchFar = searchFar;
+  public SearchinfoFar(String suggestion) {
+    this.suggestion = suggestion;
   }
 
-  public QueryFar() {
+  public SearchinfoFar() {
   }
 
-  public SearchinfoFar getSearchinfoFar() {
-    return searchinfoFar;
+  public String getSuggestion() {
+    return suggestion;
   }
 
-  public void setSearchinfoFar(SearchinfoFar searchinfoFar) {
-    this.searchinfoFar = searchinfoFar;
-  }
-
-  public List<SearchFar> getSearchFar() {
-    return searchFar;
-  }
-
-  public void setSearchFar(List<SearchFar> searchFar) {
-    this.searchFar = searchFar;
+  public void setSuggestion(String suggestion) {
+    this.suggestion = suggestion;
   }
 
   @Override
   public String toString() {
-    return "QueryFar{" +
-        "searchinfoFar=" + searchinfoFar +
-        ", searchFar=" + searchFar +
+    return "SearchinfoFar{" +
+        "suggestion='" + suggestion + '\'' +
         '}';
   }
 }
