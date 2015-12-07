@@ -25,6 +25,7 @@
   <script src="js/vendor/modernizr.js"></script>
 
   <script>
+    // TODO: Examine usefulness of, and possibly refactor, functionality in this handler
     window.addEventListener('load', function() {
       //alert("iframe loaded");
       retrieveClaimsByItemId("Q2", "en");
@@ -38,6 +39,7 @@
      */
     function searchPopulateArticleNameMatches () {
       var searchStr = $('#searchInput').val();
+      $('#searchButton').prop('disabled', true);
       //alert("searchStr: " + searchStr);
       if (searchStr.length > 0) {
         searchStr = searchStr.split(" ").join("%20");
@@ -50,8 +52,11 @@
               $('#searchDrop').html('');
               for (i in response.titles) {
                 var title = response.titles[i];
-                //loadWikipediaPageByArticleName(name, lang)
-                $('#searchDrop').append("<li><a href='#' onclick='loadWikipediaPageByArticleName(" + name + ", \"en\")'>" + title + "</a></li>");
+                var snippet = "<li><a href='#' onclick='loadWikipediaPageByArticleName(\"" + title + "\", \"en\")'>" + title + "</a></li>";
+                $('#searchDrop').append(snippet);
+                if (title.toLowerCase() === searchStr.toLowerCase()) {
+                  $('#searchButton').prop('disabled', false);
+                }
               }
             })
             .error(function (err) {
@@ -78,8 +83,11 @@
      * http://localhost:8080/wikipage?name=Terre&lang=fr
      */
     function refreshClaimsWikipageEndpoint (endpointUrl) {
-      var endpointUrlArray = endpointUrl.split(/&|\?/);
+      // Clear the search input text field
+      // TODO: Perhaps find a better place to clear the search input text field
+      $("#searchInput").val("");
 
+      var endpointUrlArray = endpointUrl.split(/&|\?/);
       var articleName = "";
       var language = "";
       for (idx in endpointUrlArray) {
@@ -148,7 +156,7 @@
     }
 
     function loadWikipediaPageByArticleName(name, lang) {
-      $( "#wikipediaInnerFrame" ).attr("src", "/wikipage?name=" + name + "&lang=" + lang);
+      $("#wikipediaInnerFrame").attr("src", "/wikipage?name=" + name + "&lang=" + lang);
     }
 
     function populateOffCanvasList(resp) {
@@ -201,8 +209,22 @@
       <nav class="tab-bar">
         <section class="middle tab-bar-section">
           <h1 id="offCanvasTitle" class="title">WikiBrowser</h1>
-          <input id="searchInput" type="text" placeholder="Search" data-dropdown="searchDrop"
-                 onKeyUp="searchPopulateArticleNameMatches()"/>
+          <!--input id="searchInput" type="text" placeholder="Search" data-dropdown="searchDrop"
+                 onKeyUp="searchPopulateArticleNameMatches()"/-->
+
+          <div class="row">
+            <div class="small-3 large-3 columns">
+              <a href="#" class="button" data-dropdown="searchDrop">&raquo;</a>
+            </div>
+            <div class="small-6 large-6 columns">
+              <input id="searchInput" type="text" placeholder="Search"
+                   onKeyUp="searchPopulateArticleNameMatches()"/>
+            </div>
+            <div class="small-3 large-3 columns">
+              <!--a href="#" class="button" onclick="loadWikipediaPageByArticleName($('#searchInput').val(),'en')">Search</a-->
+              <button id="searchButton" type="button" diabled="true" onclick="loadWikipediaPageByArticleName($('#searchInput').val(),'en')">Search</button>
+            </div>
+          </div>
 
           <ul id="searchDrop" class="f-dropdown" data-options="align:left" data-dropdown-content aria-hidden="true" tabindex="-1">
             <!-- This list is dynamically populated with JQuery -->
