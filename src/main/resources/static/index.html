@@ -25,9 +25,11 @@
   <script src="js/vendor/modernizr.js"></script>
 
   <script>
+    var curNearMatch = "";
+
     // TODO: Examine usefulness of, and possibly refactor, functionality in this handler
     window.addEventListener('load', function() {
-      //alert("iframe loaded");
+      $('#searchButton').prop('disabled', true);
       retrieveClaimsByItemId("Q2", "en");
 
       $( "#wikipediaInnerFrame" ).attr("width",window.innerWidth - 0).attr("height",window.innerHeight - 60);
@@ -37,10 +39,38 @@
      * Retrieves Wikipedia article names for a string in an input field. This method is called
      * with each keystroke in the input field
      */
-    function searchPopulateArticleNameMatches () {
+    function searchArticleNameNearMatch () {
       var searchStr = $('#searchInput').val();
       $('#searchButton').prop('disabled', true);
-      //alert("searchStr: " + searchStr);
+      if (searchStr.length > 0) {
+        searchStr = searchStr.split(" ").join("%20");
+        $.ajax({
+              url: '/articlesearch',
+              data: "title=" + searchStr + "&nearmatch=true&lang=en", //TODO: Enable user to select lanquage
+              dataType: 'json',
+            })
+            .done(function (response) {
+              for (i in response.titles) {
+                var title = response.titles[i];
+                if (title.toLowerCase() === searchStr.toLowerCase()) {
+                  $('#searchButton').prop('disabled', false);
+                  curNearMatch = title;
+                }
+              }
+            })
+            .error(function (err) {
+              //alert("error: " + err);
+            });
+      }
+    }
+
+    /**
+    /**
+     * Retrieves Wikipedia article names for a string in an input field. This method is called
+     * with each keystroke in the input field
+     */
+    function searchPopulateArticleNameMatches () {
+      var searchStr = $('#searchInput').val();
       if (searchStr.length > 0) {
         searchStr = searchStr.split(" ").join("%20");
         $.ajax({
@@ -54,9 +84,6 @@
                 var title = response.titles[i];
                 var snippet = "<li><a href='#' onclick='loadWikipediaPageByArticleName(\"" + title + "\", \"en\")'>" + title + "</a></li>";
                 $('#searchDrop').append(snippet);
-                if (title.toLowerCase() === searchStr.toLowerCase()) {
-                  $('#searchButton').prop('disabled', false);
-                }
               }
             })
             .error(function (err) {
@@ -198,6 +225,7 @@
       }
       $('#offCanvasList').append("</ul>");
     }
+
   </script>
 
 </head>
@@ -214,15 +242,16 @@
 
           <div class="row">
             <div class="small-3 large-3 columns">
-              <a href="#" class="button" data-dropdown="searchDrop">&raquo;</a>
+              <a href="#" class="button" data-dropdown="searchDrop" onclick="searchPopulateArticleNameMatches()">&raquo;</a>
             </div>
             <div class="small-6 large-6 columns">
               <input id="searchInput" type="text" placeholder="Search"
-                   onKeyUp="searchPopulateArticleNameMatches()"/>
+                   onKeyUp="searchArticleNameNearMatch()"/>
             </div>
             <div class="small-3 large-3 columns">
               <!--a href="#" class="button" onclick="loadWikipediaPageByArticleName($('#searchInput').val(),'en')">Search</a-->
-              <button id="searchButton" type="button" diabled="true" onclick="loadWikipediaPageByArticleName($('#searchInput').val(),'en')">Search</button>
+              <!--button id="searchButton" type="button" diabled="true" onclick="loadWikipediaPageByArticleName($('#searchInput').val(),'en')">Search</button-->
+              <button id="searchButton" type="button" diabled="true" onclick="loadWikipediaPageByArticleName(curNearMatch,'en')">Search</button>
             </div>
           </div>
 
@@ -275,6 +304,22 @@
       $(window).on('resize', Foundation.utils.throttle(function(e){
         $( "#wikipediaInnerFrame" ).attr("width",window.innerWidth - 0).attr("height",window.innerHeight - 60);
       }, 300));
+    </script>
+
+    <script>
+      $("input").keypress(function(event){
+        var keycode = (event.keyCode ? event.keyCode : event.which);
+        if(keycode == '13'){
+          //loadWikipediaPageByArticleName($('#searchInput').val(),'en');
+          if (curNearMatch.length > 0) {  //TODO: Also check if Search button is enabled (or better yet, a common "is" method?
+            loadWikipediaPageByArticleName(curNearMatch, 'en');
+          }
+        }
+        else {
+          searchArticleNameNearMatch();
+        }
+      });
+
     </script>
 
 </body>

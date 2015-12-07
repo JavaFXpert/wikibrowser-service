@@ -23,6 +23,7 @@ import com.javafxpert.wikibrowser.model.locator.Sitelinks;
 import com.javafxpert.wikibrowser.model.search.SearchFar;
 import com.javafxpert.wikibrowser.model.search.SearchResponseFar;
 import com.javafxpert.wikibrowser.model.search.SearchResponseNear;
+import com.javafxpert.wikibrowser.model.search.SearchinfoFar;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpStatus;
@@ -50,6 +51,8 @@ public class WikiSearchController {
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Object> search(@RequestParam(value = "title", defaultValue="")
                                                 String title,
+                                                @RequestParam(value = "nearmatch", defaultValue="false")
+                                                boolean nearmatch,
                                                 @RequestParam(value = "lang", defaultValue="en")
                                                 String lang) {
 
@@ -57,13 +60,17 @@ public class WikiSearchController {
 
     String qa = "https://";
     String qb = ""; // Some language code e.g. en
-    String qc = ".wikipedia.org/w/api.php?action=query&format=json&list=search&srlimit=10&srsearch=";
-    String qd = ""; // article title so search for
+    String qc = ".wikipedia.org/w/api.php?action=query&format=json&list=search&srlimit=10";
+    String qd = ""; // Indication that only nearmatch is desired
+    String qe = "&srsearch=";
+    String qf = ""; // article title so search for
 
     qb = lang;
-    qd = title;
+    //qd = nearmatch.equalsIgnoreCase("true") ? "&srwhat=nearmatch" : "";
+    qd = nearmatch ? "&srwhat=nearmatch" : "";
+    qf = title;
 
-    String searchQuery = qa + qb + qc + qd;
+    String searchQuery = qa + qb + qc + qd + qe + qf;
 
     SearchResponseNear searchResponseNear = queryProcessSearchResponse(searchQuery, lang);
 
@@ -87,9 +94,12 @@ public class WikiSearchController {
           SearchResponseFar.class);
       log.info(searchResponseFar.toString());
 
-      String suggestion = searchResponseFar.getQueryFar().getSearchinfoFar().getSuggestion();
-      if (suggestion != null && suggestion.length() > 0) {
-        searchResponseNear.getTitles().add(suggestion);
+      SearchinfoFar searchinfoFar = searchResponseFar.getQueryFar().getSearchinfoFar();
+      if (searchinfoFar != null) {
+        String suggestion = searchResponseFar.getQueryFar().getSearchinfoFar().getSuggestion();
+        if (suggestion != null && suggestion.length() > 0) {
+          searchResponseNear.getTitles().add(suggestion);
+        }
       }
 
       Iterator iterator = searchResponseFar.getQueryFar().getSearchFar().iterator();
