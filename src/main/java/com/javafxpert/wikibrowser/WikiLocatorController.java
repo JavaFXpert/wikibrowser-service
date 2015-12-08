@@ -104,6 +104,7 @@ public class WikiLocatorController {
   }
 
   private ItemInfo queryProcessLocatorResponse(String query, String lang) {
+    query = query.replaceAll(" ", "%20");
     log.info("query: " + query);
     LocatorResponse locatorResponse = null;
     try {
@@ -120,21 +121,28 @@ public class WikiLocatorController {
     ItemInfo itemInfo = new ItemInfo();
     Map<String, Item> itemMap = locatorResponse.getEntities();
     Item item = itemMap.get(itemMap.keySet().toArray()[0]);
-    Map<String, Sitelinks> sitelinksMap = itemMap.get(item.getId()).getSitelinks();
 
-    //TODO: Investigate why this is occasionally empty when called by a WikiClaimsController method
-    //      and when called by WikiLocatorController#Name2Id() on Eleatics
-    if (sitelinksMap!= null && !sitelinksMap.isEmpty() && !sitelinksMap.keySet().isEmpty()) {
-      Sitelinks sitelink = sitelinksMap.get(sitelinksMap.keySet().toArray()[0]);
-      String urlStr = sitelink.getUrl();
-      String titleStr = sitelink.getTitle();
-      String nameStr = urlStr.substring(urlStr.lastIndexOf("/") + 1);
-      itemInfo.setArticleUrl(urlStr);
-      itemInfo.setArticleTitle(titleStr);
-      itemInfo.setArticleName(nameStr);
-      itemInfo.setSite(sitelink.getSite());
+    String itemId = item.getId();
+    Item itemRef = itemMap.get(itemId);
+
+    //TODO: Investigate why this is occasionally null and handle it better
+    if (itemRef != null) {
+      Map<String, Sitelinks> sitelinksMap = itemRef.getSitelinks();
+
+      if (sitelinksMap != null && !sitelinksMap.isEmpty() && !sitelinksMap.keySet().isEmpty()) {
+        Sitelinks sitelink = sitelinksMap.get(sitelinksMap.keySet().toArray()[0]);
+        String urlStr = sitelink.getUrl();
+        String titleStr = sitelink.getTitle();
+        String nameStr = urlStr.substring(urlStr.lastIndexOf("/") + 1);
+        itemInfo.setArticleUrl(urlStr);
+        itemInfo.setArticleTitle(titleStr);
+        itemInfo.setArticleName(nameStr);
+        itemInfo.setSite(sitelink.getSite());
+      }
     }
-
+    else {
+      log.info("item is null");
+    }
     itemInfo.setLang(lang);
     itemInfo.setItemId(item.getId());
     return itemInfo;

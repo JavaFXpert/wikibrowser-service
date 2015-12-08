@@ -108,6 +108,7 @@ public class WikiClaimsController {
     wdqj = lang;
     wdqm = lang;
     String wdQuery = wdqa + wdqb + wdqc + wdqd + wdqe + wdqf + wdqg + wdqh + wdqi + wdqj + wdqk + wdql + wdqm + wdqn;
+    wdQuery = wdQuery.replaceAll(" ", "%20");
     log.info("wdQuery: " + wdQuery);
 
     try {
