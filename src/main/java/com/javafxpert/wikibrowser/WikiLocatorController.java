@@ -82,44 +82,46 @@ public class WikiLocatorController {
     query = query.replaceAll(" ", "%20");
     log.info("query: " + query);
     LocatorResponse locatorResponse = null;
+    ItemInfo itemInfo = new ItemInfo();
+
     try {
       locatorResponse = new RestTemplate().getForObject(new URI(query),
           LocatorResponse.class);
 
       log.info(locatorResponse.toString());
+
+      Map<String, Item> itemMap = locatorResponse.getEntities();
+      Item item = itemMap.get(itemMap.keySet().toArray()[0]);
+
+      String itemId = item.getId();
+      Item itemRef = itemMap.get(itemId);
+
+      //TODO: Investigate why this is occasionally null and handle it better
+      if (itemRef != null) {
+        Map<String, Sitelinks> sitelinksMap = itemRef.getSitelinks();
+
+        if (sitelinksMap != null && !sitelinksMap.isEmpty() && !sitelinksMap.keySet().isEmpty()) {
+          Sitelinks sitelink = sitelinksMap.get(sitelinksMap.keySet().toArray()[0]);
+          String urlStr = sitelink.getUrl();
+          String titleStr = sitelink.getTitle();
+          String nameStr = urlStr.substring(urlStr.lastIndexOf("/") + 1);
+          itemInfo.setArticleUrl(urlStr);
+          itemInfo.setArticleTitle(titleStr);
+          itemInfo.setArticleName(nameStr);
+          itemInfo.setSite(sitelink.getSite());
+        }
+      }
+      else {
+        log.info("item is null");
+      }
+      itemInfo.setLang(lang);
+      itemInfo.setItemId(item.getId());
     }
     catch (Exception e) { //TODO: Consider moving catch down further in simlar method for all Controller classes
       e.printStackTrace();
       log.info("Caught exception when calling wikidata name to ID service " + e);
     }
 
-    ItemInfo itemInfo = new ItemInfo();
-    Map<String, Item> itemMap = locatorResponse.getEntities();
-    Item item = itemMap.get(itemMap.keySet().toArray()[0]);
-
-    String itemId = item.getId();
-    Item itemRef = itemMap.get(itemId);
-
-    //TODO: Investigate why this is occasionally null and handle it better
-    if (itemRef != null) {
-      Map<String, Sitelinks> sitelinksMap = itemRef.getSitelinks();
-
-      if (sitelinksMap != null && !sitelinksMap.isEmpty() && !sitelinksMap.keySet().isEmpty()) {
-        Sitelinks sitelink = sitelinksMap.get(sitelinksMap.keySet().toArray()[0]);
-        String urlStr = sitelink.getUrl();
-        String titleStr = sitelink.getTitle();
-        String nameStr = urlStr.substring(urlStr.lastIndexOf("/") + 1);
-        itemInfo.setArticleUrl(urlStr);
-        itemInfo.setArticleTitle(titleStr);
-        itemInfo.setArticleName(nameStr);
-        itemInfo.setSite(sitelink.getSite());
-      }
-    }
-    else {
-      log.info("item is null");
-    }
-    itemInfo.setLang(lang);
-    itemInfo.setItemId(item.getId());
     return itemInfo;
   }
 

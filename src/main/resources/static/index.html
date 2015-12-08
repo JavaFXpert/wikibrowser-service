@@ -179,7 +179,10 @@
             dataType: 'json',
           })
           .done(function(itemInfo) { // Variable data contains the data we get from serverside
-            $( "#wikipediaInnerFrame" ).attr("src", "/wikipage?name=" + itemInfo.articleName + "&lang=" + lang);
+            var artName = itemInfo.articleName;
+            if (artName !== null) {
+              $("#wikipediaInnerFrame").attr("src", "/wikipage?name=" + itemInfo.articleName + "&lang=" + lang);
+            }
           })
           .error(function(err) {
             //alert("error: " + err);
