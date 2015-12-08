@@ -143,7 +143,7 @@
         lastArticleNameRefreshed = name;
         lastLangRefreshed = lang;
         $.ajax({
-              url: '/locator',
+              url: '/idlocator',
               data: "name=" + name + "&lang=" + lang + "",
               dataType: 'json',
             })
