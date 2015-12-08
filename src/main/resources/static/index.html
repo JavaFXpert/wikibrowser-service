@@ -52,7 +52,7 @@
             .done(function (response) {
               for (i in response.titles) {
                 var title = response.titles[i];
-                if (title.toLowerCase() === searchStr.toLowerCase()) {
+                if (title.toLowerCase() === $('#searchInput').val().toLowerCase()) {
                   $('#searchButton').prop('disabled', false);
                   curNearMatch = title;
                 }
@@ -72,6 +72,7 @@
     function searchPopulateArticleNameMatches () {
       var searchStr = $('#searchInput').val();
       if (searchStr.length > 0) {
+        $('#searchDropdown').prop('disabled', false);
         searchStr = searchStr.split(" ").join("%20");
         $.ajax({
               url: '/articlesearch',
@@ -114,6 +115,8 @@
       // TODO: Perhaps find a better place to clear the search input text field & suggestions dropdown
       $("#searchInput").val("");
       $('#searchDrop').html('');
+      $('#searchButton').prop('disabled', true);
+      $('#searchDropdown').prop('disabled', true);
 
       var endpointUrlArray = endpointUrl.split(/&|\?/);
       var articleName = "";
@@ -242,14 +245,14 @@
                  onKeyUp="searchPopulateArticleNameMatches()"/-->
 
           <div class="row" align="bottom">
-            <div class="small-1 large-1 columns">
-              <a href="#" class="button small" data-dropdown="searchDrop" onclick="searchPopulateArticleNameMatches()">&raquo;</a>
+            <div class="small-2 large-2 columns">
+              <a href="#" id="searchDropdown" class="button small" data-dropdown="searchDrop" onclick="searchPopulateArticleNameMatches()">&raquo;</a>
             </div>
-            <div class="small-10 large-10 columns">
+            <div class="small-8 large-8 columns">
               <input id="searchInput" type="text" placeholder="Search"
                    onKeyUp="searchArticleNameNearMatch()"/>
             </div>
-            <div class="small-1 large-1 columns">
+            <div class="small-2 large-2 columns">
               <!--a href="#" class="button" onclick="loadWikipediaPageByArticleName($('#searchInput').val(),'en')">Search</a-->
               <!--button id="searchButton" type="button" diabled="true" onclick="loadWikipediaPageByArticleName($('#searchInput').val(),'en')">Search</button-->
               <button id="searchButton" type="button" class="small" disabled="true" onclick="loadWikipediaPageByArticleName(curNearMatch,'en')">Search</button>
