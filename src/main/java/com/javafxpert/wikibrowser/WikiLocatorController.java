@@ -47,17 +47,12 @@ public class WikiLocatorController {
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Object> locatorEndpoint(@RequestParam(value = "id", defaultValue="")
                                                 String itemId,
-                                                @RequestParam(value = "name", defaultValue="")
-                                                String articleName,
                                                 @RequestParam(value = "lang", defaultValue="en")
                                                 String lang) {
 
     ItemInfo itemInfo = null;
     if (!itemId.equals("")) {
       itemInfo = id2Name(itemId, lang);
-    }
-    else if (!articleName.equals("")) {
-      itemInfo = name2Id(articleName, lang);
     }
 
     return Optional.ofNullable(itemInfo)
@@ -79,26 +74,6 @@ public class WikiLocatorController {
     i2nqb = itemId;
     i2nqd = lang;
     String wdQuery = i2nqa + i2nqb + i2nqc + i2nqd + i2nqe;
-
-    return queryProcessLocatorResponse(wdQuery, lang);
-  }
-
-  public ItemInfo name2Id(String articleName, String lang) {
-
-    //TODO: Implement better way of creating the query represented by the following variables
-    String n2iqa = "https://www.wikidata.org/w/api.php?action=wbgetentities&format=json&titles=";
-    String n2iqb = ""; // Some article name e.g. Ada_Lovelace
-    String n2iqc = "&props=sitelinks%7Csitelinks/urls&sitefilter=";
-    String n2iqd = ""; // Some language code e.g. en
-    String n2iqe = "wiki";
-    String n2iqf = "&sites=";
-    String n2iqg = ""; // Some language code e.g. en
-    String n2iqh = "wiki";
-
-    n2iqb = articleName;
-    n2iqd = n2iqg = lang;
-
-    String wdQuery = n2iqa + n2iqb + n2iqc + n2iqd + n2iqe + n2iqf + n2iqg + n2iqh;
 
     return queryProcessLocatorResponse(wdQuery, lang);
   }
