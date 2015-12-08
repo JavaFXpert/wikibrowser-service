@@ -111,8 +111,9 @@
      */
     function refreshClaimsWikipageEndpoint (endpointUrl) {
       // Clear the search input text field
-      // TODO: Perhaps find a better place to clear the search input text field
+      // TODO: Perhaps find a better place to clear the search input text field & suggestions dropdown
       $("#searchInput").val("");
+      $('#searchDrop').html('');
 
       var endpointUrlArray = endpointUrl.split(/&|\?/);
       var articleName = "";
@@ -240,18 +241,18 @@
           <!--input id="searchInput" type="text" placeholder="Search" data-dropdown="searchDrop"
                  onKeyUp="searchPopulateArticleNameMatches()"/-->
 
-          <div class="row">
-            <div class="small-3 large-3 columns">
-              <a href="#" class="button" data-dropdown="searchDrop" onclick="searchPopulateArticleNameMatches()">&raquo;</a>
+          <div class="row" align="bottom">
+            <div class="small-1 large-1 columns">
+              <a href="#" class="button small" data-dropdown="searchDrop" onclick="searchPopulateArticleNameMatches()">&raquo;</a>
             </div>
-            <div class="small-6 large-6 columns">
+            <div class="small-10 large-10 columns">
               <input id="searchInput" type="text" placeholder="Search"
                    onKeyUp="searchArticleNameNearMatch()"/>
             </div>
-            <div class="small-3 large-3 columns">
+            <div class="small-1 large-1 columns">
               <!--a href="#" class="button" onclick="loadWikipediaPageByArticleName($('#searchInput').val(),'en')">Search</a-->
               <!--button id="searchButton" type="button" diabled="true" onclick="loadWikipediaPageByArticleName($('#searchInput').val(),'en')">Search</button-->
-              <button id="searchButton" type="button" diabled="true" onclick="loadWikipediaPageByArticleName(curNearMatch,'en')">Search</button>
+              <button id="searchButton" type="button" class="small" disabled="true" onclick="loadWikipediaPageByArticleName(curNearMatch,'en')">Search</button>
             </div>
           </div>
 
