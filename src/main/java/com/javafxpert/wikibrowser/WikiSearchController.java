@@ -26,6 +26,7 @@ import com.javafxpert.wikibrowser.model.search.SearchResponseNear;
 import com.javafxpert.wikibrowser.model.search.SearchinfoFar;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -46,6 +47,13 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/articlesearch")
 public class WikiSearchController {
+  private final WikiBrowserProperties wikiBrowserProperties;
+
+  @Autowired
+  public WikiSearchController(WikiBrowserProperties wikiBrowserProperties) {
+    this.wikiBrowserProperties = wikiBrowserProperties;
+  }
+
   private Log log = LogFactory.getLog(getClass());
 
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -53,26 +61,28 @@ public class WikiSearchController {
                                                 String title,
                                                 @RequestParam(value = "nearmatch", defaultValue="false")
                                                 boolean nearmatch,
-                                                @RequestParam(value = "lang", defaultValue="en")
+                                                @RequestParam(value = "lang")
                                                 String lang) {
+
+    String language = wikiBrowserProperties.computeLang(lang);
 
     //TODO: Implement better way of creating the query represented by the following variables
 
     String qa = "https://";
     String qb = ""; // Some language code e.g. en
-    String qc = ".wikipedia.org/w/api.php?action=query&format=json&list=search&srlimit=10";
+    String qc = ".wikipedia.org/w/api.php?action=query&format=json&list=search&srlimit=10&redirects";
     String qd = ""; // Indication that only nearmatch is desired
     String qe = "&srsearch=";
     String qf = ""; // article title so search for
 
-    qb = lang;
+    qb = language;
     //qd = nearmatch.equalsIgnoreCase("true") ? "&srwhat=nearmatch" : "";
     qd = nearmatch ? "&srwhat=nearmatch" : "";
     qf = title;
 
     String searchQuery = qa + qb + qc + qd + qe + qf;
 
-    SearchResponseNear searchResponseNear = queryProcessSearchResponse(searchQuery, lang);
+    SearchResponseNear searchResponseNear = queryProcessSearchResponse(searchQuery, language);
 
     return Optional.ofNullable(searchResponseNear)
         .map(cr -> new ResponseEntity<>((Object)cr, HttpStatus.OK))

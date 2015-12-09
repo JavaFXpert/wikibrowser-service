@@ -64,11 +64,12 @@ public class WikiClaimsController {
   @RequestMapping(value = "/claims", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Object> renderClaims(@RequestParam(value = "id", defaultValue="Q7259")
                                                                  String itemId,
-                                                                 @RequestParam(value = "lang", defaultValue="en")
+                                                                 @RequestParam(value = "lang")
                                                                  String lang) {
 
-    ClaimsSparqlResponse claimsSparqlResponse = callClaimsSparqlQuery(itemId, lang);
-    ClaimsResponse claimsResponse = convertSparqlResponse(claimsSparqlResponse, lang, itemId);
+    String language = wikiBrowserProperties.computeLang(lang);
+    ClaimsSparqlResponse claimsSparqlResponse = callClaimsSparqlQuery(itemId, language);
+    ClaimsResponse claimsResponse = convertSparqlResponse(claimsSparqlResponse, language, itemId);
 
     return Optional.ofNullable(claimsResponse)
         .map(cr -> new ResponseEntity<>((Object)cr, HttpStatus.OK))
@@ -80,11 +81,12 @@ public class WikiClaimsController {
   @RequestMapping(value = "/claimsxml", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
   public ResponseEntity<Object> renderClaimsXml(@RequestParam(value = "id", defaultValue="Q7259")
                                                              String itemId,
-                                                             @RequestParam(value = "lang", defaultValue="en")
+                                                             @RequestParam(value = "lang")
                                                              String lang) {
 
-    ClaimsSparqlResponse claimsSparqlResponse = callClaimsSparqlQuery(itemId, lang);
-    ClaimsResponse claimsResponse = convertSparqlResponse(claimsSparqlResponse, lang, itemId);
+    String language = wikiBrowserProperties.computeLang(lang);
+    ClaimsSparqlResponse claimsSparqlResponse = callClaimsSparqlQuery(itemId, language);
+    ClaimsResponse claimsResponse = convertSparqlResponse(claimsSparqlResponse, language, itemId);
 
     return Optional.ofNullable(claimsResponse)
         .map(cr -> new ResponseEntity<>((Object)cr, HttpStatus.OK))
