@@ -144,13 +144,7 @@ public class WikiClaimsController {
     ItemInfoResponse itemInfoResponse = null;
 
     try {
-      /*  //TODO: Make an approach similar to this work:
-      log.info("this.wikiBrowserProperties.getLocatorServiceEndpoint(itemId, lang):" + this.wikiBrowserProperties.getLocatorServiceEndpoint(itemId, lang));
-      itemInfoResponse = new RestTemplate().getForObject(this.wikiBrowserProperties.getLocatorServiceEndpoint(itemId, lang),
-          ItemInfoResponse.class);
-      */
-
-      itemInfoResponse = new RestTemplate().getForObject(new URI("http://wikibrowserservice.cfapps.io/locator?id=" + itemId + "&lang=" + lang),
+      itemInfoResponse = new RestTemplate().getForObject(this.wikiBrowserProperties.getLocatorServiceUrl(itemId, ""),
           ItemInfoResponse.class);
 
       log.info(itemInfoResponse.toString());

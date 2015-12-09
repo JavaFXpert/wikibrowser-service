@@ -26,16 +26,24 @@ import org.springframework.stereotype.Component;
 @Component
 public class WikiBrowserProperties {
 
-  private String wikiBrowserServiceHost;
-
+  private String host;
+  private String locatorEndpoint;
   private String lang;
 
-  public String getWikiBrowserServiceHost() {
-    return wikiBrowserServiceHost;
+  public String getHost() {
+    return host;
   }
 
-  public void setWikiBrowserServiceHost(String wikiBrowserServiceHost) {
-    this.wikiBrowserServiceHost = wikiBrowserServiceHost;
+  public void setHost(String host) {
+    this.host = host;
+  }
+
+  public String getLocatorEndpoint() {
+    return locatorEndpoint;
+  }
+
+  public void setLocatorEndpoint(String locatorEndpoint) {
+    this.locatorEndpoint = locatorEndpoint;
   }
 
   public String getLang() {
@@ -47,14 +55,21 @@ public class WikiBrowserProperties {
   }
 
   /**
-   * Provide a route to the locator service method
+   * Provide the URL to the locator service method
    *
-   * @param route a relative URI to the service endpoint for the locator service
-   * @param param parameters for the route's query string
-   * @return a fully qualified URI to the desired service route
    */
-  public String getLocatorServiceEndpoint(String route, String... param) {
-    String routeAndParams = param != null ? String.format(route, (Object)param) : route;
-    return String.format("%s%s", this.wikiBrowserServiceHost, routeAndParams);
+  public String getLocatorServiceUrl(String itemId, String lang) {
+    String language = "en"; // Fallback value if not passed in or available in property
+    if (lang != null && lang.length() > 0) {
+      // If lang is passed in, use it
+      language = lang;
+    }
+    else if (this.lang != null && this.lang.length() > 0) {
+      // If lang not passed in, then use the property if available
+      language = this.lang;
+    }
+
+    String url = this.host + String.format(this.getLocatorEndpoint(), itemId, language);
+    return url;
   }
 }
