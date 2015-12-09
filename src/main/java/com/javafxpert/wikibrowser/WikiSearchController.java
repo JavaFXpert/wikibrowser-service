@@ -47,6 +47,8 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/articlesearch")
 public class WikiSearchController {
+  private Log log = LogFactory.getLog(getClass());
+
   private final WikiBrowserProperties wikiBrowserProperties;
 
   @Autowired
@@ -54,7 +56,6 @@ public class WikiSearchController {
     this.wikiBrowserProperties = wikiBrowserProperties;
   }
 
-  private Log log = LogFactory.getLog(getClass());
 
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Object> search(@RequestParam(value = "title", defaultValue="")

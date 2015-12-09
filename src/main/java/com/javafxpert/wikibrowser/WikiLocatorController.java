@@ -22,6 +22,7 @@ import com.javafxpert.wikibrowser.model.locator.Sitelinks;
 import com.javafxpert.wikibrowser.model.locator.ItemInfo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -44,15 +45,24 @@ import java.util.Set;
 public class WikiLocatorController {
   private Log log = LogFactory.getLog(getClass());
 
+  private final WikiBrowserProperties wikiBrowserProperties;
+
+  @Autowired
+  public WikiLocatorController(WikiBrowserProperties wikiBrowserProperties) {
+    this.wikiBrowserProperties = wikiBrowserProperties;
+  }
+
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Object> locatorEndpoint(@RequestParam(value = "id", defaultValue="")
                                                 String itemId,
-                                                @RequestParam(value = "lang", defaultValue="en")
+                                                @RequestParam(value = "lang")
                                                 String lang) {
+
+    String language = wikiBrowserProperties.computeLang(lang);
 
     ItemInfo itemInfo = null;
     if (!itemId.equals("")) {
-      itemInfo = id2Name(itemId, lang);
+      itemInfo = id2Name(itemId, language);
     }
 
     return Optional.ofNullable(itemInfo)

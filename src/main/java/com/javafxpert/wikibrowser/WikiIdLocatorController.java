@@ -27,6 +27,7 @@ import com.javafxpert.wikibrowser.model.locator.Sitelinks;
 import com.javafxpert.wikibrowser.model.search.QueryFar;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -49,15 +50,24 @@ import java.util.Optional;
 public class WikiIdLocatorController {
   private Log log = LogFactory.getLog(getClass());
 
+  private final WikiBrowserProperties wikiBrowserProperties;
+
+  @Autowired
+  public WikiIdLocatorController(WikiBrowserProperties wikiBrowserProperties) {
+    this.wikiBrowserProperties = wikiBrowserProperties;
+  }
+
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Object> locatorEndpoint(@RequestParam(value = "name", defaultValue="")
                                                 String articleName,
-                                                @RequestParam(value = "lang", defaultValue="en")
+                                                @RequestParam(value = "lang")
                                                 String lang) {
+
+    String language = wikiBrowserProperties.computeLang(lang);
 
     ItemInfo itemInfo = null;
     if (!articleName.equals("")) {
-      itemInfo = name2Id(articleName, lang);
+      itemInfo = name2Id(articleName, language);
     }
 
     return Optional.ofNullable(itemInfo)
@@ -83,7 +93,7 @@ public class WikiIdLocatorController {
 
   private ItemInfo queryProcessIdLocatorResponse(String query, String lang) {
     query = query.replaceAll(" ", "%20");
-    log.info("query: " + query);
+    log.info("QUERY: " + query);
     IdLocatorResponse idLocatorResponse = null;
     ItemInfo itemInfo = new ItemInfo();
     try {
