@@ -26,6 +26,7 @@ import com.javafxpert.wikibrowser.model.claimssparqlresponse.Results;
 import com.javafxpert.wikibrowser.model.locator.ItemInfoResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -53,6 +54,12 @@ public class WikiClaimsController {
 
   private Log log = LogFactory.getLog(getClass());
 
+  private final WikiBrowserProperties wikiBrowserProperties;
+
+  @Autowired
+  public WikiClaimsController(WikiBrowserProperties wikiBrowserProperties) {
+    this.wikiBrowserProperties = wikiBrowserProperties;
+  }
 
   @RequestMapping(value = "/claims", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Object> renderClaims(@RequestParam(value = "id", defaultValue="Q7259")
@@ -137,7 +144,12 @@ public class WikiClaimsController {
     ItemInfoResponse itemInfoResponse = null;
 
     try {
-      //TODO: Make URL configurable
+      /*  //TODO: Make an approach similar to this work:
+      log.info("this.wikiBrowserProperties.getLocatorServiceEndpoint(itemId, lang):" + this.wikiBrowserProperties.getLocatorServiceEndpoint(itemId, lang));
+      itemInfoResponse = new RestTemplate().getForObject(this.wikiBrowserProperties.getLocatorServiceEndpoint(itemId, lang),
+          ItemInfoResponse.class);
+      */
+
       itemInfoResponse = new RestTemplate().getForObject(new URI("http://wikibrowserservice.cfapps.io/locator?id=" + itemId + "&lang=" + lang),
           ItemInfoResponse.class);
 
@@ -183,5 +195,6 @@ public class WikiClaimsController {
     }
     return claimsResponse;
   }
+
 }
 
