@@ -72,18 +72,6 @@ public class WikiBrowserProperties {
    *
    */
   public String getLocatorServiceUrl(String itemId, String lang) {
-    /*
-    String language = "en"; // Fallback value if not passed in or available in property
-    if (lang != null && lang.length() > 0) {
-      // If lang is passed in, use it
-      language = lang;
-    }
-    else if (this.lang != null && this.lang.length() > 0) {
-      // If lang not passed in, then use the property if available
-      language = this.lang;
-    }
-    */
-
     String url = this.host + String.format(this.getLocatorEndpoint(), itemId, computeLang(lang));
     return url;
   }

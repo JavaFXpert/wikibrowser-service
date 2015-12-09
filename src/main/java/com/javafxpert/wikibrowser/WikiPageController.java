@@ -67,12 +67,14 @@ public class WikiPageController {
 
     pageText = pageText.replaceAll("href=\\\"/wiki/", "href=\"" + "/wikipage?lang=" + language + "&name=");
     StringBuilder pageTextSb = new StringBuilder(pageText);
+
+    /* TODO: OK to remove?
     boolean finished = false;
     int prevFoundPos = 0;
-    String matchStr = "/wikipage?name=";
-    String templateStr = " onclick='window.parent.refreshClaims(\"%s\", \"en\")' ";
+    String matchStr = "/wikipage?lang=";
+    String templateStr = " onclick='window.parent.refreshClaims(\"%s\", \"" + language + "\")' ";
     while (!finished) {
-      int curFoundPos = pageTextSb.indexOf("/wikipage?name=", prevFoundPos + matchStr.length());
+      int curFoundPos = pageTextSb.indexOf("/wikipage?lang=", prevFoundPos + matchStr.length());
       if (curFoundPos > prevFoundPos) {
         prevFoundPos = curFoundPos;
         int nameStartPos = curFoundPos + matchStr.length();
@@ -90,6 +92,8 @@ public class WikiPageController {
         finished = true;
       }
     }
+    */
+
     return pageTextSb.toString();
   }
 }

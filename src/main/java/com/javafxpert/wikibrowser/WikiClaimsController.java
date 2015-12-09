@@ -163,10 +163,10 @@ public class WikiClaimsController {
       claimsResponse.setArticleId(itemInfoResponse.getItemId());
     }
 
-    //TODO: Implement fallback to "en" if Wikipedia article doesn't exist in requested language
+    //TODO: Consider implementing fallback to "en" if Wikipedia article doesn't exist in requested language
     claimsResponse.setWpBase(String.format(WIKIPEDIA_TEMPLATE, lang));
 
-    //TODO: Implement fallback to "en" if mobile Wikipedia article doesn't exist in requested language
+    //TODO: Consider implementing fallback to "en" if mobile Wikipedia article doesn't exist in requested language
     claimsResponse.setWpMobileBase(String.format(WIKIPEDIA_MOBILE_TEMPLATE, lang));
 
     Results results = claimsSparqlResponse.getResults();
