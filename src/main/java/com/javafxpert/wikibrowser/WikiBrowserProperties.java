@@ -58,7 +58,7 @@ public class WikiBrowserProperties {
     String language = "en"; // Fallback value if not passed in or available in property
     if (forceLang != null && forceLang.length() > 0) {
       // If forceLand is passed in, use it
-      language = lang;
+      language = forceLang;
     }
     else if (this.lang != null && this.lang.length() > 0) {
       // If lang not passed in, then use the property if available

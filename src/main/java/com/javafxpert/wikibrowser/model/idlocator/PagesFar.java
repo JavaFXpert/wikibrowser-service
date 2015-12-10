@@ -23,6 +23,9 @@ import com.javafxpert.wikibrowser.model.claimssparqlresponse.PropUrl;
 import com.javafxpert.wikibrowser.model.claimssparqlresponse.ValLabel;
 import com.javafxpert.wikibrowser.model.claimssparqlresponse.ValUrl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author James Weaver
  */
@@ -40,14 +43,18 @@ public class PagesFar {
   @JsonProperty("pageprops")
   private PagePropsFar pagePropsFar;
 
+  @JsonProperty("langlinks")
+  private List<LangLinkFar> langLinkFarList = new ArrayList<>();
+
   public PagesFar() {
   }
 
-  public PagesFar(String title, String pageLanguage, String fullUrl, PagePropsFar pagePropsFar) {
+  public PagesFar(String title, String pageLanguage, String fullUrl, PagePropsFar pagePropsFar, List<LangLinkFar> langLinkFarList) {
     this.title = title;
     this.pageLanguage = pageLanguage;
     this.fullUrl = fullUrl;
     this.pagePropsFar = pagePropsFar;
+    this.langLinkFarList = langLinkFarList;
   }
 
   public String getTitle() {
@@ -82,6 +89,14 @@ public class PagesFar {
     this.pagePropsFar = pagePropsFar;
   }
 
+  public List<LangLinkFar> getLangLinkFarList() {
+    return langLinkFarList;
+  }
+
+  public void setLangLinkFarList(List<LangLinkFar> langLinkFarList) {
+    this.langLinkFarList = langLinkFarList;
+  }
+
   @Override
   public String toString() {
     return "PagesFar{" +
@@ -89,6 +104,7 @@ public class PagesFar {
         ", pageLanguage='" + pageLanguage + '\'' +
         ", fullUrl='" + fullUrl + '\'' +
         ", pagePropsFar=" + pagePropsFar +
+        ", langLinkFarList=" + langLinkFarList +
         '}';
   }
 }

@@ -148,7 +148,8 @@ public class WikiClaimsController {
     ItemInfoResponse itemInfoResponse = null;
 
     try {
-      itemInfoResponse = new RestTemplate().getForObject(this.wikiBrowserProperties.getLocatorServiceUrl(itemId, ""),
+      String url = this.wikiBrowserProperties.getLocatorServiceUrl(itemId, lang);
+      itemInfoResponse = new RestTemplate().getForObject(url,
           ItemInfoResponse.class);
 
       log.info(itemInfoResponse.toString());

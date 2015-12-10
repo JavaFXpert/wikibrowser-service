@@ -52,6 +52,7 @@ public class WikiPageController {
     String pageText = reader.lines().collect(Collectors.joining("\n"));
     pageText = pageText.replaceAll("\\\"/w/", "\"" + mWikipediaBase + "w/");
     pageText = pageText.replaceAll("\\\"/images/", "\"" + mWikipediaBase + "images/");
+    pageText = pageText.replaceAll("\\\"/static/", "\"" + mWikipediaBase + "static/");
 
     pageText = pageText.replaceAll("\\\"href\\\":\\\"/w/", "\"href\":\"" + mWikipediaBase + "w/");
     pageText = pageText.replaceAll("\\\"href\\\":\\\"/wiki/", "\"href\":\"" + mWikipedia);

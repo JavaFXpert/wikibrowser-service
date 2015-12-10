@@ -45,7 +45,7 @@
         searchStr = searchStr.split(" ").join("%20");
         $.ajax({
               url: '/articlesearch',
-              data: "title=" + searchStr + "&nearmatch=true&lang=en", //TODO: Enable user to select lanquage
+              data: "title=" + searchStr + "&nearmatch=true&lang=fr", //TODO: Enable user to select lanquage
               dataType: 'json',
             })
             .done(function (response) {
@@ -75,14 +75,14 @@
         searchStr = searchStr.split(" ").join("%20");
         $.ajax({
               url: '/articlesearch',
-              data: "title=" + searchStr + "&lang=en", //TODO: Enable user to select lanquage
+              data: "title=" + searchStr + "&lang=fr", //TODO: Enable user to select lanquage
               dataType: 'json',
             })
             .done(function (response) {
               $('#searchDrop').html('');
               for (i in response.titles) {
                 var title = response.titles[i];
-                var snippet = "<li><a href='#' onclick='loadWikipediaPageByArticleName(\"" + title + "\", \"en\")'>" + title + "</a></li>";
+                var snippet = "<li><a href='#' onclick='loadWikipediaPageByArticleName(\"" + title + "\", \"fr\")'>" + title + "</a></li>";
                 $('#searchDrop').append(snippet);
               }
             })
@@ -253,7 +253,7 @@
                    onKeyUp="searchArticleNameNearMatch()"/>
             </div>
             <div class="small-2 large-2 columns">
-              <button id="searchButton" type="button" class="small" disabled="true" onclick="loadWikipediaPageByArticleName(curNearMatch,'en')">Search</button>
+              <button id="searchButton" type="button" class="small" disabled="true" onclick="loadWikipediaPageByArticleName(curNearMatch,'fr')">Search</button>
             </div>
           </div>
 
@@ -274,7 +274,7 @@
       </aside>
 
       <section class="main-section">
-        <iframe id="wikipediaInnerFrame" src="/wikipage?name=Earth&lang=en" frameborder="0" scrolling="yes" width="1000" onload="refreshClaimsWikipageEndpoint(this.contentWindow.location.href)"></iframe>
+        <iframe id="wikipediaInnerFrame" src="/wikipage?name=Earth&lang=fr" frameborder="0" scrolling="yes" width="1000" onload="refreshClaimsWikipageEndpoint(this.contentWindow.location.href)"></iframe>
       </section>
 
       <a class="exit-off-canvas"></a>
@@ -312,7 +312,7 @@
         var keycode = (event.keyCode ? event.keyCode : event.which);
         if(keycode == '13'){
           if (curNearMatch.length > 0) {  //TODO: Also check if Search button is enabled (or better yet, a common "is" method?
-            loadWikipediaPageByArticleName(curNearMatch, 'en');
+            loadWikipediaPageByArticleName(curNearMatch, 'fr');
           }
         }
         else {
