@@ -25,6 +25,7 @@
   <script src="js/vendor/modernizr.js"></script>
 
   <script>
+    var curLang = "en";
     var curNearMatch = "";
 
     // TODO: Examine usefulness of, and possibly refactor, functionality in this handler
@@ -45,7 +46,7 @@
         searchStr = searchStr.split(" ").join("%20");
         $.ajax({
               url: '/articlesearch',
-              data: "title=" + searchStr + "&nearmatch=true&lang=fr", //TODO: Enable user to select lanquage
+              data: "title=" + searchStr + "&nearmatch=true&lang=" + curLang, //TODO: Enable user to select lanquage
               dataType: 'json',
             })
             .done(function (response) {
@@ -75,14 +76,14 @@
         searchStr = searchStr.split(" ").join("%20");
         $.ajax({
               url: '/articlesearch',
-              data: "title=" + searchStr + "&lang=fr", //TODO: Enable user to select lanquage
+              data: "title=" + searchStr + "&lang=" + curLang, //TODO: Enable user to select lanquage
               dataType: 'json',
             })
             .done(function (response) {
               $('#searchDrop').html('');
               for (i in response.titles) {
                 var title = response.titles[i];
-                var snippet = "<li><a href='#' onclick='loadWikipediaPageByArticleName(\"" + title + "\", \"fr\")'>" + title + "</a></li>";
+                var snippet = "<li><a href='#' onclick='loadWikipediaPageByArticleName(\"" + title + "\", \"" + curLang + "\")'>" + title + "</a></li>";
                 $('#searchDrop').append(snippet);
               }
             })
@@ -232,6 +233,7 @@
       $('#offCanvasList').append("</ul>");
     }
 
+
   </script>
 
 </head>
@@ -253,7 +255,7 @@
                    onKeyUp="searchArticleNameNearMatch()"/>
             </div>
             <div class="small-2 large-2 columns">
-              <button id="searchButton" type="button" class="small" disabled="true" onclick="loadWikipediaPageByArticleName(curNearMatch,'fr')">Search</button>
+              <button id="searchButton" type="button" class="small" disabled="true" onclick="loadWikipediaPageByArticleName(curNearMatch, curLang)">Search</button>
             </div>
           </div>
 
@@ -274,7 +276,7 @@
       </aside>
 
       <section class="main-section">
-        <iframe id="wikipediaInnerFrame" src="/wikipage?name=Earth&lang=fr" frameborder="0" scrolling="yes" width="1000" onload="refreshClaimsWikipageEndpoint(this.contentWindow.location.href)"></iframe>
+        <iframe id="wikipediaInnerFrame" src="/wikipage?name=Earth&lang=en" frameborder="0" scrolling="yes" width="1000" onload="refreshClaimsWikipageEndpoint(this.contentWindow.location.href)"></iframe>
       </section>
 
       <a class="exit-off-canvas"></a>
@@ -305,14 +307,12 @@
       $(window).on('resize', Foundation.utils.throttle(function(e){
         $( "#wikipediaInnerFrame" ).attr("width",window.innerWidth - 0).attr("height",window.innerHeight - 60);
       }, 300));
-    </script>
 
-    <script>
       $("input").keypress(function(event){
         var keycode = (event.keyCode ? event.keyCode : event.which);
         if(keycode == '13'){
           if (curNearMatch.length > 0) {  //TODO: Also check if Search button is enabled (or better yet, a common "is" method?
-            loadWikipediaPageByArticleName(curNearMatch, 'fr');
+            loadWikipediaPageByArticleName(curNearMatch, curLang);
           }
         }
         else {
