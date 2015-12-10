@@ -49,15 +49,6 @@ public class WikiPageController {
     InputStream inputStream = url.openStream();
     BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
 
-    /*
-    StringBuilder response = new StringBuilder();
-    String inputLine;
-    while ((inputLine = reader.readLine()) != null)
-      response.append(inputLine);
-    reader.close();
-    return response.toString();
-    */
-
     String pageText = reader.lines().collect(Collectors.joining("\n"));
     pageText = pageText.replaceAll("\\\"/w/", "\"" + mWikipediaBase + "w/");
     pageText = pageText.replaceAll("\\\"/images/", "\"" + mWikipediaBase + "images/");
@@ -67,32 +58,6 @@ public class WikiPageController {
 
     pageText = pageText.replaceAll("href=\\\"/wiki/", "href=\"" + "/wikipage?lang=" + language + "&name=");
     StringBuilder pageTextSb = new StringBuilder(pageText);
-
-    /* TODO: OK to remove?
-    boolean finished = false;
-    int prevFoundPos = 0;
-    String matchStr = "/wikipage?lang=";
-    String templateStr = " onclick='window.parent.refreshClaims(\"%s\", \"" + language + "\")' ";
-    while (!finished) {
-      int curFoundPos = pageTextSb.indexOf("/wikipage?lang=", prevFoundPos + matchStr.length());
-      if (curFoundPos > prevFoundPos) {
-        prevFoundPos = curFoundPos;
-        int nameStartPos = curFoundPos + matchStr.length();
-        int nameEndPosExc = pageTextSb.indexOf("\"", nameStartPos + 1);
-        if (nameEndPosExc > nameStartPos) {
-          String articleName = pageTextSb.substring(nameStartPos, nameEndPosExc);
-          String.format(templateStr, articleName);
-          pageTextSb.insert(nameEndPosExc + 1, String.format(templateStr, articleName));
-        }
-        else {
-          finished = true;
-        }
-      }
-      else {
-        finished = true;
-      }
-    }
-    */
 
     return pageTextSb.toString();
   }

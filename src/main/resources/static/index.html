@@ -30,7 +30,6 @@
     // TODO: Examine usefulness of, and possibly refactor, functionality in this handler
     window.addEventListener('load', function() {
       $('#searchButton').prop('disabled', true);
-      retrieveClaimsByItemId("Q2", "en");
 
       $( "#wikipediaInnerFrame" ).attr("width",window.innerWidth - 0).attr("height",window.innerHeight - 60);
     } );
@@ -244,8 +243,6 @@
       <nav class="tab-bar">
         <section class="middle tab-bar-section">
           <h1 id="offCanvasTitle" class="title">WikiBrowser</h1>
-          <!--input id="searchInput" type="text" placeholder="Search" data-dropdown="searchDrop"
-                 onKeyUp="searchPopulateArticleNameMatches()"/-->
 
           <div class="row" align="bottom">
             <div class="small-2 large-2 columns">
@@ -256,8 +253,6 @@
                    onKeyUp="searchArticleNameNearMatch()"/>
             </div>
             <div class="small-2 large-2 columns">
-              <!--a href="#" class="button" onclick="loadWikipediaPageByArticleName($('#searchInput').val(),'en')">Search</a-->
-              <!--button id="searchButton" type="button" diabled="true" onclick="loadWikipediaPageByArticleName($('#searchInput').val(),'en')">Search</button-->
               <button id="searchButton" type="button" class="small" disabled="true" onclick="loadWikipediaPageByArticleName(curNearMatch,'en')">Search</button>
             </div>
           </div>
@@ -280,7 +275,6 @@
 
       <section class="main-section">
         <iframe id="wikipediaInnerFrame" src="/wikipage?name=Earth&lang=en" frameborder="0" scrolling="yes" width="1000" onload="refreshClaimsWikipageEndpoint(this.contentWindow.location.href)"></iframe>
-
       </section>
 
       <a class="exit-off-canvas"></a>
@@ -317,7 +311,6 @@
       $("input").keypress(function(event){
         var keycode = (event.keyCode ? event.keyCode : event.which);
         if(keycode == '13'){
-          //loadWikipediaPageByArticleName($('#searchInput').val(),'en');
           if (curNearMatch.length > 0) {  //TODO: Also check if Search button is enabled (or better yet, a common "is" method?
             loadWikipediaPageByArticleName(curNearMatch, 'en');
           }
