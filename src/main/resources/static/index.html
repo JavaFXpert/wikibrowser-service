@@ -41,7 +41,7 @@
      * with each keystroke in the input field
      */
     function searchArticleNameNearMatch () {
-      var searchStr = $('#searchInput').val();
+      var searchStr = $('#searchInput').val().trim();
       $('#searchDropdown').prop('disabled', true);
       $('#searchButton').prop('disabled', true);
       if (searchStr.length > 0) {
@@ -55,7 +55,7 @@
             .done(function (response) {
               for (i in response.titles) {
                 var title = response.titles[i];
-                if (title.toLowerCase() === $('#searchInput').val().toLowerCase()) {
+                if (title.toLowerCase() === $('#searchInput').val().trim().toLowerCase()) {
                   $('#searchButton').prop('disabled', false);
                   curNearMatch = title;
                 }
@@ -73,7 +73,7 @@
      * with each keystroke in the input field
      */
     function searchPopulateArticleNameMatches () {
-      var searchStr = $('#searchInput').val();
+      var searchStr = $('#searchInput').val().trim();
       if (searchStr.length > 0) {
         searchStr = searchStr.split(" ").join("%20");
         $.ajax({
@@ -193,7 +193,7 @@
 
     function loadWikipediaPageByArticleName(name, lang) {
       curLang = lang;
-      $("#wikipediaInnerFrame").attr("src", "/wikipage?name=" + name + "&lang=" + lang);
+      $("#wikipediaInnerFrame").attr("src", "/wikipage?name=" + name.trim() + "&lang=" + lang);
     }
 
     function populateOffCanvasList(resp) {
