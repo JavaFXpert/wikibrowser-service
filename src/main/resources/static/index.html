@@ -42,8 +42,10 @@
      */
     function searchArticleNameNearMatch () {
       var searchStr = $('#searchInput').val();
+      $('#searchDropdown').prop('disabled', true);
       $('#searchButton').prop('disabled', true);
       if (searchStr.length > 0) {
+        $('#searchDropdown').prop('disabled', false);
         searchStr = searchStr.split(" ").join("%20");
         $.ajax({
               url: '/articlesearch',
@@ -73,7 +75,6 @@
     function searchPopulateArticleNameMatches () {
       var searchStr = $('#searchInput').val();
       if (searchStr.length > 0) {
-        $('#searchDropdown').prop('disabled', false);
         searchStr = searchStr.split(" ").join("%20");
         $.ajax({
               url: '/articlesearch',
@@ -287,15 +288,16 @@
           <h1 id="offCanvasTitle" class="title">WikiBrowser</h1>
 
           <div class="row" align="bottom">
-            <div class="small-2 large-2 columns">
-              <a href="#" id="searchDropdown" class="button small" data-dropdown="searchDrop" onclick="searchPopulateArticleNameMatches()">&raquo;</a>
+            <div class="small-1 large-1 columns">
+              <button id="searchDropdown" type="button" class="tiny" disabled="true" data-dropdown="searchDrop" onclick="searchPopulateArticleNameMatches()">v</button>
+              <!--a href="#" id="searchDropdown" class="button tiny" data-dropdown="searchDrop" disabled="true" onclick="searchPopulateArticleNameMatches()">v</a-->
             </div>
-            <div class="small-8 large-8 columns">
-              <input id="searchInput" type="text" placeholder="Search"
+            <div class="small-10 large-10 columns">
+              <input id="searchInput" type="text" placeholder="Search" style="margin-top: 6px"
                    onKeyUp="searchArticleNameNearMatch()"/>
             </div>
-            <div class="small-2 large-2 columns">
-              <button id="searchButton" type="button" class="small" disabled="true" onclick="loadWikipediaPageByArticleName(curNearMatch, curLang)">Search</button>
+            <div class="small-1 large-1 columns">
+              <button id="searchButton" type="button" class="tiny" disabled="true" onclick="loadWikipediaPageByArticleName(curNearMatch, curLang)">&gt;</button>
             </div>
           </div>
 
