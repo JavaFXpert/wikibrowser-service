@@ -58,8 +58,15 @@ public class WikiPageController {
     pageText = pageText.replaceAll("\\\"href\\\":\\\"/wiki/", "\"href\":\"" + mWikipedia);
 
     pageText = pageText.replaceAll("href=\\\"/wiki/", "href=\"" + "/wikipage?lang=" + language + "&name=");
-    StringBuilder pageTextSb = new StringBuilder(pageText);
 
-    return pageTextSb.toString();
+    // Remove the search menu at the top of the page
+    int searchAnchorStartPos = pageText.indexOf("<a title");
+    if (searchAnchorStartPos > 0) {
+      int searchAnchorEndPos = pageText.indexOf("</a>", searchAnchorStartPos);
+      if (searchAnchorEndPos > 0) {
+        pageText = pageText.substring(0, searchAnchorStartPos) + pageText.substring(searchAnchorEndPos + "</a>".length());
+      }
+    }
+    return pageText;
   }
 }
