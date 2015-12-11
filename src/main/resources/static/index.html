@@ -28,6 +28,7 @@
     var curLang = "en";
     var curTitle = "";
     var curNearMatch = "";
+    var dispIds = false;
 
     // TODO: Examine usefulness of, and possibly refactor, functionality in this handler
     window.addEventListener('load', function() {
@@ -205,29 +206,26 @@
       var isProperty;
 
       if (title == null) title = "Wikipedia article missing";
-      $('#offCanvasTitle').text(title + " :" + resp.articleId + " [" + language + "]");
+      $('#offCanvasTitle').text(title + (dispIds ? (" :" + resp.articleId) : "") + " [" + language + "]");
       for (var cIdx in resp.claim) {
         if (resp.claim[cIdx].val.length == 1) {
           itemId = resp.claim[cIdx].val[0].id;
           isProperty = itemId.substring(0, 1).toUpperCase() === "P";
           $('#offCanvasList').append("<li><a href='#' onclick='retrieveClaimsAndLoadPage(\"" + itemId + "\", \"" + language + "\")'><label>" +
-              resp.claim[cIdx].prop.label +
-              ":</label><br/>" +
-              (isProperty ? ("<i>" + itemId + ": ") : "") +
-              resp.claim[cIdx].val[0].label +
-              (isProperty ? ("</i>") : "") +
+              resp.claim[cIdx].prop.label + (dispIds ? (" :" + resp.claim[cIdx].prop.id) : "") + "</label><br/>" +
+              resp.claim[cIdx].val[0].label + (dispIds ? (" <i>:" + itemId) : "") +
+              (dispIds ? ("</i>") : "") +
               "</a></li>");
         }
         else {
-          $('#offCanvasList').append("<li><label>" + resp.claim[cIdx].prop.label + ":</label></li>");
+          $('#offCanvasList').append("<li><label>" + resp.claim[cIdx].prop.label + (dispIds ? (" :" + resp.claim[cIdx].prop.id) : "") + "</label></li>");
           var vals = resp.claim[cIdx].val;
           for (var vIdx in vals) {
             itemId = vals[vIdx].id;
             isProperty = itemId.substring(0, 1).toUpperCase() === "P";
             $('#offCanvasList').append("  <li><a href='#' onclick='retrieveClaimsAndLoadPage(\"" + itemId + "\", \"" + language + "\")'>" +
-                (isProperty ? ("<i>" + itemId + ": ") : "") +
-                vals[vIdx].label +
-                (isProperty ? ("</i>") : "") +
+                vals[vIdx].label + (dispIds ? (" <i>:" + itemId) : "") +
+                (dispIds ? ("</i>") : "") +
                 "</a></li>");
           }
           $('#offCanvasList').append("  </ul>");
