@@ -59,6 +59,10 @@ public class WikiPageController {
 
     pageText = pageText.replaceAll("href=\\\"/wiki/", "href=\"" + "/wikipage?lang=" + language + "&name=");
 
+    pageText = pageText.replaceAll("href=\\\"//", "target=\"_blank\" href=\"//");
+
+    pageText = pageText.replaceAll("href=\\\"http", "target=\"_blank\" href=\"http");
+
     // Remove the search menu at the top of the page
     int searchAnchorStartPos = pageText.indexOf("<a title");
     if (searchAnchorStartPos > 0) {
