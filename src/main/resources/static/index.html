@@ -287,16 +287,15 @@
         <section class="middle tab-bar-section">
           <h1 id="offCanvasTitle" class="title">WikiBrowser</h1>
 
-          <div class="row" align="bottom">
+          <div class="row">
             <div class="small-2 large-2 columns">
               <button id="searchDropdown" type="button" class="tiny" disabled="true" data-dropdown="searchDrop" onclick="searchPopulateArticleNameMatches()">v</button>
-              <!--a href="#" id="searchDropdown" class="button tiny" data-dropdown="searchDrop" disabled="true" onclick="searchPopulateArticleNameMatches()">v</a-->
             </div>
             <div class="small-8 large-8 columns">
               <input id="searchInput" type="text" placeholder="Search" style="margin-top: 6px"
                    onKeyUp="searchArticleNameNearMatch()"/>
             </div>
-            <div class="small-2 large-2 columns">
+            <div class="small-2 large-2 columns end">
               <button id="searchButton" type="button" class="tiny" disabled="true" onclick="loadWikipediaPageByArticleName(curNearMatch, curLang)">&gt;</button>
             </div>
           </div>
