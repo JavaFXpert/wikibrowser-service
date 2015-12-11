@@ -203,8 +203,8 @@
       var itemId = ""
       var isProperty;
 
-      if (title == null) title = "Wikipedia (" + language + ") article missing";
-      $('#offCanvasTitle').text(title + " :" + resp.articleId);
+      if (title == null) title = "Wikipedia article missing";
+      $('#offCanvasTitle').text(title + " :" + resp.articleId + " [" + language + "]");
       for (var cIdx in resp.claim) {
         if (resp.claim[cIdx].val.length == 1) {
           itemId = resp.claim[cIdx].val[0].id;
@@ -238,7 +238,7 @@
 
     function retrieveLangLinks (title, lang) {
       //alert("Retrieving language links for: " + title + ", " + lang);
-      titleStr = title.split(" ").join("%20");
+      var titleStr = title.split(" ").join("%20");
       $.ajax({
             url: '/langlinks',
             data: "title=" + titleStr + "&lang=" + lang + "",
@@ -253,18 +253,20 @@
     }
 
     function populateLangLinks(resp) {
-      $('#offCanvasLangLinks').html(''); // Clear out language links
-      $('#offCanvasLangLinks').append("<ul><li><label>Languages:</label></li>"); //TODO: Internationalize this label
-      for (var idx in resp.langlinks) {
-        var langLink = resp.langlinks[idx];
-        var langName = langLink.langName;
-        var langAutonym = langLink.langAutonym;
-        var langCode = langLink.langCode;
-        var articleName = langLink.articleName;
-        $('#offCanvasLangLinks').append("<li><a href='#' onclick='loadWikipediaPageByArticleName(\"" + articleName + "\", \"" + langCode + "\")'>" +
-            langName + "/" + langAutonym + "</a></li>");
+      if (resp.langlinks.length > 0) {
+        $('#offCanvasLangLinks').html(''); // Clear out language links
+        $('#offCanvasLangLinks').append("<ul><li><label>Languages:</label></li>"); //TODO: Internationalize this label
+        for (var idx in resp.langlinks) {
+          var langLink = resp.langlinks[idx];
+          var langName = langLink.langName;
+          var langAutonym = langLink.langAutonym;
+          var langCode = langLink.langCode;
+          var articleName = langLink.articleName;
+          $('#offCanvasLangLinks').append("<li><a href='#' onclick='loadWikipediaPageByArticleName(\"" + articleName + "\", \"" + langCode + "\")'>" +
+              langName + " / " + langAutonym + "</a></li>");
+        }
+        $('#offCanvasLangLinks').append("</ul>");
       }
-      $('#offCanvasLangLinks').append("</ul>");
     }
 
   </script>
