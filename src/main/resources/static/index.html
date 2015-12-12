@@ -33,7 +33,7 @@
     // TODO: Examine usefulness of, and possibly refactor, functionality in this handler
     window.addEventListener('load', function() {
       $('#searchButton').prop('disabled', true);
-
+      $('#helpAboutButton').prop('disabled', false);
       $( "#wikipediaInnerFrame" ).attr("width",window.innerWidth - 0).attr("height",window.innerHeight - 220);
     } );
 
@@ -268,6 +268,11 @@
       }
     }
 
+    function revealAboutDialog() {
+      $('#aboutDialog').foundation('reveal', 'open');
+    }
+
+
   </script>
 
 </head>
@@ -330,12 +335,16 @@
       </div>
 
       <div class="row">
-        <div class="small-2 small-offset-4 columns">
-          <button id="searchDropdown" type="button" class="tiny" disabled="true" data-dropdown="searchDrop" style="padding: 0px;margin: 10px;" onclick="searchPopulateArticleNameMatches()"><img src="img/dropdown-arrow-icon.png" width="44"/></button>
+        <div class="small-2 small-offset-1 columns">
+          <button id="searchDropdown" type="button" class="tiny" disabled="true" data-dropdown="searchDrop" style="padding: 0px; margin-top: 10px; margin-left: 0px; margin-right: 0px;" onclick="searchPopulateArticleNameMatches()"><img src="img/dropdown-arrow-icon.png" width="44"/></button>
         </div>
 
         <div class="small-2 small-offset-0 columns">
-          <button id="searchButton" type="button" class="tiny" disabled="true" style="padding: 0px;margin: 10px;" onclick="loadWikipediaPageByArticleName(curNearMatch, curLang)"><img src="img/magnifying-glass.png" width="44"/></button>
+          <button id="searchButton" type="button" class="tiny" disabled="true" style="padding: 0px;margin-top: 10px; margin-left: 0px; margin-right: 0px;" onclick="loadWikipediaPageByArticleName(curNearMatch, curLang)"><img src="img/magnifying-glass.png" width="44"/></button>
+        </div>
+
+        <div class="small-2 small-offset-5 columns">
+          <button id="helpAboutButton" type="button" class="tiny" disabled="false" style="padding: 0px;margin-top: 10px; margin-left: 0px; margin-right: 0px;" onclick="revealAboutDialog()"><img src="img/question-mark.png" width="44"/></button>
         </div>
 
         <ul id="searchDrop" class="f-dropdown" data-options="align:left" data-dropdown-content aria-hidden="true" tabindex="-1">
@@ -363,6 +372,17 @@
     </div>
   </div>
 
+  <div id="aboutDialog" class="reveal-modal large" data-reveal aria-labelledby="aboutDialogTitle" aria-hidden="true" role="dialog">
+    <div align="center">
+      <h3 id="aboutDialogTitle">About WikiBrowser</h3>
+      <img src="img/wikibrowser-logo-347.png" >
+      <p>Version 1.0</p>
+      <p>Developed by <a href="https://twitter.com/javafxpert"
+                         target="_blank">James L. Weaver</a></p>
+      <p>Licensed under the Apache License, Version 2.0</p>
+      <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+    </div>
+  </div>
 
 
   <script src="js/vendor/jquery.js"></script>
