@@ -34,7 +34,7 @@
     window.addEventListener('load', function() {
       $('#searchButton').prop('disabled', true);
       $('#helpAboutButton').prop('disabled', false);
-      $( "#wikipediaInnerFrame" ).attr("width",window.innerWidth - 0).attr("height",window.innerHeight - 220);
+      $( "#wikipediaInnerFrame" ).attr("width",window.innerWidth - 0).attr("height",window.innerHeight - 230);
     } );
 
     /**
@@ -404,7 +404,7 @@
     <script>
       // Throttled resize function
       $(window).on('resize', Foundation.utils.throttle(function(e){
-        $( "#wikipediaInnerFrame" ).attr("width",window.innerWidth - 0).attr("height",window.innerHeight - 220);
+        $( "#wikipediaInnerFrame" ).attr("width",window.innerWidth - 0).attr("height",window.innerHeight - 230);
       }, 300));
 
       $("input").keypress(function(event){
