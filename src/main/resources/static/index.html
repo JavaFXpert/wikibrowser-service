@@ -34,7 +34,7 @@
     window.addEventListener('load', function() {
       $('#searchButton').prop('disabled', true);
 
-      $( "#wikipediaInnerFrame" ).attr("width",window.innerWidth - 0).attr("height",window.innerHeight - 60);
+      $( "#wikipediaInnerFrame" ).attr("width",window.innerWidth - 0).attr("height",window.innerHeight - 220);
     } );
 
     /**
@@ -274,6 +274,37 @@
 
 <body>
 
+<!-- Top bar -->
+
+  <nav class="top-bar" data-topbar role="navigation">
+    <ul class="title-area">
+      <li class="name">
+        <h1><a href="#">WikiBrowser</a></h1>
+      </li>
+    </ul>
+
+    <section class="top-bar-section">
+      <ul class="right">
+        <li><a href="http://wikidata.org" target="_blank" style="padding-left: 0px"><img src="img/wikidata-logo.png" ></a></li>
+      </ul>
+      <ul class="right">
+        <li><a href="http://wikidata.org" target="_blank"><i>and Wikidata</i></a></li>
+      </ul>
+      <ul class="right">
+        <li><a href="http://pivotal.io/platform" target="_blank" style="padding: 0px"><img src="img/cloudfoundry-logo.png" style="padding: 0px"></a></li>
+      </ul>
+      <ul class="right">
+        <li><a href="http://pivotal.io/platform" target="_blank"><i>Cloud Foundry</i></a></li>
+      </ul>
+      <ul class="right">
+        <li><a href="http://projects.spring.io/spring-boot" target="_blank" style="padding: 0px"><img src="img/spring-logo.png" style="padding: 0px"></a></li>
+      </ul>
+      <ul class="right">
+        <li><a href="http://projects.spring.io/spring-boot" target="_blank"><i>powered by Spring Boot</i></a></li>
+      </ul>
+    </section>
+  </nav>
+
   <div class="off-canvas-wrap" data-offcanvas>
     <div class="inner-wrap">
       <nav class="tab-bar">
@@ -284,23 +315,6 @@
 
         <section class="middle tab-bar-section">
           <h1 id="offCanvasTitle" class="title">WikiBrowser</h1>
-
-          <div class="row">
-            <div class="small-2 large-2 columns">
-              <button id="searchDropdown" type="button" class="tiny" disabled="true" data-dropdown="searchDrop" onclick="searchPopulateArticleNameMatches()">v</button>
-            </div>
-            <div class="small-8 large-8 columns">
-              <input id="searchInput" type="text" placeholder="Search" style="margin-top: 6px"
-                   onKeyUp="searchArticleNameNearMatch()"/>
-            </div>
-            <div class="small-2 large-2 columns end">
-              <button id="searchButton" type="button" class="tiny" disabled="true" onclick="loadWikipediaPageByArticleName(curNearMatch, curLang)">&gt;</button>
-            </div>
-          </div>
-
-          <ul id="searchDrop" class="f-dropdown" data-options="align:left" data-dropdown-content aria-hidden="true" tabindex="-1">
-            <!-- This list is dynamically populated with JQuery -->
-          </ul>
         </section>
 
         <section class="right-small">
@@ -308,30 +322,50 @@
         </section>
       </nav>
 
+      <div class="row middle">
+        <div class="small-12 large-12 columns">
+          <input id="searchInput" type="text" style="margin-top: 6px"
+                 onKeyUp="searchArticleNameNearMatch()"/>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="small-2 small-offset-4 columns">
+          <button id="searchDropdown" type="button" class="tiny" disabled="true" data-dropdown="searchDrop" style="padding: 0px" onclick="searchPopulateArticleNameMatches()"><img src="img/dropdown-arrow-icon.png" width="44"/></button>
+        </div>
+
+        <div class="small-2 small-offset-0 columns">
+          <button id="searchButton" type="button" class="tiny" disabled="true" style="padding: 10px" onclick="loadWikipediaPageByArticleName(curNearMatch, curLang)"><img src="svgs/fi-magnifying-glass.svg" width="24"/></button>
+        </div>
+
+        <ul id="searchDrop" class="f-dropdown" data-options="align:left" data-dropdown-content aria-hidden="true" tabindex="-1">
+          <!-- This list is dynamically populated -->
+        </ul>
+      </div>
+
       <aside class="left-off-canvas-menu">
         <ul id="offCanvasLangLinks" class="off-canvas-list">
-          <!-- This list is dynamically populated with JQuery -->
+          <!-- This list is dynamically populated -->
         </ul>
       </aside>
 
       <aside class="right-off-canvas-menu">
         <ul id="offCanvasList" class="off-canvas-list">
-          <!-- This list is dynamically populated with JQuery -->
+          <!-- This list is dynamically populated -->
         </ul>
       </aside>
+
+      <a class="exit-off-canvas"></a>
 
       <section class="main-section">
         <iframe id="wikipediaInnerFrame" src="/wikipage?name=Earth&lang=en" frameborder="0" scrolling="yes" width="1000" onload="refreshClaimsWikipageEndpoint(this.contentWindow.location.href)"></iframe>
       </section>
-
-      <a class="exit-off-canvas"></a>
-
     </div>
   </div>
 
 
 
-    <script src="js/vendor/jquery.js"></script>
+  <script src="js/vendor/jquery.js"></script>
     <script src="js/foundation.min.js"></script>
     <script>
       //$(document).foundation();
@@ -350,7 +384,7 @@
     <script>
       // Throttled resize function
       $(window).on('resize', Foundation.utils.throttle(function(e){
-        $( "#wikipediaInnerFrame" ).attr("width",window.innerWidth - 0).attr("height",window.innerHeight - 60);
+        $( "#wikipediaInnerFrame" ).attr("width",window.innerWidth - 0).attr("height",window.innerHeight - 220);
       }, 300));
 
       $("input").keypress(function(event){

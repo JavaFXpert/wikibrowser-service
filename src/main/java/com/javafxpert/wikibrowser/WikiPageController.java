@@ -71,6 +71,16 @@ public class WikiPageController {
         pageText = pageText.substring(0, searchAnchorStartPos) + pageText.substring(searchAnchorEndPos + "</a>".length());
       }
     }
+
+    // Remove the search form at the top of the page
+    int searchFormStartPos = pageText.indexOf("<form");
+    if (searchFormStartPos > 0) {
+      int searchFormEndPos = pageText.indexOf("</form>", searchFormStartPos);
+      if (searchFormEndPos > 0) {
+        pageText = pageText.substring(0, searchFormStartPos) + pageText.substring(searchFormEndPos + "</form>".length());
+      }
+    }
+
     return pageText;
   }
 }
