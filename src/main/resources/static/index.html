@@ -324,18 +324,18 @@
 
       <div class="row middle">
         <div class="small-12 large-12 columns">
-          <input id="searchInput" type="text" style="margin-top: 6px"
+          <input id="searchInput" type="text" style="margin-top: 10px;margin-bottom: 5px"
                  onKeyUp="searchArticleNameNearMatch()"/>
         </div>
       </div>
 
       <div class="row">
         <div class="small-2 small-offset-4 columns">
-          <button id="searchDropdown" type="button" class="tiny" disabled="true" data-dropdown="searchDrop" style="padding: 0px" onclick="searchPopulateArticleNameMatches()"><img src="img/dropdown-arrow-icon.png" width="44"/></button>
+          <button id="searchDropdown" type="button" class="tiny" disabled="true" data-dropdown="searchDrop" style="padding: 0px;margin: 10px;" onclick="searchPopulateArticleNameMatches()"><img src="img/dropdown-arrow-icon.png" width="44"/></button>
         </div>
 
         <div class="small-2 small-offset-0 columns">
-          <button id="searchButton" type="button" class="tiny" disabled="true" style="padding: 0px" onclick="loadWikipediaPageByArticleName(curNearMatch, curLang)"><img src="img/magnifying-glass.png" width="44"/></button>
+          <button id="searchButton" type="button" class="tiny" disabled="true" style="padding: 0px;margin: 10px;" onclick="loadWikipediaPageByArticleName(curNearMatch, curLang)"><img src="img/magnifying-glass.png" width="44"/></button>
         </div>
 
         <ul id="searchDrop" class="f-dropdown" data-options="align:left" data-dropdown-content aria-hidden="true" tabindex="-1">
