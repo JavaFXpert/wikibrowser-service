@@ -73,7 +73,7 @@ public class WikiClaimsController {
 
     log.info("claimsResponse:" + claimsResponse);
 
-
+    //TODO: MERGE item and relationships into Neo4j graph
 
     return Optional.ofNullable(claimsResponse)
         .map(cr -> new ResponseEntity<>((Object)cr, HttpStatus.OK))
