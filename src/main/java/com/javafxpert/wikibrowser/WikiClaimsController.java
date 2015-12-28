@@ -23,6 +23,10 @@ import com.javafxpert.wikibrowser.model.claimsresponse.WikidataProperty;
 import com.javafxpert.wikibrowser.model.claimssparqlresponse.Bindings;
 import com.javafxpert.wikibrowser.model.claimssparqlresponse.ClaimsSparqlResponse;
 import com.javafxpert.wikibrowser.model.claimssparqlresponse.Results;
+import com.javafxpert.wikibrowser.model.conceptmap.GraphItem;
+import com.javafxpert.wikibrowser.model.conceptmap.ItemRepository;
+import com.javafxpert.wikibrowser.model.conceptmap.ItemService;
+import com.javafxpert.wikibrowser.model.conceptmap.ItemServiceImpl;
 import com.javafxpert.wikibrowser.model.locator.ItemInfoResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -56,9 +60,15 @@ public class WikiClaimsController {
 
   private final WikiBrowserProperties wikiBrowserProperties;
 
+  private final ItemServiceImpl itemService;
+
+  private ItemRepository itemRespository;
+
   @Autowired
-  public WikiClaimsController(WikiBrowserProperties wikiBrowserProperties) {
+  public WikiClaimsController(WikiBrowserProperties wikiBrowserProperties, ItemServiceImpl itemService) {
     this.wikiBrowserProperties = wikiBrowserProperties;
+    this.itemService = itemService;
+    itemRespository = itemService.getItemRepository();
   }
 
   @RequestMapping(value = "/claims", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -73,7 +83,11 @@ public class WikiClaimsController {
 
     log.info("claimsResponse:" + claimsResponse);
 
-    //TODO: MERGE item and relationships into Neo4j graph
+    // MERGE item and relationships into Neo4j graph
+    if (claimsResponse.getArticleId() != null && claimsResponse.getArticleTitle() != null) {
+      log.info("====== itemRespository.addItem: " + claimsResponse.getArticleId() + ", " + claimsResponse.getArticleTitle());
+      itemRespository.addItem(claimsResponse.getArticleId(), claimsResponse.getArticleTitle());
+    }
 
     return Optional.ofNullable(claimsResponse)
         .map(cr -> new ResponseEntity<>((Object)cr, HttpStatus.OK))
@@ -192,7 +206,15 @@ public class WikiClaimsController {
         claimsResponse.getClaims().add(wikidataClaim);
         lastPropId = nextPropId;
       }
-      wikidataClaim.addItem(new WikidataItem(nextValId, bindings.getValLabel().getValue()));
+
+      WikidataItem wikidataItem = new WikidataItem(nextValId, bindings.getValLabel().getValue());
+      wikidataClaim.addItem(wikidataItem);
+
+      // MERGE item and relationships into Neo4j graph
+      if (wikidataItem.getId() != null && wikidataItem.getLabel() != null) {
+        log.info("++++++ itemRespository.addItem: " + wikidataItem.getId() + ", " + wikidataItem.getLabel());
+        itemRespository.addItem(wikidataItem.getId(), wikidataItem.getLabel());
+      }
     }
     return claimsResponse;
   }

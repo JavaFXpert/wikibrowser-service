@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+/*
+  TODO: Refactoring any business logic that is in the body of API methods an put in service classes
+ */
+
 package com.javafxpert.wikibrowser;
 
 import org.springframework.boot.SpringApplication;
