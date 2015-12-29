@@ -83,12 +83,6 @@ public class WikiClaimsController {
 
     log.info("claimsResponse:" + claimsResponse);
 
-    // MERGE item and relationships into Neo4j graph
-    if (claimsResponse.getArticleId() != null && claimsResponse.getArticleTitle() != null) {
-      log.info("====== itemRespository.addItem: " + claimsResponse.getArticleId() + ", " + claimsResponse.getArticleTitle());
-      itemRespository.addItem(claimsResponse.getArticleId(), claimsResponse.getArticleTitle());
-    }
-
     return Optional.ofNullable(claimsResponse)
         .map(cr -> new ResponseEntity<>((Object)cr, HttpStatus.OK))
         .orElse(new ResponseEntity<>("Wikidata query unsuccessful", HttpStatus.INTERNAL_SERVER_ERROR));
@@ -178,6 +172,12 @@ public class WikiClaimsController {
     if (itemInfoResponse != null) {
       claimsResponse.setArticleTitle(itemInfoResponse.getArticleTitle());
       claimsResponse.setArticleId(itemInfoResponse.getItemId());
+
+      // MERGE item into Neo4j graph
+      if (claimsResponse.getArticleId() != null && claimsResponse.getArticleTitle() != null) {
+        log.info("====== itemRespository.addItem: " + claimsResponse.getArticleId() + ", " + claimsResponse.getArticleTitle());
+        itemRespository.addItem(claimsResponse.getArticleId(), claimsResponse.getArticleTitle());
+      }
     }
 
     //TODO: Consider implementing fallback to "en" if Wikipedia article doesn't exist in requested language
@@ -211,9 +211,29 @@ public class WikiClaimsController {
       wikidataClaim.addItem(wikidataItem);
 
       // MERGE item and relationships into Neo4j graph
-      if (wikidataItem.getId() != null && wikidataItem.getLabel() != null) {
+      if (itemId != null &&
+          wikidataItem.getId() != null &&
+          wikidataClaim.getProp().getId() != null &&
+          wikidataClaim.getProp().getLabel() != null) {
+
+        // Write item
         log.info("++++++ itemRespository.addItem: " + wikidataItem.getId() + ", " + wikidataItem.getLabel());
         itemRespository.addItem(wikidataItem.getId(), wikidataItem.getLabel());
+
+        // Write relationship
+        String capsLabel = wikidataClaim.getProp().getLabel();
+        capsLabel = capsLabel.toUpperCase();
+        capsLabel = capsLabel.replaceAll(" ", "_");
+        log.info("------ itemRespository.addRelationship: " + itemId + ", " +
+                         wikidataItem.getId() + ", " +
+                         wikidataClaim.getProp().getId() + ", " +
+                         wikidataClaim.getProp().getLabel() + ", " +
+                         capsLabel);
+        itemRespository.addRelationship(itemId,
+                                        wikidataItem.getId(),
+                                        wikidataClaim.getProp().getId(),
+                                        wikidataClaim.getProp().getLabel(),
+                                        capsLabel);
       }
     }
     return claimsResponse;
