@@ -219,23 +219,18 @@ public class WikiClaimsController {
         itemRepository.addItem(wikidataItem.getId(), wikidataItem.getLabel());
 
         // Write relationship
-        String capsLabel = wikidataClaim.getProp().getLabel();
-        capsLabel = capsLabel.toUpperCase();
-        capsLabel = capsLabel.replaceAll(" ", "_");
         log.info("------ itemRepository.addRelationship: " + itemId + ", " +
                          wikidataItem.getId() + ", " +
                          wikidataClaim.getProp().getId() + ", " +
-                         wikidataClaim.getProp().getLabel() + ", " +
-                         capsLabel);
+                         wikidataClaim.getProp().getLabel());
+
         itemRepository.addRelationship(itemId,
-                                        wikidataItem.getId(),
-                                        wikidataClaim.getProp().getId(),
-                                        wikidataClaim.getProp().getLabel(),
-                                        capsLabel);
+            wikidataItem.getId(),
+            wikidataClaim.getProp().getId(),
+            wikidataClaim.getProp().getLabel());
       }
     }
     return claimsResponse;
   }
-
 }
 
