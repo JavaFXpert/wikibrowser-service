@@ -33,7 +33,7 @@ public interface ItemRepository extends GraphRepository<GraphItem> {
   //TODO: Make the following work instead so that propCapsLabel may be supplied
   //@Query("MATCH (a:Item {itemId:{itemIdA}}), (b:Item {itemId:{itemIdB}}) MERGE (a)-[:{propCapsLabel} {propId:{propId}, label:{propLabel}}]->(b)")
 
-  @Query("MATCH (a:Item {itemId:{itemIdA}}), (b:Item {itemId:{itemIdB}}) MERGE (a)-[:RELATIONSHIP {propId:{propId}, label:{propLabel}}]->(b)")
+  @Query("MATCH (a:Item {itemId:{itemIdA}}), (b:Item {itemId:{itemIdB}}) MERGE (a)-[:R {propId:{propId}, label:{propLabel}}]->(b)")
   void addRelationship(@Param("itemIdA") String itemIdA,
                        @Param("itemIdB") String itemIdB,
                        @Param("propId") String propId,

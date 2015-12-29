@@ -23,9 +23,7 @@ import com.javafxpert.wikibrowser.model.claimsresponse.WikidataProperty;
 import com.javafxpert.wikibrowser.model.claimssparqlresponse.Bindings;
 import com.javafxpert.wikibrowser.model.claimssparqlresponse.ClaimsSparqlResponse;
 import com.javafxpert.wikibrowser.model.claimssparqlresponse.Results;
-import com.javafxpert.wikibrowser.model.conceptmap.GraphItem;
 import com.javafxpert.wikibrowser.model.conceptmap.ItemRepository;
-import com.javafxpert.wikibrowser.model.conceptmap.ItemService;
 import com.javafxpert.wikibrowser.model.conceptmap.ItemServiceImpl;
 import com.javafxpert.wikibrowser.model.locator.ItemInfoResponse;
 import org.apache.commons.logging.Log;
@@ -62,13 +60,13 @@ public class WikiClaimsController {
 
   private final ItemServiceImpl itemService;
 
-  private ItemRepository itemRespository;
+  private ItemRepository itemRepository;
 
   @Autowired
   public WikiClaimsController(WikiBrowserProperties wikiBrowserProperties, ItemServiceImpl itemService) {
     this.wikiBrowserProperties = wikiBrowserProperties;
     this.itemService = itemService;
-    itemRespository = itemService.getItemRepository();
+    itemRepository = itemService.getItemRepository();
   }
 
   @RequestMapping(value = "/claims", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -175,8 +173,8 @@ public class WikiClaimsController {
 
       // MERGE item into Neo4j graph
       if (claimsResponse.getArticleId() != null && claimsResponse.getArticleTitle() != null) {
-        log.info("====== itemRespository.addItem: " + claimsResponse.getArticleId() + ", " + claimsResponse.getArticleTitle());
-        itemRespository.addItem(claimsResponse.getArticleId(), claimsResponse.getArticleTitle());
+        log.info("====== itemRepository.addItem: " + claimsResponse.getArticleId() + ", " + claimsResponse.getArticleTitle());
+        itemRepository.addItem(claimsResponse.getArticleId(), claimsResponse.getArticleTitle());
       }
     }
 
@@ -217,19 +215,19 @@ public class WikiClaimsController {
           wikidataClaim.getProp().getLabel() != null) {
 
         // Write item
-        log.info("++++++ itemRespository.addItem: " + wikidataItem.getId() + ", " + wikidataItem.getLabel());
-        itemRespository.addItem(wikidataItem.getId(), wikidataItem.getLabel());
+        log.info("++++++ itemRepository.addItem: " + wikidataItem.getId() + ", " + wikidataItem.getLabel());
+        itemRepository.addItem(wikidataItem.getId(), wikidataItem.getLabel());
 
         // Write relationship
         String capsLabel = wikidataClaim.getProp().getLabel();
         capsLabel = capsLabel.toUpperCase();
         capsLabel = capsLabel.replaceAll(" ", "_");
-        log.info("------ itemRespository.addRelationship: " + itemId + ", " +
+        log.info("------ itemRepository.addRelationship: " + itemId + ", " +
                          wikidataItem.getId() + ", " +
                          wikidataClaim.getProp().getId() + ", " +
                          wikidataClaim.getProp().getLabel() + ", " +
                          capsLabel);
-        itemRespository.addRelationship(itemId,
+        itemRepository.addRelationship(itemId,
                                         wikidataItem.getId(),
                                         wikidataClaim.getProp().getId(),
                                         wikidataClaim.getProp().getLabel(),
