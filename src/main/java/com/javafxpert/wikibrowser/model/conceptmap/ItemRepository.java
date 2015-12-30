@@ -19,7 +19,8 @@ public interface ItemRepository extends GraphRepository<GraphItem> {
    * @param itemTitle
    */
   // MERGE (Q2:Item {itemId:"Q2", title:"Earth"})
-  @Query("MERGE (:Item {itemId:{itemId}, title:{itemTitle}})")
+  //@Query("MERGE (:Item {itemId:{itemId}, title:{itemTitle}})")
+  @Query("MERGE (a:Item {itemId:{itemId}}) SET a.title = {itemTitle}")
   void addItem(@Param("itemId") String itemId, @Param("itemTitle") String itemTitle);
 
   /**
