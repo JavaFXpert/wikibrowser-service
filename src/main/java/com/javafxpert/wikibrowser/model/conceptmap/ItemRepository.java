@@ -3,6 +3,9 @@ package com.javafxpert.wikibrowser.model.conceptmap;
 import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.neo4j.repository.GraphRepository;
 import org.springframework.data.repository.query.Param;
+import org.springframework.util.ReflectionUtils;
+
+import java.lang.reflect.Method;
 
 /**
  * Provides custom Cypher queries as repository search operations
@@ -36,15 +39,19 @@ public interface ItemRepository extends GraphRepository<GraphItem> {
               String propId,
               String propLabel) {
 
-    switch (propId) {
-      case "P31": addRelP31(itemIdA, itemIdB, propId, propLabel); break;
-      case "P127": addRelP127(itemIdA, itemIdB, propId, propLabel); break;
-      case "P138": addRelP138(itemIdA, itemIdB, propId, propLabel); break;
-      case "P279": addRelP279(itemIdA, itemIdB, propId, propLabel); break;
-      case "P361": addRelP361(itemIdA, itemIdB, propId, propLabel); break;
-      case "P527": addRelP527(itemIdA, itemIdB, propId, propLabel); break;
-      case "P790": addRelP790(itemIdA, itemIdB, propId, propLabel); break;
-      default: addRel(itemIdA, itemIdB, propId, propLabel); break;
+    String methodStr = "addRel" + propId;
+    Method method = ReflectionUtils.findMethod(ItemRepository.class, methodStr, new Class[]{String.class, String.class, String.class, String.class});
+    if (method != null) {
+      try {
+        ReflectionUtils.invokeMethod(method, this, itemIdA, itemIdB, propId, propLabel);
+      }
+      catch (Exception e) {
+        System.out.println("Exception in invokeMethod " + methodStr + ": " + e);
+        // TODO: Remove println above and decide how to report
+      }
+    }
+    else {
+      addRel(itemIdA, itemIdB, propId, propLabel);
     }
   }
 
@@ -68,6 +75,12 @@ public interface ItemRepository extends GraphRepository<GraphItem> {
 
   @Query("MATCH (a:Item {itemId:{itemIdA}}), (b:Item {itemId:{itemIdB}}) MERGE (a)-[:SUBCLASS_OF {propId:{propId}, label:{propLabel}}]->(b)")
   void addRelP279(@Param("itemIdA") String itemIdA,
+                  @Param("itemIdB") String itemIdB,
+                  @Param("propId") String propId,
+                  @Param("propLabel") String propLabel);
+
+  @Query("MATCH (a:Item {itemId:{itemIdA}}), (b:Item {itemId:{itemIdB}}) MERGE (a)-[:CAT_MAIN_TOPIC {propId:{propId}, label:{propLabel}}]->(b)")
+  void addRelP301(@Param("itemIdA") String itemIdA,
                   @Param("itemIdB") String itemIdB,
                   @Param("propId") String propId,
                   @Param("propLabel") String propLabel);
