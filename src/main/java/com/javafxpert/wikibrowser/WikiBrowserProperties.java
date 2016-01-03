@@ -30,6 +30,10 @@ public class WikiBrowserProperties {
   private String locatorEndpoint;
   private String lang;
 
+  private String cypherHost;
+  private String cypherPort;
+  private String cypherEndpoint;
+
   public String getHost() {
     return host;
   }
@@ -54,6 +58,30 @@ public class WikiBrowserProperties {
     this.lang = lang;
   }
 
+  public String getCypherHost() {
+    return cypherHost;
+  }
+
+  public void setCypherHost(String cypherHost) {
+    this.cypherHost = cypherHost;
+  }
+
+  public String getCypherPort() {
+    return cypherPort;
+  }
+
+  public void setCypherPort(String cypherPort) {
+    this.cypherPort = cypherPort;
+  }
+
+  public String getCypherEndpoint() {
+    return cypherEndpoint;
+  }
+
+  public void setCypherEndpoint(String cypherEndpoint) {
+    this.cypherEndpoint = cypherEndpoint;
+  }
+
   public String computeLang(String forceLang) {
     String language = "en"; // Fallback value if not passed in or available in property
     if (forceLang != null && forceLang.length() > 0) {
@@ -73,6 +101,15 @@ public class WikiBrowserProperties {
    */
   public String getLocatorServiceUrl(String itemId, String lang) {
     String url = this.host + String.format(this.getLocatorEndpoint(), itemId, computeLang(lang));
+    return url;
+  }
+
+  /**
+   * Provide the URL to the Neo4j Transactional Cypher HTTP endpoint
+   *
+   */
+  public String getNeoCypherUrl() {
+    String url = "http://" + this.cypherHost + ":" + this.cypherPort + this.cypherEndpoint;
     return url;
   }
 }
