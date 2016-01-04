@@ -21,6 +21,7 @@ import com.javafxpert.wikibrowser.model.search.SearchFar;
 import com.javafxpert.wikibrowser.model.search.SearchResponseFar;
 import com.javafxpert.wikibrowser.model.search.SearchResponseNear;
 import com.javafxpert.wikibrowser.model.search.SearchinfoFar;
+import com.javafxpert.wikibrowser.util.WikiBrowserUtils;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -53,27 +54,52 @@ public class WikiGraphController {
 
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Object> search(@RequestParam(value = "items", defaultValue="") String items) {
-
-    String neoCypherUrl = wikiBrowserProperties.getNeoCypherUrl();
-
-    /*
-    {
-      "statements" : [ {
-        "statement" : "MATCH (a)-[r]->(b) WHERE a.itemId IN ['Q24', 'Q30', 'Q23', 'Q16', 'Q20'] AND b.itemId IN ['Q24', 'Q30', 'Q23', 'Q16', 'Q20'] RETURN a, b, r",
-        "resultDataContents" : ["graph" ]
-      } ]
+    // Example endpoint usage is graph?items=Q24, Q30, Q23, Q16, Q20
+    // Scrub the input, and output a string for the Cypher query similar to the following:
+    // 'Q24','Q30','Q23','Q16','Q20'
+    String[] itemsArray = items.split(",");
+    String argStr = "";
+    for (int i = 0; i < itemsArray.length; i++) {
+      String itemStr = itemsArray[i];
+      itemStr = itemStr.trim().toUpperCase();
+      if (itemStr.length() > 0 && itemStr.substring(0, 1).equals("Q")) {
+        argStr += "'" + itemStr + "'";
+        if (i < itemsArray.length - 1) {
+          argStr += ",";
+        }
+      }
     }
-    */
+    log.info("argStr=" + argStr);
 
-    String qa = "{\"statements\":[{\"statement\":\"MATCH (a)-[r]->(b) WHERE a.itemId IN [";
-    String qb = "'Q24','Q30','Q23','Q16','Q20'"; // Item IDs
-    String qc = "] AND b.itemId IN [";
-    String qd = "'Q24','Q30','Q23','Q16','Q20'"; // Item IDs
-    String qe = "] RETURN a, b, r\",\"resultDataContents\":[\"graph\"]}]}";
+    GraphResponseNear graphResponseNear = null;
 
-    String postString = qa + qb + qc + qd + qe;
+    if (argStr.length() == 0) {
+      // TODO: Consider handling an invalid items argument better than the way it is handled here
+      argStr = "'Q2'"; // If the items argumentisn't valid, pretend Q2 (Earth) was entered
+    }
 
-    GraphResponseNear graphResponseNear = queryProcessSearchResponse(neoCypherUrl, postString);
+    if (argStr.length() > 0) {
+      String neoCypherUrl = wikiBrowserProperties.getNeoCypherUrl();
+
+      /*  Example Cypher query POST
+      {
+        "statements" : [ {
+          "statement" : "MATCH (a)-[r]->(b) WHERE a.itemId IN ['Q24', 'Q30', 'Q23', 'Q16', 'Q20'] AND b.itemId IN ['Q24', 'Q30', 'Q23', 'Q16', 'Q20'] RETURN a, b, r",
+          "resultDataContents" : ["graph" ]
+        } ]
+      }
+      */
+
+      String qa = "{\"statements\":[{\"statement\":\"MATCH (a)-[r]->(b) WHERE a.itemId IN [";
+      String qb = argStr; // Item IDs
+      String qc = "] AND b.itemId IN [";
+      String qd = argStr; // Item IDs
+      String qe = "] RETURN a, b, r\",\"resultDataContents\":[\"graph\"]}]}";
+
+      String postString = qa + qb + qc + qd + qe;
+
+      graphResponseNear = queryProcessSearchResponse(neoCypherUrl, postString);
+    }
 
     return Optional.ofNullable(graphResponseNear)
         .map(cr -> new ResponseEntity<>((Object)cr, HttpStatus.OK))
@@ -90,11 +116,11 @@ public class WikiGraphController {
     log.info("neoCypherUrl: " + neoCypherUrl);
     log.info("postString: " + postString);
 
-    String username = "wikibrowserdb"; //TODO: Make a configuration setting
-    String password = "sKZ88sPptVL6INjQEeQk"; //TODO: Make a configuration setting
-
     RestTemplate restTemplate = new RestTemplate();
-    HttpHeaders httpHeaders = this.createHeaders(username, password);
+
+    HttpHeaders httpHeaders = WikiBrowserUtils.createHeaders(wikiBrowserProperties.getCypherUsername(),
+        wikiBrowserProperties.getCypherPassword());
+
     httpHeaders.setContentType(MediaType.APPLICATION_JSON);
     httpHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 
@@ -106,7 +132,6 @@ public class WikiGraphController {
       ResponseEntity<GraphResponseFar> result = restTemplate.exchange(neoCypherUrl, HttpMethod.POST, request,
           GraphResponseFar.class);
       graphResponseFar = result.getBody();
-      log.info(graphResponseFar.toString());
 
       // Populate GraphResponseNear instance from GraphResponseFar instance
       HashMap<String, GraphNodeNear> graphNodeNearMap = new HashMap<>();
@@ -158,6 +183,20 @@ public class WikiGraphController {
             graphLinkNearMap.put(graphRelationFar.getId(), graphLinkNear);
           }
         }
+
+        // Create and populate a List of nodes to set into the graphResponseNear instance
+        List<GraphNodeNear> graphNodeNearList = new ArrayList<>();
+        graphNodeNearMap.forEach((k, v) -> {
+          graphNodeNearList.add(v);
+        });
+        graphResponseNear.setGraphNodeNearList(graphNodeNearList);
+
+        // Create and populate a List of links to set into the graphResponseNear instance
+        List<GraphLinkNear> graphLinkNearList = new ArrayList<>();
+        graphLinkNearMap.forEach((k, v) -> {
+          graphLinkNearList.add(v);
+        });
+        graphResponseNear.setGraphLinkNearList(graphLinkNearList);
       }
     }
     catch (Exception e) {
@@ -165,31 +204,6 @@ public class WikiGraphController {
       log.info("Caught exception when calling Neo Cypher service " + e);
     }
 
-    //TODO: Left off here
-    //graphResponseNear.setGraphNodeNearList(graphNodeNearMap);
     return graphResponseNear;
   }
-
-  /**
-   * TODO: Move this to a util class
-   * @param username
-   * @param password
-   * @return
-   */
-  private HttpHeaders createHeaders(final String username, final String password ){
-    HttpHeaders headers =  new HttpHeaders(){
-      {
-        String auth = username + ":" + password;
-        byte[] encodedAuth = Base64.encodeBase64(
-            auth.getBytes(Charset.forName("US-ASCII")) );
-        String authHeader = "Basic " + new String( encodedAuth );
-        set( "Authorization", authHeader );
-      }
-    };
-    headers.add("Content-Type", "application/xml");
-    headers.add("Accept", "application/xml");
-
-    return headers;
-  }
-
 }

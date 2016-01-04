@@ -30,6 +30,9 @@ public class WikiBrowserProperties {
   private String locatorEndpoint;
   private String lang;
 
+  private String cypherUsername;
+  private String cypherPassword;
+
   private String cypherHost;
   private String cypherPort;
   private String cypherEndpoint;
@@ -80,6 +83,22 @@ public class WikiBrowserProperties {
 
   public void setCypherEndpoint(String cypherEndpoint) {
     this.cypherEndpoint = cypherEndpoint;
+  }
+
+  public String getCypherUsername() {
+    return cypherUsername;
+  }
+
+  public void setCypherUsername(String cypherUsername) {
+    this.cypherUsername = cypherUsername;
+  }
+
+  public String getCypherPassword() {
+    return cypherPassword;
+  }
+
+  public void setCypherPassword(String cypherPassword) {
+    this.cypherPassword = cypherPassword;
   }
 
   public String computeLang(String forceLang) {
