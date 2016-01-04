@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by jamesweaver on 1/2/16.
@@ -11,27 +13,27 @@ import java.io.Serializable;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ResultFar implements Serializable {
   @JsonProperty("data")
-  private DataFar dataFar;
+  private List<DataFar> dataFarList = new ArrayList<>();
 
   public ResultFar() {
   }
 
-  public ResultFar(DataFar dataFar) {
-    this.dataFar = dataFar;
+  public ResultFar(List<DataFar> dataFarList) {
+    this.dataFarList = dataFarList;
   }
 
-  public DataFar getDataFar() {
-    return dataFar;
+  public List<DataFar> getDataFarList() {
+    return dataFarList;
   }
 
-  public void setDataFar(DataFar dataFar) {
-    this.dataFar = dataFar;
+  public void setDataFarList(List<DataFar> dataFarList) {
+    this.dataFarList = dataFarList;
   }
 
   @Override
   public String toString() {
     return "ResultFar{" +
-        "dataFar=" + dataFar +
+        "dataFarList=" + dataFarList +
         '}';
   }
 }

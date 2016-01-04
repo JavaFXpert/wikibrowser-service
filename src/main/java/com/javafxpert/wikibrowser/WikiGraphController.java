@@ -16,6 +16,7 @@
 
 package com.javafxpert.wikibrowser;
 
+import com.javafxpert.wikibrowser.model.conceptmap.DummyResponseFar;
 import com.javafxpert.wikibrowser.model.conceptmap.GraphResponseFar;
 import com.javafxpert.wikibrowser.model.conceptmap.GraphResponseNear;
 import com.javafxpert.wikibrowser.model.conceptmap.ItemServiceImpl;
@@ -23,18 +24,19 @@ import com.javafxpert.wikibrowser.model.search.SearchFar;
 import com.javafxpert.wikibrowser.model.search.SearchResponseFar;
 import com.javafxpert.wikibrowser.model.search.SearchResponseNear;
 import com.javafxpert.wikibrowser.model.search.SearchinfoFar;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Optional;
 
@@ -55,7 +57,7 @@ public class WikiGraphController {
 
 
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Object> search(@RequestParam(value = "items", defaultValue="") String title) {
+  public ResponseEntity<Object> search(@RequestParam(value = "items", defaultValue="") String items) {
 
     String neoCypherUrl = wikiBrowserProperties.getNeoCypherUrl();
 
@@ -100,12 +102,23 @@ public class WikiGraphController {
   private GraphResponseNear queryProcessSearchResponse(String neoCypherUrl, String postString) {
     log.info("neoCypherUrl: " + neoCypherUrl);
     log.info("postString: " + postString);
-    GraphResponseFar graphResponseFar = null;
+
+    String username = "wikibrowserdb"; //TODO: Make a configuration setting
+    String password = "sKZ88sPptVL6INjQEeQk"; //TODO: Make a configuration setting
+
+    RestTemplate restTemplate = new RestTemplate();
+    HttpHeaders httpHeaders = this.createHeaders(username, password);
+    httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+    httpHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+
+    HttpEntity request = new HttpEntity(postString, httpHeaders);
+
+    DummyResponseFar graphResponseFar = null;
     GraphResponseNear graphResponseNear = new GraphResponseNear();
     try {
-      graphResponseFar = new RestTemplate().postForObject(neoCypherUrl, postString,
-          GraphResponseFar.class);
-      log.info(graphResponseFar.toString());
+      restTemplate.exchange(neoCypherUrl, HttpMethod.POST, request,
+          DummyResponseFar.class);
+      //log.info(graphResponseFar.toString());
 
       /*
       Iterator iterator = searchResponseFar.getQueryFar().getSearchFar().iterator();
@@ -121,6 +134,28 @@ public class WikiGraphController {
     }
 
     return graphResponseNear;
+  }
+
+  /**
+   * TODO: Move this to a util class
+   * @param username
+   * @param password
+   * @return
+   */
+  private HttpHeaders createHeaders(final String username, final String password ){
+    HttpHeaders headers =  new HttpHeaders(){
+      {
+        String auth = username + ":" + password;
+        byte[] encodedAuth = Base64.encodeBase64(
+            auth.getBytes(Charset.forName("US-ASCII")) );
+        String authHeader = "Basic " + new String( encodedAuth );
+        set( "Authorization", authHeader );
+      }
+    };
+    headers.add("Content-Type", "application/xml");
+    headers.add("Accept", "application/xml");
+
+    return headers;
   }
 
 }
