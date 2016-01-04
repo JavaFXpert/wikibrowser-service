@@ -70,14 +70,6 @@ public class WikiGraphController {
     }
     */
 
-    /*
-    String qa = "%7B\"statements\":[%7B\"statement\":\"MATCH%20(a)-[r]-%3E(b)%20WHERE%20a.itemId%20IN%20[";
-    String qb = "'Q24','Q30','Q23','Q16','Q20'"; // Item IDs
-    String qc = "]%20AND%20b.itemId%20IN%20[";
-    String qd = "'Q24','Q30','Q23','Q16','Q20'"; // Item IDs
-    String qe = "%20RETURN%20a,b,r\",\"resultDataContents\":[\"graph\"]%7D]%7D";
-    */
-
     String qa = "{\"statements\":[{\"statement\":\"MATCH (a)-[r]->(b) WHERE a.itemId IN [";
     String qb = "'Q24','Q30','Q23','Q16','Q20'"; // Item IDs
     String qc = "] AND b.itemId IN [";
@@ -116,9 +108,10 @@ public class WikiGraphController {
     GraphResponseFar graphResponseFar = null;
     GraphResponseNear graphResponseNear = new GraphResponseNear();
     try {
-      restTemplate.exchange(neoCypherUrl, HttpMethod.POST, request,
+      ResponseEntity<GraphResponseFar> result = restTemplate.exchange(neoCypherUrl, HttpMethod.POST, request,
           GraphResponseFar.class);
-      //log.info(graphResponseFar.toString());
+      graphResponseFar = result.getBody();
+      log.info(graphResponseFar.toString());
 
       /*
       Iterator iterator = searchResponseFar.getQueryFar().getSearchFar().iterator();

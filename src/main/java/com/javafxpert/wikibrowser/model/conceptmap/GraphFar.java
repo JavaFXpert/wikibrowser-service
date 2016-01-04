@@ -15,11 +15,15 @@ public class GraphFar implements Serializable {
   @JsonProperty("nodes")
   private List<GraphNodeFar> graphNodeFarList = new ArrayList<>();
 
+  @JsonProperty("relationships")
+  private List<GraphRelationFar> graphRelationFarList = new ArrayList<>();
+
   public GraphFar() {
   }
 
-  public GraphFar(List<GraphNodeFar> graphNodeFarList) {
+  public GraphFar(List<GraphNodeFar> graphNodeFarList, List<GraphRelationFar> graphRelationFarList) {
     this.graphNodeFarList = graphNodeFarList;
+    this.graphRelationFarList = graphRelationFarList;
   }
 
   public List<GraphNodeFar> getGraphNodeFarList() {
@@ -30,10 +34,19 @@ public class GraphFar implements Serializable {
     this.graphNodeFarList = graphNodeFarList;
   }
 
+  public List<GraphRelationFar> getGraphRelationFarList() {
+    return graphRelationFarList;
+  }
+
+  public void setGraphRelationFarList(List<GraphRelationFar> graphRelationFarList) {
+    this.graphRelationFarList = graphRelationFarList;
+  }
+
   @Override
   public String toString() {
     return "GraphFar{" +
         "graphNodeFarList=" + graphNodeFarList +
+        ", graphRelationFarList=" + graphRelationFarList +
         '}';
   }
 }
