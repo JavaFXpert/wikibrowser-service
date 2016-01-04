@@ -113,11 +113,11 @@ public class WikiGraphController {
 
     HttpEntity request = new HttpEntity(postString, httpHeaders);
 
-    DummyResponseFar graphResponseFar = null;
+    GraphResponseFar graphResponseFar = null;
     GraphResponseNear graphResponseNear = new GraphResponseNear();
     try {
       restTemplate.exchange(neoCypherUrl, HttpMethod.POST, request,
-          DummyResponseFar.class);
+          GraphResponseFar.class);
       //log.info(graphResponseFar.toString());
 
       /*

@@ -13,27 +13,27 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DataFar implements Serializable {
   @JsonProperty("graph")
-  private List<GraphFar> graphFarList = new ArrayList<>();
+  private GraphFar graphFar;
 
   public DataFar() {
   }
 
-  public DataFar(List<GraphFar> graphFarList) {
-    this.graphFarList = graphFarList;
+  public DataFar(GraphFar graphFar) {
+    this.graphFar = graphFar;
   }
 
-  public List<GraphFar> getGraphFarList() {
-    return graphFarList;
+  public GraphFar getGraphFar() {
+    return graphFar;
   }
 
-  public void setGraphFarList(List<GraphFar> graphFarList) {
-    this.graphFarList = graphFarList;
+  public void setGraphFar(GraphFar graphFar) {
+    this.graphFar = graphFar;
   }
 
   @Override
   public String toString() {
     return "DataFar{" +
-        "graphFarList=" + graphFarList +
+        "graphFar=" + graphFar +
         '}';
   }
 }
