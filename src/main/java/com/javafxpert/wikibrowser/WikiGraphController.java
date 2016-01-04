@@ -16,10 +16,7 @@
 
 package com.javafxpert.wikibrowser;
 
-import com.javafxpert.wikibrowser.model.conceptmap.DummyResponseFar;
-import com.javafxpert.wikibrowser.model.conceptmap.GraphResponseFar;
-import com.javafxpert.wikibrowser.model.conceptmap.GraphResponseNear;
-import com.javafxpert.wikibrowser.model.conceptmap.ItemServiceImpl;
+import com.javafxpert.wikibrowser.model.conceptmap.*;
 import com.javafxpert.wikibrowser.model.search.SearchFar;
 import com.javafxpert.wikibrowser.model.search.SearchResponseFar;
 import com.javafxpert.wikibrowser.model.search.SearchResponseNear;
@@ -36,9 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by jamesweaver on 10/13/15.
@@ -113,19 +108,65 @@ public class WikiGraphController {
       graphResponseFar = result.getBody();
       log.info(graphResponseFar.toString());
 
-      /*
-      Iterator iterator = searchResponseFar.getQueryFar().getSearchFar().iterator();
-      while (iterator.hasNext()) {
-        SearchFar searchFar = (SearchFar)iterator.next();
-        searchResponseNear.getTitles().add(searchFar.getTitle());
+      // Populate GraphResponseNear instance from GraphResponseFar instance
+      HashMap<String, GraphNodeNear> graphNodeNearMap = new HashMap<>();
+      HashMap<String, GraphLinkNear> graphLinkNearMap = new HashMap<>();
+
+      List<ResultFar> resultFarList = graphResponseFar.getResultFarList();
+      if (resultFarList.size() > 0) {
+        List<DataFar> dataFarList = resultFarList.get(0).getDataFarList();
+        Iterator<DataFar> dataFarIterator = dataFarList.iterator();
+
+        while (dataFarIterator.hasNext()) {
+          GraphFar graphFar = dataFarIterator.next().getGraphFar();
+
+          List<GraphNodeFar> graphNodeFarList = graphFar.getGraphNodeFarList();
+          Iterator<GraphNodeFar> graphNodeFarIterator = graphNodeFarList.iterator();
+
+          while (graphNodeFarIterator.hasNext()) {
+            GraphNodeFar graphNodeFar = graphNodeFarIterator.next();
+            GraphNodeNear graphNodeNear = new GraphNodeNear();
+
+            graphNodeNear.setId(graphNodeFar.getGraphNodePropsFar().getItemId());
+            graphNodeNear.setTitle(graphNodeFar.getGraphNodePropsFar().getTitle());
+            graphNodeNear.setLabelsList(graphNodeFar.getLabelsList());
+
+            // Note: The key in the graphNodeNearMap is the Neo4j node id, not the Wikidata item ID
+            graphNodeNearMap.put(graphNodeFar.getId(), graphNodeNear);
+          }
+
+          List<GraphRelationFar> graphRelationFarList = graphFar.getGraphRelationFarList();
+          Iterator<GraphRelationFar> graphRelationFarIterator = graphRelationFarList.iterator();
+
+          while (graphRelationFarIterator.hasNext()) {
+            GraphRelationFar graphRelationFar = graphRelationFarIterator.next();
+            GraphLinkNear graphLinkNear = new GraphLinkNear();
+
+            // Use the Neo4j node ids from the relationship to retrieve the Wikidata Item IDs from the graphNodeNearMap
+            String neo4jStartNodeId = graphRelationFar.getStartNode();
+            String wikidataStartNodeItemId = graphNodeNearMap.get(neo4jStartNodeId).getId();
+            String neo4jEndNodeId = graphRelationFar.getEndNode();
+            String wikidataEndNodeItemId = graphNodeNearMap.get(neo4jEndNodeId).getId();
+
+            graphLinkNear.setSource(wikidataStartNodeItemId);
+            graphLinkNear.setTarget(wikidataEndNodeItemId);
+            graphLinkNear.setPropId(graphRelationFar.getGraphRelationPropsFar().getPropId());
+            graphLinkNear.setLabel(graphRelationFar.getGraphRelationPropsFar().getLabel());
+            graphLinkNear.setType(graphRelationFar.getType());
+
+            // Note: The key in the graphLinkNearMap is the Neo4j node id, not the Wikidata item ID
+            graphLinkNearMap.put(graphRelationFar.getId(), graphLinkNear);
+          }
+        }
       }
-      */
     }
     catch (Exception e) {
       e.printStackTrace();
       log.info("Caught exception when calling Neo Cypher service " + e);
     }
 
+    //TODO: Left off here
+    //graphResponseNear.setGraphNodeNearList(graphNodeNearMap);
     return graphResponseNear;
   }
 
