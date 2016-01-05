@@ -173,7 +173,7 @@ public class WikiClaimsController {
 
       // MERGE item into Neo4j graph
       if (claimsResponse.getArticleId() != null && claimsResponse.getArticleTitle() != null) {
-        log.info("====== itemRepository.addItem: " + claimsResponse.getArticleId() + ", " + claimsResponse.getArticleTitle());
+        //log.info("====== itemRepository.addItem: " + claimsResponse.getArticleId() + ", " + claimsResponse.getArticleTitle());
         itemRepository.addItem(claimsResponse.getArticleId(), claimsResponse.getArticleTitle());
       }
     }
@@ -215,14 +215,14 @@ public class WikiClaimsController {
           wikidataClaim.getProp().getLabel() != null) {
 
         // Write item
-        log.info("++++++ itemRepository.addItem: " + wikidataItem.getId() + ", " + wikidataItem.getLabel());
+        //log.info("++++++ itemRepository.addItem: " + wikidataItem.getId() + ", " + wikidataItem.getLabel());
         itemRepository.addItem(wikidataItem.getId(), wikidataItem.getLabel());
 
         // Write relationship
-        log.info("------ itemRepository.addRelationship: " + itemId + ", " +
-                         wikidataItem.getId() + ", " +
-                         wikidataClaim.getProp().getId() + ", " +
-                         wikidataClaim.getProp().getLabel());
+        //log.info("------ itemRepository.addRelationship: " + itemId + ", " +
+        //                 wikidataItem.getId() + ", " +
+        //                 wikidataClaim.getProp().getId() + ", " +
+        //                 wikidataClaim.getProp().getLabel());
 
         itemRepository.addRelationship(itemId,
             wikidataItem.getId(),

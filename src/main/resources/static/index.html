@@ -22,6 +22,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WikiBrowser</title>
   <link rel="stylesheet" href="css/foundation.css"/>
+  <link rel="stylesheet" href="css/concept-map.css"/>
   <script src="js/vendor/modernizr.js"></script>
 
   <script>
@@ -35,7 +36,7 @@
       $('#searchButton').prop('disabled', true);
       $('#helpAboutButton').prop('disabled', false);
       $('#offCanvasList').foundation('offcanvas', 'show', 'offcanvas-overlap-left');
-      $( "#wikipediaInnerFrame" ).attr("width",window.innerWidth - 0).attr("height",window.innerHeight - 230);
+      $( "#wikipediaInnerFrame" ).attr("width",(window.innerWidth / 2) - 12).attr("height",window.innerHeight - 250);
     } );
 
     /**
@@ -161,7 +162,9 @@
     }
 
     function retrieveClaimsByItemId (id, lang) {
-      //alert("Retrieving claims for: " + id);
+      // Cause Concept Map model to be updated
+      addItemId(id);
+
       $.ajax({
             url: '/claims',
             data: "id=" + id + "&lang=" + lang + "",
@@ -369,7 +372,14 @@
       <a class="exit-off-canvas"></a>
 
       <section class="main-section">
-        <iframe id="wikipediaInnerFrame" src="/wikipage?name=Earth&lang=en" frameborder="0" scrolling="yes" width="1000" onload="refreshClaimsWikipageEndpoint(this.contentWindow.location.href)"></iframe>
+        <ul class="small-block-grid-2">
+          <li>
+            <div id="conceptMap"/>
+          </li>
+          <li>
+            <iframe id="wikipediaInnerFrame" src="/wikipage?name=Earth&lang=en" frameborder="0" scrolling="yes" width="500" onload="refreshClaimsWikipageEndpoint(this.contentWindow.location.href)"></iframe>
+          </li>
+        </ul>
       </section>
     </div>
   </div>
@@ -387,6 +397,7 @@
   </div>
 
 
+  <script src="js/d3.min.js"></script>
   <script src="js/vendor/jquery.js"></script>
   <script src="js/foundation.min.js"></script>
   <script>
@@ -406,7 +417,7 @@
   <script>
     // Throttled resize function
     $(window).on('resize', Foundation.utils.throttle(function(e){
-      $( "#wikipediaInnerFrame" ).attr("width",window.innerWidth - 0).attr("height",window.innerHeight - 230);
+      $( "#wikipediaInnerFrame" ).attr("width",(window.innerWidth / 2) - 12).attr("height",window.innerHeight - 250);
     }, 300));
 
     $("input").keypress(function(event){
@@ -420,6 +431,125 @@
         searchArticleNameNearMatch();
       }
     });
+  </script>
+
+  <!-- Concept Map related functionality -->
+  <script>
+    var w = window,
+        d = document,
+        e = d.documentElement,
+        g = d.getElementsByTagName('body')[0],
+        x = w.innerWidth || e.clientWidth || g.clientWidth,
+        y = w.innerHeight|| e.clientHeight|| g.clientHeight;
+
+    var width = 500,
+        height = 400;
+
+    var svg = d3.select("#conceptMap").append("svg")
+        .attr("width", x / 2)
+        .attr("height", y - 250)
+        .append("g");
+
+    var force = d3.layout.force()
+        .size([width, height])
+        .linkDistance(60)
+        .charge(-300);
+
+    //var svg = d3.select("#conceptMap").append("svg")
+    //    .attr("width", width)
+    //    .attr("height", height);
+
+    var graphServiceUrl = "http://wikibrowserservice.cfapps.io/graph?items=";
+
+function loadConceptMap(itemsArg) {
+  d3.json(graphServiceUrl + itemsArg, function (error, graph) {
+    if (error) throw error;
+
+    var nodeById = d3.map();
+
+    graph.nodes.forEach(function (node) {
+      nodeById.set(node.id, node);
+    });
+
+    graph.links.forEach(function (link) {
+      link.source = nodeById.get(link.source);
+      link.target = nodeById.get(link.target);
+    });
+
+    force
+        .nodes(graph.nodes)
+        .links(graph.links)
+        .on("tick", tick)
+        .start();
+
+    // Per-type markers, as they don't inherit styles.
+    svg.append("defs").selectAll("marker")
+        .data(["suit", "licensing", "resolved"])
+        .enter().append("marker")
+        .attr("id", function (d) {
+          return d;
+        })
+        .attr("viewBox", "0 -5 10 10")
+        .attr("refX", 15)
+        .attr("refY", -1.5)
+        .attr("markerWidth", 6)
+        .attr("markerHeight", 6)
+        .attr("orient", "auto")
+        .append("path")
+        .attr("d", "M0,-5L10,0L0,5");
+
+    var path = svg.append("g").selectAll("path")
+        .data(force.links())
+        .enter().append("path")
+        .attr("class", function (d) {
+          return "link " + d.type;
+        })
+        .attr("marker-end", function (d) {
+          return "url(#" + d.type + ")";
+        });
+
+    var circle = svg.append("g").selectAll("circle")
+        .data(force.nodes())
+        .enter().append("circle")
+        .attr("r", 6)
+        .call(force.drag);
+
+    var text = svg.append("g").selectAll("text")
+        .data(force.nodes())
+        .enter().append("text")
+        .attr("x", 8)
+        .attr("y", ".31em")
+        .text(function (d) {
+          return d.title;
+        });
+
+    // Use elliptical arc path segments to doubly-encode directionality.
+    function tick() {
+      path.attr("d", linkArc);
+      circle.attr("transform", transform);
+      text.attr("transform", transform);
+    }
+
+    function linkArc(d) {
+      var dx = d.target.x - d.source.x,
+          dy = d.target.y - d.source.y,
+          dr = Math.sqrt(dx * dx + dy * dy);
+      return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
+    }
+
+    function transform(d) {
+      return "translate(" + d.x + "," + d.y + ")";
+    }
+  });
+}
+
+    var itemIdArray = ["Q23", "Q16", "Q30", "Q24", "Q23"];
+    loadConceptMap(itemIdArray.join(","));
+
+    function addItemId(itemId) {
+      itemIdArray.push(itemId);
+      loadConceptMap(itemIdArray.join(","));
+    }
 
   </script>
 
