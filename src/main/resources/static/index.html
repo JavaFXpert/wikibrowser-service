@@ -499,10 +499,10 @@
             .data(force.links())
             .enter().append("path")
             .attr("class", function (d) {
-              return "link " + d.type;
+              return "link " + "suit";
             })
             .attr("marker-end", function (d) {
-              return "url(#" + d.type + ")";
+              return "url(#" + "suit" + ")";
             });
 
         var circle = svg.append("g").selectAll("circle")
