@@ -100,10 +100,12 @@ RETURN a, collect(rel)
 
       String qa = "{\"statements\":[{\"statement\":\"MATCH (a) WHERE a.itemId IN [";
       String qb = argStr; // Item IDs
-      String qc = "] OPTIONAL MATCH (a)-[rel]-() RETURN a, collect(rel)\",";
-      String qd = "\"resultDataContents\":[\"graph\"]}]}";
+      String qc = "] OPTIONAL MATCH (a)-[rel]-(b) WHERE b.itemId IN [";
+      String qd = argStr; // Item IDs
+      String qe = "] RETURN a, b, collect(rel)\",";
+      String qf = "\"resultDataContents\":[\"graph\"]}]}";
 
-      String postString = qa + qb + qc + qd;
+      String postString = qa + qb + qc + qd + qe + qf;
 
       graphResponseNear = queryProcessSearchResponse(neoCypherUrl, postString);
     }
