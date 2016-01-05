@@ -450,6 +450,7 @@
         .attr("height", y - 250)
         .append("g");
 
+    function loadConceptMap(itemsArg) {
     var force = d3.layout.force()
         .size([width, height])
         .linkDistance(60)
@@ -461,7 +462,6 @@
 
     var graphServiceUrl = "http://wikibrowserservice.cfapps.io/graph?items=";
 
-function loadConceptMap(itemsArg) {
   d3.json(graphServiceUrl + itemsArg, function (error, graph) {
     if (error) throw error;
 
@@ -540,10 +540,11 @@ function loadConceptMap(itemsArg) {
     function transform(d) {
       return "translate(" + d.x + "," + d.y + ")";
     }
+
   });
 }
 
-    var itemIdArray = ["Q23", "Q16", "Q30", "Q24", "Q23"];
+    var itemIdArray = ["Q2","Q544","Q111","Q7547","Q112","Q7548","Q193","Q308","Q313","Q313","Q324","Q332","Q319","Q206717"];
     loadConceptMap(itemIdArray.join(","));
 
     function addItemId(itemId) {
