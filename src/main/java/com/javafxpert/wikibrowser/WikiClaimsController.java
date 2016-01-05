@@ -79,7 +79,7 @@ public class WikiClaimsController {
     ClaimsSparqlResponse claimsSparqlResponse = callClaimsSparqlQuery(itemId, language);
     ClaimsResponse claimsResponse = convertSparqlResponse(claimsSparqlResponse, language, itemId);
 
-    log.info("claimsResponse:" + claimsResponse);
+    //log.info("claimsResponse:" + claimsResponse);
 
     return Optional.ofNullable(claimsResponse)
         .map(cr -> new ResponseEntity<>((Object)cr, HttpStatus.OK))
