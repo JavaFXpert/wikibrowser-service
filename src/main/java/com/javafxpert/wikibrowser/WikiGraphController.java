@@ -90,13 +90,20 @@ public class WikiGraphController {
       }
       */
 
-      String qa = "{\"statements\":[{\"statement\":\"MATCH (a)-[r]->(b) WHERE a.itemId IN [";
-      String qb = argStr; // Item IDs
-      String qc = "] AND b.itemId IN [";
-      String qd = argStr; // Item IDs
-      String qe = "] RETURN a, b, r\",\"resultDataContents\":[\"graph\"]}]}";
+      /*
+MATCH (a)
+WHERE a.itemId IN ['Q2', 'Q24', 'Q30', 'Q23', 'Q16', 'Q20']
+OPTIONAL MATCH (a)-[rel]-()
+RETURN a, collect(rel)
 
-      String postString = qa + qb + qc + qd + qe;
+     */
+
+      String qa = "{\"statements\":[{\"statement\":\"MATCH (a) WHERE a.itemId IN [";
+      String qb = argStr; // Item IDs
+      String qc = "] OPTIONAL MATCH (a)-[rel]-() RETURN a, collect(rel)\",";
+      String qd = "\"resultDataContents\":[\"graph\"]}]}";
+
+      String postString = qa + qb + qc + qd;
 
       graphResponseNear = queryProcessSearchResponse(neoCypherUrl, postString);
     }
