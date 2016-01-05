@@ -511,6 +511,8 @@
             .attr("r", 6)
             .call(force.drag);
 
+        circle.on("click", handleNodeClick)
+
         var text = svg.append("g").selectAll("text")
             .data(force.nodes())
             .enter().append("text")
@@ -547,6 +549,11 @@
     function addItemId(itemId) {
       itemIdArray.push(itemId);
       loadConceptMap(itemIdArray.join(","));
+    }
+
+    function handleNodeClick(d) {
+      retrieveClaimsAndLoadPage(d.id, curLang);
+      //alert("In handleNodeClick(), d=" + d);
     }
 
   </script>
