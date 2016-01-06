@@ -28,6 +28,7 @@
   <script>
     var curLang = "en";
     var curTitle = "";
+    var curItemId = "";
     var curNearMatch = "";
     var dispIds = true;
 
@@ -163,7 +164,7 @@
 
     function retrieveClaimsByItemId (id, lang) {
       // Cause Concept Map model to be updated
-      addItemId(id);
+      // addItemId(id);
 
       $.ajax({
             url: '/claims',
@@ -211,7 +212,12 @@
       var isProperty;
 
       if (title == null) title = "Wikipedia article missing";
-      $('#offCanvasTitle').text(title + (dispIds ? (" :" + resp.articleId) : "") + " [" + language + "]");
+      curItemId = resp.articleId;
+
+      // Update concept map pin switch
+      $('#pinSwitch[checked]').prop('checked', isItemIdInConceptMap(curItemId));
+
+      $('#offCanvasTitle').text(title + (dispIds ? (" :" + curItemId) : "") + " [" + language + "]");
       for (var cIdx in resp.claim) {
         if (resp.claim[cIdx].val.length == 1) {
           itemId = resp.claim[cIdx].val[0].id;
@@ -340,7 +346,13 @@
       </div>
 
       <div class="row">
-        <div class="small-2 small-offset-1 columns">
+        <div class="switch round small-2 small-offset-1 columns">
+          <input id="pinSwitch" name="pinSwitchName" type="checkbox"
+                 style="padding: 0px;margin-top: 50px; margin-left: 0px; margin-right: 0px;">
+          <label for="pinSwitch" onclick="handlePinSwitchClick()">Pin</label>
+        </div>
+
+        <div class="small-2 small-offset-0 columns">
           <button id="searchDropdown" type="button" class="tiny" disabled="true" data-dropdown="searchDrop" style="padding: 0px; margin-top: 10px; margin-left: 0px; margin-right: 0px;" onclick="searchPopulateArticleNameMatches()"><img src="img/dropdown-arrow-icon.png" width="44"/></button>
         </div>
 
@@ -348,7 +360,7 @@
           <button id="searchButton" type="button" class="tiny" disabled="true" style="padding: 0px;margin-top: 10px; margin-left: 0px; margin-right: 0px;" onclick="loadWikipediaPageByArticleName(curNearMatch, curLang)"><img src="img/magnifying-glass.png" width="44"/></button>
         </div>
 
-        <div class="small-2 small-offset-5 columns">
+        <div class="small-2 small-offset-2 columns">
           <button id="helpAboutButton" type="button" class="tiny" disabled="false" style="padding: 0px;margin-top: 10px; margin-left: 0px; margin-right: 0px;" onclick="revealAboutDialog()"><img src="img/question-mark.png" width="44"/></button>
         </div>
 
@@ -565,17 +577,43 @@
       });
     }
 
-    var itemIdArray = ['Q2'];
+    // Contains item IDs to display in concept map
+    var itemIdArray = [];
+
+
     loadConceptMap(itemIdArray.join(","));
 
     function addItemId(itemId) {
-      itemIdArray.push(itemId);
+      if (itemIdArray.indexOf(itemId) < 0) {
+        itemIdArray.push(itemId);
+      }
       loadConceptMap(itemIdArray.join(","));
+    }
+
+    function removeItemId(itemId) {
+      var index = itemIdArray.indexOf(itemId);
+      if (index > -1) {
+        itemIdArray.splice(index, 1);
+      }
+      loadConceptMap(itemIdArray.join(","));
+    }
+
+    function isItemIdInConceptMap(itemId) {
+      return itemIdArray.indexOf(itemId) > -1;
+    }
+
+    function handlePinSwitchClick() {
+      var isOn = $('#pinSwitch').is(':checked');
+      if (isOn) {
+        removeItemId(curItemId);
+      }
+      else {
+        addItemId(curItemId);
+      }
     }
 
     function handleNodeClick(d) {
       retrieveClaimsAndLoadPage(d.id, curLang);
-      //alert("In handleNodeClick(), d=" + d);
     }
 
   </script>
