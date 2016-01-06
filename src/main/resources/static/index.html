@@ -450,12 +450,13 @@
       var svg = d3.select("#conceptMap").append("svg")
         .attr("width", x / 2)
         .attr("height", y - 250)
-        .append("g");
+        .style("background" ,"#FFFFFF");
+        //.append("g");
 
       var force = d3.layout.force()
           .size([width, height])
-          .linkDistance(100)
-          .charge(-300);
+          .linkDistance(150)
+          .charge(-900);
 
       var graphServiceUrl = "http://wikibrowserservice.cfapps.io/graph?items=";
 
@@ -481,34 +482,60 @@
 
         // Per-type markers, as they don't inherit styles.
         svg.append("defs").selectAll("marker")
-            .data(["suit", "licensing", "resolved"])
+            .data(["UVA", "Prework", "School","Golf","Board"])
             .enter().append("marker")
-            .attr("id", function (d) {
-              return d;
-            })
+            .attr("id", String)
             .attr("viewBox", "0 -5 10 10")
-            .attr("refX", 15)
-            .attr("refY", -1.5)
+            .attr("refX", 30)
+            .attr("refY", -4.5)
             .attr("markerWidth", 6)
             .attr("markerHeight", 6)
             .attr("orient", "auto")
             .append("path")
             .attr("d", "M0,-5L10,0L0,5");
 
+        /*
         var path = svg.append("g").selectAll("path")
             .data(force.links())
             .enter().append("path")
             .attr("class", function (d) {
-              return "link " + "suit";
+              return "link " + "UVA";
             })
             .attr("marker-end", function (d) {
-              return "url(#" + "suit" + ")";
+              return "url(#" + "UVA" + ")";
             });
+            */
+
+        var path = svg.append("svg:g").selectAll("path")
+            .data(force.links())
+            .enter().append("svg:path")
+            .attr("class", function(d) { return "link " + d.type; })
+            .attr("id",function(d,i) { return "linkId_" + i; })
+            //.attr("marker-end", function(d) { return "url(#" + d.type + ")"; });
+            .attr("marker-end", function(d) { return "url(#" + "UVA" + ")"; });
+        var linktext = svg.append("svg:g").selectAll("g.linklabelholder").data(force.links());
+
+        linktext.enter().append("g").attr("class", "linklabelholder")
+            .append("text")
+            .attr("class", "linklabel")
+            .style("font-size", "10px")
+            .attr("x", "50")
+            .attr("y", "-20")
+            .attr("text-anchor", "start")
+            .style("fill","#000")
+            .append("textPath")
+            //.attr("xlink:href",function(d) { return "hello";})
+            .attr("xlink:href",function(d,i) { return "#linkId_" + i;})
+            .text(function(d) {
+              return "UVA";
+              //return d.type;
+            });
+
 
         var circle = svg.append("g").selectAll("circle")
             .data(force.nodes())
             .enter().append("circle")
-            .attr("r", 6)
+            .attr("r", 20)
             .call(force.drag);
 
         circle.on("click", handleNodeClick)
@@ -543,7 +570,7 @@
       });
     }
 
-    var itemIdArray = ['Q2'];
+    var itemIdArray = ['Q2', 'Q525'];
     loadConceptMap(itemIdArray.join(","));
 
     function addItemId(itemId) {
