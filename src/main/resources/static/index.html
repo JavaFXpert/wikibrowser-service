@@ -482,7 +482,7 @@
 
         // Per-type markers, as they don't inherit styles.
         svg.append("defs").selectAll("marker")
-            .data(["UVA", "Prework", "School","Golf","Board"])
+            .data(["default"])
             .enter().append("marker")
             .attr("id", String)
             .attr("viewBox", "0 -5 10 10")
@@ -494,32 +494,20 @@
             .append("path")
             .attr("d", "M0,-5L10,0L0,5");
 
-        /*
-        var path = svg.append("g").selectAll("path")
-            .data(force.links())
-            .enter().append("path")
-            .attr("class", function (d) {
-              return "link " + "UVA";
-            })
-            .attr("marker-end", function (d) {
-              return "url(#" + "UVA" + ")";
-            });
-            */
-
         var path = svg.append("svg:g").selectAll("path")
-            .data(graph.links)
+            .data(force.links())
             .enter().append("svg:path")
             .attr("class", function(d) { return "link " + d.type; })
             .attr("id",function(d,i) { return "linkId_" + i; })
             //.attr("marker-end", function(d) { return "url(#" + d.type + ")"; });
-            .attr("marker-end", function(d) { return "url(#" + "UVA" + ")"; });
-        var linktext = svg.append("svg:g").selectAll("g.linklabelholder").data(graph.links);
+            .attr("marker-end", function(d) { return "url(#" + "default" + ")"; });
+        var linktext = svg.append("svg:g").selectAll("g.linklabelholder").data(force.links());
 
         linktext.enter().append("g").attr("class", "linklabelholder")
             .append("text")
             .attr("class", "linklabel")
-            .style("font-size", "10px")
-            .attr("x", "50")
+            .style("font-size", "8px")
+            .attr("x", "30")
             .attr("y", "-20")
             .attr("text-anchor", "start")
             .style("fill","#000")
@@ -527,7 +515,6 @@
             //.attr("xlink:href",function(d) { return "hello";})
             .attr("xlink:href",function(d,i) { return "#linkId_" + i;})
             .text(function(d) {
-              //return "UVA";
               return d.type;
             });
 
@@ -544,7 +531,7 @@
         var text = svg.append("g").selectAll("text")
             .data(force.nodes())
             .enter().append("text")
-            .attr("x", 8)
+            .attr("x", -12)
             .attr("y", ".31em")
             .text(function (d) {
               return d.title;
