@@ -456,7 +456,7 @@
       var force = d3.layout.force()
           .size([width, height])
           .linkDistance(150)
-          .charge(-900);
+          .charge(-450);
 
       var graphServiceUrl = "http://wikibrowserservice.cfapps.io/graph?items=";
 
@@ -507,13 +507,13 @@
             */
 
         var path = svg.append("svg:g").selectAll("path")
-            .data(force.links())
+            .data(graph.links)
             .enter().append("svg:path")
             .attr("class", function(d) { return "link " + d.type; })
             .attr("id",function(d,i) { return "linkId_" + i; })
             //.attr("marker-end", function(d) { return "url(#" + d.type + ")"; });
             .attr("marker-end", function(d) { return "url(#" + "UVA" + ")"; });
-        var linktext = svg.append("svg:g").selectAll("g.linklabelholder").data(force.links());
+        var linktext = svg.append("svg:g").selectAll("g.linklabelholder").data(graph.links);
 
         linktext.enter().append("g").attr("class", "linklabelholder")
             .append("text")
@@ -527,8 +527,8 @@
             //.attr("xlink:href",function(d) { return "hello";})
             .attr("xlink:href",function(d,i) { return "#linkId_" + i;})
             .text(function(d) {
-              return "UVA";
-              //return d.type;
+              //return "UVA";
+              return d.type;
             });
 
 
@@ -539,6 +539,7 @@
             .call(force.drag);
 
         circle.on("click", handleNodeClick)
+        circle.on("touch", handleNodeClick)
 
         var text = svg.append("g").selectAll("text")
             .data(force.nodes())
