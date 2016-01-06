@@ -451,14 +451,13 @@
         .attr("width", x / 2)
         .attr("height", y - 250)
         .style("background" ,"#FFFFFF");
-        //.append("g");
 
       var force = d3.layout.force()
           .size([width, height])
           .linkDistance(150)
           .charge(-450);
 
-      var graphServiceUrl = "http://wikibrowserservice.cfapps.io/graph?items=";
+     var graphServiceUrl = "http://wikibrowserservice.cfapps.io/graph?items=";
 
       d3.json(graphServiceUrl + itemsArg, function (error, graph) {
         if (error) throw error;
@@ -473,6 +472,9 @@
           link.source = nodeById.get(link.source);
           link.target = nodeById.get(link.target);
         });
+
+        var drag = force.drag()
+            .on("dragstart", dragstart);
 
         force
             .nodes(graph.nodes)
@@ -523,10 +525,12 @@
             .data(force.nodes())
             .enter().append("circle")
             .attr("r", 20)
+            .on("dblclick", handleNodeClick)
+            .on("touch", handleNodeClick)
             .call(force.drag);
 
-        circle.on("click", handleNodeClick)
-        circle.on("touch", handleNodeClick)
+        circle.on("dblclick", handleNodeClick);
+        circle.on("touch", handleNodeClick);
 
         var text = svg.append("g").selectAll("text")
             .data(force.nodes())
@@ -555,10 +559,13 @@
           return "translate(" + d.x + "," + d.y + ")";
         }
 
+        function dragstart(d) {
+          d3.select(this).classed("fixed", d.fixed = true);
+        }
       });
     }
 
-    var itemIdArray = ['Q2', 'Q525'];
+    var itemIdArray = ['Q2'];
     loadConceptMap(itemIdArray.join(","));
 
     function addItemId(itemId) {
