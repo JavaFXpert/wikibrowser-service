@@ -289,6 +289,10 @@
       $('#aboutDialog').foundation('reveal', 'open');
     }
 
+    function openWikidataItem() {
+      window.open('https://www.wikidata.org/wiki/' + curItemId);
+    }
+
 
   </script>
 
@@ -307,7 +311,7 @@
 
     <section class="top-bar-section">
       <ul class="right">
-        <li><a href="http://wikidata.org" target="_blank" style="padding-left: 0px"><img src="img/wikidata-logo.png" ></a></li>
+        <li><a href="#" onclick="openWikidataItem()" target="_blank" style="padding-left: 0px"><img src="img/wikidata-logo.png" ></a></li>
       </ul>
       <ul class="right">
         <li><a href="http://wikidata.org" target="_blank"><i>and Wikidata</i></a></li>
@@ -491,8 +495,9 @@
           link.target = nodeById.get(link.target);
         });
 
-        var drag = force.drag()
-            .on("dragstart", dragstart);
+        // TODO: Decide whether to enable
+        //var drag = force.drag()
+        //    .on("dragstart", dragstart);
 
         force
             .nodes(graph.nodes)
@@ -543,12 +548,9 @@
             .data(force.nodes())
             .enter().append("circle")
             .attr("r", 20)
-            .on("dblclick", handleNodeClick)
+            .on("click", handleNodeClick)
             .on("touch", handleNodeClick)
             .call(force.drag);
-
-        circle.on("dblclick", handleNodeClick);
-        circle.on("touch", handleNodeClick);
 
         var text = svg.append("g").selectAll("text")
             .data(force.nodes())
