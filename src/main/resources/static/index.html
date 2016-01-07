@@ -215,7 +215,13 @@
       curItemId = resp.articleId;
 
       // Update concept map pin switch
-      $('#pinSwitch[checked]').prop('checked', isItemIdInConceptMap(curItemId));
+      //$('#pinSwitch[checked]').prop('checked', isItemIdInConceptMap(curItemId));
+      if (isItemIdInConceptMap(curItemId)) {
+        $('#pinSwitch:checked').prop('checked', true);
+      }
+      else {
+        $('#pinSwitch:checked').prop('checked', false);
+      }
 
       $('#offCanvasTitle').text(title + (dispIds ? (" :" + curItemId) : "") + " [" + language + "]");
       for (var cIdx in resp.claim) {
@@ -347,7 +353,7 @@
 
       <div class="row">
         <div class="switch round small-2 small-offset-1 columns">
-          <input id="pinSwitch" name="pinSwitchName" type="checkbox"
+          <input id="pinSwitch" name="pinSwitchName" type="checkbox" checked
                  style="padding: 0px;margin-top: 50px; margin-left: 0px; margin-right: 0px;">
           <label for="pinSwitch" onclick="handlePinSwitchClick()">Pin</label>
         </div>
@@ -578,22 +584,26 @@
     }
 
     // Contains item IDs to display in concept map
-    var itemIdArray = [];
+    var itemIdArray = ["Q2"];
 
 
     loadConceptMap(itemIdArray.join(","));
 
     function addItemId(itemId) {
-      if (itemIdArray.indexOf(itemId) < 0) {
-        itemIdArray.push(itemId);
+      if (itemId.length > 0) {
+        if (itemIdArray.indexOf(itemId) < 0) {
+          itemIdArray.push(itemId);
+        }
       }
       loadConceptMap(itemIdArray.join(","));
     }
 
     function removeItemId(itemId) {
-      var index = itemIdArray.indexOf(itemId);
-      if (index > -1) {
-        itemIdArray.splice(index, 1);
+      if (itemId.length > 0) {
+        var index = itemIdArray.indexOf(itemId);
+        if (index > -1) {
+          itemIdArray.splice(index, 1);
+        }
       }
       loadConceptMap(itemIdArray.join(","));
     }
