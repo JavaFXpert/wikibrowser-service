@@ -585,13 +585,47 @@
       });
     }
 
-    alert('Query string: '+self.location.search);
 
     // Contains item IDs to display in concept map
     var itemIdArray = ["Q1"];
 
+    //alert('Query string: '+self.location.search);
+    // if query string supplied to app, populate item ID array
+    var appQueryString = self.location.search;
+    if (appQueryString !== null) {
+      appQueryString = appQueryString.trim();
+      var itemsArgName = "?items=";
+      if (appQueryString.length > itemsArgName.length) {
+        // Remove the ?items= from the beginning of the query string
+        appQueryString = appQueryString.substring(7);
+        appQueryString = decodeURI(appQueryString);
+        importItemIds(appQueryString);
+      }
+    }
 
+    // Load the concept map with the contents of the item ID array
     loadConceptMap(itemIdArray.join(","));
+
+    /*
+     * Scrub a String containing comma-separated item IDs and populate itemIdArray
+     */
+    function importItemIds (itemIds) {
+      itemIdArray=[];
+      var tempArray = itemIds.split(",");
+      for (var i = 0; i < tempArray.length; i++) {
+        var itemStr = tempArray[i];
+        itemStr = itemStr.trim().toUpperCase();
+        if (itemStr.length > 0 && itemStr.substring(0, 1) === "Q") {
+          itemIdArray.push(itemStr);
+        }
+      }
+
+      // Set the current item ID to the first ID in the supplied list of items
+      if (itemIdArray.length > 0) {
+        curItemId = itemIdArray[0];
+        retrieveClaimsAndLoadPage(curItemId, curLang);
+      }
+    }
 
     function addItemId(itemId) {
       if (itemId.length > 0) {
@@ -630,6 +664,9 @@
       retrieveClaimsAndLoadPage(d.id, curLang);
     }
 
+    /**
+     * TODO: Populate this function
+     */
     function generateExportLink() {
 
     }
