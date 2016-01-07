@@ -75,7 +75,7 @@ public class WikiGraphController {
 
     if (argStr.length() == 0) {
       // TODO: Consider handling an invalid items argument better than the way it is handled here
-      argStr = "'Q2'"; // If the items argumentisn't valid, pretend Q2 (Earth) was entered
+      //argStr = "'Q2'"; // If the items argumentisn't valid, pretend Q2 (Earth) was entered
     }
 
     if (argStr.length() > 0) {

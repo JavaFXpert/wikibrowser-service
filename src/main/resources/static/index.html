@@ -28,7 +28,7 @@
   <script>
     var curLang = "en";
     var curTitle = "";
-    var curItemId = "";
+    var curItemId = "Q1";
     var curNearMatch = "";
     var dispIds = true;
 
@@ -217,10 +217,10 @@
       // Update concept map pin switch
       //$('#pinSwitch[checked]').prop('checked', isItemIdInConceptMap(curItemId));
       if (isItemIdInConceptMap(curItemId)) {
-        $('#pinSwitch:checked').prop('checked', true);
+        $('#pinSwitch').prop('checked', true);
       }
       else {
-        $('#pinSwitch:checked').prop('checked', false);
+        $('#pinSwitch').prop('checked', false);
       }
 
       $('#offCanvasTitle').text(title + (dispIds ? (" :" + curItemId) : "") + " [" + language + "]");
@@ -356,10 +356,10 @@
       </div>
 
       <div class="row">
-        <div class="switch round small-2 small-offset-1 columns">
-          <input id="pinSwitch" name="pinSwitchName" type="checkbox" checked
-                 style="padding: 0px;margin-top: 50px; margin-left: 0px; margin-right: 0px;">
-          <label for="pinSwitch" onclick="handlePinSwitchClick()">Pin</label>
+        <div class="small-2 small-offset-1 columns">
+          <input id="pinSwitch" name="pinSwitchName" type="checkbox" onclick="handlePinSwitchClick()" checked
+                 style="padding: 0px;margin-top: 30px; margin-left: 0px; margin-right: 0px;">
+          <label for="pinSwitch" >Pin</label>
         </div>
 
         <div class="small-2 small-offset-0 columns">
@@ -399,7 +399,7 @@
             <div id="conceptMap"/>
           </li>
           <li>
-            <iframe id="wikipediaInnerFrame" src="/wikipage?name=Earth&lang=en" frameborder="0" scrolling="yes" width="500" onload="refreshClaimsWikipageEndpoint(this.contentWindow.location.href)"></iframe>
+            <iframe id="wikipediaInnerFrame" src="/wikipage?name=Universe&lang=en" frameborder="0" scrolling="yes" width="500" onload="refreshClaimsWikipageEndpoint(this.contentWindow.location.href)"></iframe>
           </li>
         </ul>
       </section>
@@ -586,7 +586,7 @@
     }
 
     // Contains item IDs to display in concept map
-    var itemIdArray = ["Q2"];
+    var itemIdArray = ["Q1"];
 
 
     loadConceptMap(itemIdArray.join(","));
@@ -617,10 +617,10 @@
     function handlePinSwitchClick() {
       var isOn = $('#pinSwitch').is(':checked');
       if (isOn) {
-        removeItemId(curItemId);
+        addItemId(curItemId);
       }
       else {
-        addItemId(curItemId);
+        removeItemId(curItemId);
       }
     }
 
