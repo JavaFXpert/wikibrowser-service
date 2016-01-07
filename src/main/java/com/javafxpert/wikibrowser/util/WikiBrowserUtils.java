@@ -30,4 +30,32 @@ public class WikiBrowserUtils {
 
     return headers;
   }
+
+  /**
+   * Scrub the list of item IDs input, which could appear like the following:
+   * Q24, q30,Q23, Q16, Q20
+   * and output a string similar to the following:
+   * 'Q24','Q30','Q23','Q16','Q20'
+   * Note that quotes are output if only if specified
+   */
+  public static String scrubItemIds(String items, boolean insertQuotes) {
+    String[] itemsArray = items.split(",");
+    String argStr = "";
+    for (int i = 0; i < itemsArray.length; i++) {
+      String itemStr = itemsArray[i];
+      itemStr = itemStr.trim().toUpperCase();
+      if (itemStr.length() > 0 && itemStr.substring(0, 1).equals("Q")) {
+        if (insertQuotes) {
+          argStr += "'" + itemStr + "'";
+        }
+        else {
+          argStr += itemStr;
+        }
+        if (i < itemsArray.length - 1) {
+          argStr += ",";
+        }
+      }
+    }
+    return argStr;
+  }
 }

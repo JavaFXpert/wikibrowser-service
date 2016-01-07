@@ -37,6 +37,8 @@ public class WikiBrowserProperties {
   private String cypherPort;
   private String cypherEndpoint;
 
+  private String blat;
+
   public String getHost() {
     return host;
   }
@@ -99,6 +101,14 @@ public class WikiBrowserProperties {
 
   public void setCypherPassword(String cypherPassword) {
     this.cypherPassword = cypherPassword;
+  }
+
+  public String getBlat() {
+    return blat;
+  }
+
+  public void setBlat(String blat) {
+    this.blat = blat;
   }
 
   public String computeLang(String forceLang) {

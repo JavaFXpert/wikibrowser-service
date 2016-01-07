@@ -57,6 +57,9 @@ public class WikiGraphController {
     // Example endpoint usage is graph?items=Q24, Q30, Q23, Q16, Q20
     // Scrub the input, and output a string for the Cypher query similar to the following:
     // 'Q24','Q30','Q23','Q16','Q20'
+    String argStr = WikiBrowserUtils.scrubItemIds(items, true);
+
+/* TODO: Remove
     String[] itemsArray = items.split(",");
     String argStr = "";
     for (int i = 0; i < itemsArray.length; i++) {
@@ -69,6 +72,8 @@ public class WikiGraphController {
         }
       }
     }
+*/
+
     log.info("argStr=" + argStr);
 
     GraphResponseNear graphResponseNear = null;

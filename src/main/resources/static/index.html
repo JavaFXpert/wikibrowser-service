@@ -585,6 +585,8 @@
       });
     }
 
+    alert('Query string: '+self.location.search);
+
     // Contains item IDs to display in concept map
     var itemIdArray = ["Q1"];
 
@@ -626,6 +628,10 @@
 
     function handleNodeClick(d) {
       retrieveClaimsAndLoadPage(d.id, curLang);
+    }
+
+    function generateExportLink() {
+
     }
 
   </script>
