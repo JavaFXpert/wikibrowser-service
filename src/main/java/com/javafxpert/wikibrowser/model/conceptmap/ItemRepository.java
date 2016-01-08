@@ -294,7 +294,7 @@ public interface ItemRepository extends GraphRepository<GraphItem> {
   @Query("MATCH (a:Item {itemId:{itemIdA}}), (b:Item {itemId:{itemIdB}}) MERGE (a)-[:STUDENT_OF {propId:{propId}, label:{propLabel}}]->(b)")
   void addRelP1066(@Param("itemIdA") String itemIdA, @Param("itemIdB") String itemIdB, @Param("propId") String propId, @Param("propLabel") String propLabel);
 
-  @Query("MATCH (a:Item {itemId:{itemIdA}}), (b:Item {itemId:{itemIdB}}) MERGE (a)-[:TOPIC'S_MAIN_WIKIMEDIA_PORTAL {propId:{propId}, label:{propLabel}}]->(b)")
+  @Query("MATCH (a:Item {itemId:{itemIdA}}), (b:Item {itemId:{itemIdB}}) MERGE (a)-[:TOPIC_MAIN_WIKIMEDIA_PORTAL {propId:{propId}, label:{propLabel}}]->(b)")
   void addRelP1151(@Param("itemIdA") String itemIdA, @Param("itemIdB") String itemIdB, @Param("propId") String propId, @Param("propLabel") String propLabel);
 
   @Query("MATCH (a:Item {itemId:{itemIdA}}), (b:Item {itemId:{itemIdB}}) MERGE (a)-[:PATENT_NUMBER {propId:{propId}, label:{propLabel}}]->(b)")

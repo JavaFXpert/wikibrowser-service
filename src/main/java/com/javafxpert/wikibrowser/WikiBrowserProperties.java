@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 /**
  * @author James Weaver
  */
-@ConfigurationProperties(prefix = "wikibrowserservice")
+@ConfigurationProperties(prefix = "conceptmap")
 @Component
 public class WikiBrowserProperties {
 

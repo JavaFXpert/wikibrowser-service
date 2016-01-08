@@ -287,6 +287,24 @@
     }
 
     function revealShareLinkDialog() {
+      $.ajax({
+            url: '/bitly',
+            data: "items=" + exportItemIds(),
+            dataType: 'json',
+          })
+          .done(function(bitly) {
+            var statCode = bitly.status_code;
+            if (statCode == 200) {
+              $('#shareLink').text(bitly.url);
+            }
+            else {
+              $('#shareLink').text("Link not retrieved, status_code: " + bitly.status_code);
+            }
+          })
+          .error(function(err) {
+            $('#shareLink').text("Error retrieving link");
+            //alert("error: " + err);
+          });
       $('#shareLinkDialog').foundation('reveal', 'open');
     }
 
@@ -364,7 +382,7 @@
         <div class="small-2 small-offset-1 columns">
           <input id="pinSwitch" name="pinSwitchName" type="checkbox" onclick="handlePinSwitchClick()" checked
                  style="padding: 0px;margin-top: 30px; margin-left: 0px; margin-right: 0px;">
-          <label for="pinSwitch" >Pin</label>
+          <label for="pinSwitch" >Pin Item</label> <!--TODO: Internationalize this label -->
         </div>
 
         <div class="small-2 small-offset-0 columns">
@@ -419,7 +437,7 @@
     <div align="center">
       <h3 id="sharelinkDialogTitle">Share Concept Map Hyperlink</h3>
       <p>Select, copy and share this hyperlink to your concept map</p>
-      <p id="sharelink"></p>
+      <p id="shareLink"></p>
       <a class="close-reveal-modal" aria-label="Close">&#215;</a>
     </div>
   </div>
@@ -497,7 +515,7 @@
           .linkDistance(150)
           .charge(-450);
 
-     var graphServiceUrl = "http://wikibrowserservice.cfapps.io/graph?items=";
+     var graphServiceUrl = "http://conceptmap.cfapps.io/graph?items=";
 
       d3.json(graphServiceUrl + itemsArg, function (error, graph) {
         if (error) throw error;
@@ -644,7 +662,23 @@
         curItemId = itemIdArray[0];
         retrieveClaimsAndLoadPage(curItemId, curLang);
       }
+    }
 
+    /**
+     * Return comma-separated item ID string from itemIdArray.
+     * Set the first element of the array to the current item ID so that the
+     * corresponding Wikipedia article will be displayed when loaded
+     */
+    function exportItemIds() {
+      if (curItemId.length > 0 && curItemId.substring(0, 1).toUpperCase() == "Q") {
+        var indexOfCurItemId = itemIdArray.indexOf(curItemId);
+        if (indexOfCurItemId > 0) {
+          var tempItemId = itemIdArray[0];
+          itemIdArray[0] = curItemId;
+          itemIdArray[indexOfCurItemId] = tempItemId;
+        }
+      }
+      return itemIdArray.join(",");
     }
 
     function addItemId(itemId) {
