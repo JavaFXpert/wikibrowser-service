@@ -35,6 +35,7 @@
     // TODO: Examine usefulness of, and possibly refactor, functionality in this handler
     window.addEventListener('load', function() {
       $('#searchButton').prop('disabled', true);
+      $('#shareLinkButton').prop('disabled', true);
       $('#helpAboutButton').prop('disabled', false);
       $('#offCanvasList').foundation('offcanvas', 'show', 'offcanvas-overlap-left');
       $( "#wikipediaInnerFrame" ).attr("width",(window.innerWidth / 2) - 12).attr("height",window.innerHeight - 250);
@@ -285,6 +286,10 @@
       }
     }
 
+    function revealShareLinkDialog() {
+      $('#shareLinkDialog').foundation('reveal', 'open');
+    }
+
     function revealAboutDialog() {
       $('#aboutDialog').foundation('reveal', 'open');
     }
@@ -370,7 +375,11 @@
           <button id="searchButton" type="button" class="tiny" disabled="true" style="padding: 0px;margin-top: 10px; margin-left: 0px; margin-right: 0px;" onclick="loadWikipediaPageByArticleName(curNearMatch, curLang)"><img src="img/magnifying-glass.png" width="44"/></button>
         </div>
 
-        <div class="small-2 small-offset-2 columns">
+        <div class="small-2 small-offset-0 columns">
+          <button id="shareLinkButton" type="button" class="tiny" disabled="false" style="padding: 0px;margin-top: 10px; margin-left: 0px; margin-right: 0px;" onclick="revealShareLinkDialog()"><img src="img/link.png" width="44"/></button>
+        </div>
+
+        <div class="small-2 small-offset-0 columns">
           <button id="helpAboutButton" type="button" class="tiny" disabled="false" style="padding: 0px;margin-top: 10px; margin-left: 0px; margin-right: 0px;" onclick="revealAboutDialog()"><img src="img/question-mark.png" width="44"/></button>
         </div>
 
@@ -403,6 +412,15 @@
           </li>
         </ul>
       </section>
+    </div>
+  </div>
+
+  <div id="shareLinkDialog" class="reveal-modal large" data-reveal aria-labelledby="sharelinkDialogTitle" aria-hidden="true" role="dialog">
+    <div align="center">
+      <h3 id="sharelinkDialogTitle">Share Concept Map Hyperlink</h3>
+      <p>Select, copy and share this hyperlink to your concept map</p>
+      <p id="sharelink"></p>
+      <a class="close-reveal-modal" aria-label="Close">&#215;</a>
     </div>
   </div>
 
@@ -619,12 +637,14 @@
           itemIdArray.push(itemStr);
         }
       }
+      $('#shareLinkButton').prop('disabled', itemIdArray.length == 0);
 
       // Set the current item ID to the first ID in the supplied list of items
       if (itemIdArray.length > 0) {
         curItemId = itemIdArray[0];
         retrieveClaimsAndLoadPage(curItemId, curLang);
       }
+
     }
 
     function addItemId(itemId) {
@@ -633,6 +653,7 @@
           itemIdArray.push(itemId);
         }
       }
+      $('#shareLinkButton').prop('disabled', itemIdArray.length == 0);
       loadConceptMap(itemIdArray.join(","));
     }
 
@@ -643,6 +664,7 @@
           itemIdArray.splice(index, 1);
         }
       }
+      $('#shareLinkButton').prop('disabled', itemIdArray.length == 0);
       loadConceptMap(itemIdArray.join(","));
     }
 
