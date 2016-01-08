@@ -138,7 +138,7 @@ public class WikiBrowserProperties {
    *
    */
   public String getNeoCypherUrl() {
-    String url = "http://" + this.cypherHost + ":" + this.cypherPort + this.cypherEndpoint;
+    String url = "https://" + this.cypherHost + ":" + this.cypherPort + this.cypherEndpoint;
     return url;
   }
 }

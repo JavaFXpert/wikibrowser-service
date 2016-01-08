@@ -45,7 +45,7 @@ public class GraphConfiguration extends Neo4jConfiguration {
 
     @Bean
     public Neo4jServer neo4jServer() {
-      return new RemoteServer(String.format("http://%s:%s", host, port));
+      return new RemoteServer(String.format("https://%s:%s", host, port));
     }
 
     @Bean
