@@ -38,7 +38,7 @@
       $('#shareLinkButton').prop('disabled', true);
       $('#helpAboutButton').prop('disabled', false);
       $('#offCanvasList').foundation('offcanvas', 'show', 'offcanvas-overlap-left');
-      $( "#wikipediaInnerFrame" ).attr("width",(window.innerWidth / 2) - 12).attr("height",window.innerHeight - 250);
+      $( "#wikipediaInnerFrame" ).attr("width",(window.innerWidth *.35) - 0); //.attr("height",window.innerHeight - 250);
     } );
 
     /**
@@ -225,6 +225,36 @@
       }
 
       $('#offCanvasTitle').text(title + (dispIds ? (" :" + curItemId) : "") + " [" + language + "]");
+
+      for (var cIdx in resp.claim) {
+        if (resp.claim[cIdx].val.length == 1) {
+          $('#offCanvasList').append("<li><label>" + resp.claim[cIdx].prop.label + (dispIds ? (" :" + resp.claim[cIdx].prop.id) : "") + "</label></li>");
+          itemId = resp.claim[cIdx].val[0].id;
+          isProperty = itemId.substring(0, 1).toUpperCase() === "P";
+          $('#offCanvasList').append("<li><a href='#' onclick='retrieveClaimsAndLoadPage(\"" + itemId + "\", \"" + language + "\")'>" +
+              resp.claim[cIdx].val[0].label + (dispIds ? (" <i>:" + itemId) : "") +
+              (dispIds ? ("</i>") : "") +
+              "</a></li>");
+        }
+        else {
+          $('#offCanvasList').append("<li><label>" + resp.claim[cIdx].prop.label + (dispIds ? (" :" + resp.claim[cIdx].prop.id) : "") + "</label></li>");
+          var vals = resp.claim[cIdx].val;
+          for (var vIdx in vals) {
+            itemId = vals[vIdx].id;
+            isProperty = itemId.substring(0, 1).toUpperCase() === "P";
+            $('#offCanvasList').append("  <li><a href='#' onclick='retrieveClaimsAndLoadPage(\"" + itemId + "\", \"" + language + "\")'>" +
+                vals[vIdx].label + (dispIds ? (" <i>:" + itemId) : "") +
+                (dispIds ? ("</i>") : "") +
+                "</a></li>");
+          }
+          $('#offCanvasList').append("  </ul>");
+          $('#offCanvasList').append("</li>");
+        }
+      }
+      $('#offCanvasList').append("</ul>");
+
+
+      /*
       for (var cIdx in resp.claim) {
         if (resp.claim[cIdx].val.length == 1) {
           itemId = resp.claim[cIdx].val[0].id;
@@ -251,6 +281,8 @@
         }
       }
       $('#offCanvasList').append("</ul>");
+      */
+
     }
 
     function retrieveLangLinks (title, lang) {
@@ -366,9 +398,9 @@
           <h1 id="offCanvasTitle" class="title">ConceptMap</h1>
         </section>
 
-        <section class="right-small">
+        <!--section class="right-small">
           <a class="right-off-canvas-toggle menu-icon" href="#"><span></span></a>
-        </section>
+        </section-->
       </nav>
 
       <div class="row middle">
@@ -379,18 +411,18 @@
       </div>
 
       <div class="row">
-        <div class="small-2 small-offset-1 columns">
-          <input id="pinSwitch" name="pinSwitchName" type="checkbox" onclick="handlePinSwitchClick()" checked
-                 style="padding: 0px;margin-top: 30px; margin-left: 0px; margin-right: 0px;">
-          <label for="pinSwitch" >Pin Item</label> <!--TODO: Internationalize this label -->
-        </div>
-
-        <div class="small-2 small-offset-0 columns">
+        <div class="small-2 small-offset-2 columns">
           <button id="searchDropdown" type="button" class="tiny" disabled="true" data-dropdown="searchDrop" style="padding: 0px; margin-top: 10px; margin-left: 0px; margin-right: 0px;" onclick="searchPopulateArticleNameMatches()"><img src="img/dropdown-arrow-icon.png" width="44"/></button>
         </div>
 
         <div class="small-2 small-offset-0 columns">
           <button id="searchButton" type="button" class="tiny" disabled="true" style="padding: 0px;margin-top: 10px; margin-left: 0px; margin-right: 0px;" onclick="loadWikipediaPageByArticleName(curNearMatch, curLang)"><img src="img/magnifying-glass.png" width="44"/></button>
+        </div>
+
+        <div class="small-2 small-offset-0 columns">
+          <input id="pinSwitch" name="pinSwitchName" type="checkbox" onclick="handlePinSwitchClick()" checked
+                 style="padding: 0px;margin-top: 30px; margin-left: 0px; margin-right: 0px;">
+          <label for="pinSwitch" >Pin Item</label> <!--TODO: Internationalize this label -->
         </div>
 
         <div class="small-2 small-offset-0 columns">
@@ -404,6 +436,7 @@
         <ul id="searchDrop" class="f-dropdown" data-options="align:left" data-dropdown-content aria-hidden="true" tabindex="-1">
           <!-- This list is dynamically populated -->
         </ul>
+
       </div>
 
       <aside class="left-off-canvas-menu">
@@ -412,23 +445,28 @@
         </ul>
       </aside>
 
-      <aside class="right-off-canvas-menu">
+      <!--aside class="right-off-canvas-menu">
         <ul id="offCanvasList" class="off-canvas-list">
-          <!-- This list is dynamically populated -->
         </ul>
-      </aside>
+      </aside-->
 
       <a class="exit-off-canvas"></a>
 
       <section class="main-section">
-        <ul class="small-block-grid-2">
-          <li>
-            <div id="conceptMap"/>
-          </li>
-          <li>
-            <iframe id="wikipediaInnerFrame" src="/wikipage?name=Universe&lang=en" frameborder="0" scrolling="yes" width="500" onload="refreshClaimsWikipageEndpoint(this.contentWindow.location.href)"></iframe>
-          </li>
-        </ul>
+        <div class="small-5 columns" >
+          <div id="conceptMap"><h3>Concept Map</h3></div>
+        </div>
+        <div class="row">
+          <div class="small-3 columns">
+            <ul id="offCanvasList" class="side-nav panel">
+            </ul>
+          </div>
+          <div class="small-4 columns">
+            <iframe id="wikipediaInnerFrame" src="/wikipage?name=Universe&lang=en" frameborder="0" scrolling="no" width="300"
+                    onload="this.style.height=this.contentDocument.body.scrollHeight +'px';refreshClaimsWikipageEndpoint(this.contentWindow.location.href)"></iframe>
+          </div>
+        </div>
+        <!--/ul-->
       </section>
     </div>
   </div>
@@ -475,7 +513,7 @@
   <script>
     // Throttled resize function
     $(window).on('resize', Foundation.utils.throttle(function(e){
-      $( "#wikipediaInnerFrame" ).attr("width",(window.innerWidth / 2) - 12).attr("height",window.innerHeight - 250);
+      $( "#wikipediaInnerFrame" ).attr("width",(window.innerWidth * .35) - 0); //.attr("height",window.innerHeight - 250);
     }, 300));
 
     $("input").keypress(function(event){
@@ -500,7 +538,7 @@
         x = w.innerWidth || e.clientWidth || g.clientWidth,
         y = w.innerHeight|| e.clientHeight|| g.clientHeight;
 
-    var width = 500,
+    var width = 300,
         height = 400;
 
     function loadConceptMap(itemsArg) {
