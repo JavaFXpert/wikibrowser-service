@@ -21,12 +21,18 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Provides custom Cypher queries as repository search operations
  * Created by jamesweaver on 12/28/15.
  */
 public interface ItemRepository extends GraphRepository<GraphItem> {
+
+  // Temporary code to populate the properties-related code in this class
+  static Map<Integer, String> propCodeMap = new TreeMap<>();
 
   /**
    * Adds an item to the repository
@@ -67,20 +73,47 @@ public interface ItemRepository extends GraphRepository<GraphItem> {
       }
     }
     else {
-      System.out.println("\n\nNeed to create method " + methodStr + "() in ItemRepository:\n\n");
-
-      String capsPropLabel = propLabel.trim().replaceAll(" ", "_").toUpperCase();
-      System.out.println("  @Query(\"MATCH (a:Item {itemId:{itemIdA}}), (b:Item {itemId:{itemIdB}}) MERGE (a)-[:" +
-          capsPropLabel + " {propId:{propId}, label:{propLabel}}]->(b)\")"
-      );
-      System.out.println("  void " + methodStr +
-      "(@Param(\"itemIdA\") String itemIdA, @Param(\"itemIdB\") String itemIdB, @Param(\"propId\") String propId, @Param(\"propLabel\") String propLabel);"
-      );
-
-      System.out.println("\n\n");
-
-      // TODO: Remove println above and decide how to report
       addRel(itemIdA, itemIdB, propId, propLabel);
+
+      // Temporary code to populate the properties-related code in this class
+
+      Integer propIdInt = new Integer(propId.substring(1));
+
+      if (!propCodeMap.containsKey(propIdInt)) {
+        String capsPropLabel = propLabel.trim().replaceAll(" ", "_").replaceAll("-", "_")
+            .replaceAll("'", "").toUpperCase();
+
+        String code = "  @Query(\"MATCH (a:Item {itemId:{itemIdA}}), (b:Item {itemId:{itemIdB}}) MERGE (a)-[:" +
+            capsPropLabel + " {propId:{propId}, label:{propLabel}}]->(b)\")\n";
+        code += "  void " + methodStr +
+            "(@Param(\"itemIdA\") String itemIdA, @Param(\"itemIdB\") String itemIdB, @Param(\"propId\") String propId, @Param(\"propLabel\") String propLabel);";
+
+        propCodeMap.put(propIdInt, code);
+
+        System.out.println("============Please paste the following methods in ItemRepository:===============");
+
+        propCodeMap.forEach((k, v) -> {
+          System.out.println(v + "\n");
+        });
+
+        System.out.println("\n\n============End of methods to paste in ItemRepository===========================");
+
+
+        /*
+        System.out.println("\n\nNeed to create method " + methodStr + "() in ItemRepository:\n\n");
+
+        String capsPropLabel = propLabel.trim().replaceAll(" ", "_").toUpperCase();
+        System.out.println("  @Query(\"MATCH (a:Item {itemId:{itemIdA}}), (b:Item {itemId:{itemIdB}}) MERGE (a)-[:" +
+            capsPropLabel + " {propId:{propId}, label:{propLabel}}]->(b)\")"
+        );
+        System.out.println("  void " + methodStr +
+        "(@Param(\"itemIdA\") String itemIdA, @Param(\"itemIdB\") String itemIdB, @Param(\"propId\") String propId, @Param(\"propLabel\") String propLabel);"
+        );
+
+        System.out.println("\n\n");
+        */
+      }
+
     }
   }
 
@@ -197,6 +230,9 @@ public interface ItemRepository extends GraphRepository<GraphItem> {
 
   @Query("MATCH (a:Item {itemId:{itemIdA}}), (b:Item {itemId:{itemIdB}}) MERGE (a)-[:LOCATED_IN_THE_ADMINISTRATIVE_TERRITORIAL_ENTITY {propId:{propId}, label:{propLabel}}]->(b)")
   void addRelP131(@Param("itemIdA") String itemIdA, @Param("itemIdB") String itemIdB, @Param("propId") String propId, @Param("propLabel") String propLabel);
+
+  @Query("MATCH (a:Item {itemId:{itemIdA}}), (b:Item {itemId:{itemIdB}}) MERGE (a)-[:MOVEMENT {propId:{propId}, label:{propLabel}}]->(b)")
+  void addRelP135(@Param("itemIdA") String itemIdA, @Param("itemIdB") String itemIdB, @Param("propId") String propId, @Param("propLabel") String propLabel);
 
   @Query("MATCH (a:Item {itemId:{itemIdA}}), (b:Item {itemId:{itemIdB}}) MERGE (a)-[:GENRE {propId:{propId}, label:{propLabel}}]->(b)")
   void addRelP136(@Param("itemIdA") String itemIdA, @Param("itemIdB") String itemIdB, @Param("propId") String propId, @Param("propLabel") String propLabel);
