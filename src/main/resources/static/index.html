@@ -390,8 +390,8 @@
 
         <div class="small-2 small-offset-0 columns">
           <input id="pinSwitch" name="pinSwitchName" type="checkbox" onclick="handlePinSwitchClick()" checked
-                 style="padding: 0px;margin-top: 30px; margin-left: 0px; margin-right: 0px; margin-bottom: 0px;">
-          <label for="pinSwitch" >Pin</label> <!--TODO: Internationalize this label -->
+                 style="padding: 0px;margin-top: 20px; margin-left: 0px; margin-right: 0px; margin-bottom: 0px;">
+          <label for="pinSwitch" >Pin item</label> <!--TODO: Internationalize this label -->
         </div>
 
         <div class="small-2 small-offset-0 columns">
@@ -642,6 +642,9 @@
 
     // Load the concept map with the contents of the item ID array
     loadConceptMap(itemIdArray.join(","));
+
+    // Give search input text field input
+    $( "#searchInput" ).focus();
 
     /*
      * Scrub a String containing comma-separated item IDs and populate itemIdArray
