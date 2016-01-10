@@ -391,7 +391,7 @@
         <div class="small-2 small-offset-0 columns">
           <input id="pinSwitch" name="pinSwitchName" type="checkbox" onclick="handlePinSwitchClick()" checked
                  style="padding: 0px;margin-top: 30px; margin-left: 0px; margin-right: 0px; margin-bottom: 0px;">
-          <label for="pinSwitch" >Pin Item</label> <!--TODO: Internationalize this label -->
+          <label for="pinSwitch" >Pin</label> <!--TODO: Internationalize this label -->
         </div>
 
         <div class="small-2 small-offset-0 columns">
@@ -501,8 +501,8 @@
         x = w.innerWidth || e.clientWidth || g.clientWidth,
         y = w.innerHeight|| e.clientHeight|| g.clientHeight;
 
-    var width = x * .41,
-        height = y - 280;
+    var width = x * .40,
+        height = y - 270;
 
     function loadConceptMap(itemsArg) {
       $( "#conceptMap" ).empty();
