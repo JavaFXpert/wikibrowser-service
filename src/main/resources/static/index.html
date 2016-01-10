@@ -390,7 +390,7 @@
 
         <div class="small-2 small-offset-0 columns">
           <input id="pinSwitch" name="pinSwitchName" type="checkbox" onclick="handlePinSwitchClick()" checked
-                 style="padding: 0px;margin-top: 30px; margin-left: 0px; margin-right: 0px;">
+                 style="padding: 0px;margin-top: 30px; margin-left: 0px; margin-right: 0px; margin-bottom: 0px;">
           <label for="pinSwitch" >Pin Item</label> <!--TODO: Internationalize this label -->
         </div>
 
@@ -417,11 +417,12 @@
       <a class="exit-off-canvas"></a>
 
       <section class="main-section">
-        <div class="small-5 columns" >
-          <div id="conceptMap"><h3>Concept Map</h3></div>
+        <div class="small-5 columns" style="margin-top: 20px;">
+          <b>Concept Map:</b>
+          <div id="conceptMap"></div>
         </div>
         <div class="row">
-          <div class="small-3 columns">
+          <div class="small-3 columns" style="margin-top: 20px;">
             <ul id="offCanvasList" class="side-nav panel"  style="padding-left:10px">
             </ul>
           </div>
@@ -447,7 +448,7 @@
     <div align="center">
       <h3 id="aboutDialogTitle">About ConceptMap</h3>
       <img src="img/wikibrowser-logo-347.png" >
-      <p>Version 1.0</p>
+      <p>Version 1.1 - released 09-Jan-2016</p>
       <p>Developed by <a href="https://twitter.com/javafxpert"
                          target="_blank">James L. Weaver</a></p>
       <p>Licensed under the Apache License, Version 2.0</p>
