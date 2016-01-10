@@ -417,12 +417,12 @@
       <a class="exit-off-canvas"></a>
 
       <section class="main-section">
-        <div class="small-5 columns" style="margin-top: 20px;">
+        <div class="small-5 columns" style="margin-top: 10px;">
           <b>Concept Map:</b>
           <div id="conceptMap"></div>
         </div>
         <div class="row">
-          <div class="small-3 columns" style="margin-top: 20px;">
+          <div class="small-3 columns" style="margin-top: 10px;">
             <ul id="offCanvasList" class="side-nav panel"  style="padding-left:10px">
             </ul>
           </div>
@@ -501,14 +501,14 @@
         x = w.innerWidth || e.clientWidth || g.clientWidth,
         y = w.innerHeight|| e.clientHeight|| g.clientHeight;
 
-    var width = 450,
-        height = 400;
+    var width = x * .41,
+        height = y - 280;
 
     function loadConceptMap(itemsArg) {
       $( "#conceptMap" ).empty();
       var svg = d3.select("#conceptMap").append("svg")
-        .attr("width", x / 2)
-        .attr("height", y - 250)
+        .attr("width", width)
+        .attr("height", height)
         .style("background" ,"#FFFFFF");
 
       var force = d3.layout.force()
