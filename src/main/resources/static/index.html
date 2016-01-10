@@ -120,12 +120,12 @@
       <a class="exit-off-canvas"></a>
 
       <section class="main-section">
-        <div class="small-5 columns" style="margin-top: 10px;">
-          <b>Concept Map:</b>
+        <div class="small-6 columns" style="margin-top: 0px;">
+          <!--b>Concept Map:</b-->
           <div id="conceptMap"></div>
         </div>
         <div class="row">
-          <div class="small-3 columns" style="margin-top: 10px;">
+          <div class="small-2 columns" style="margin-top: 10px;">
             <ul id="offCanvasList" class="side-nav panel"  style="padding-left:10px">
             </ul>
           </div>
@@ -190,7 +190,7 @@
       $('#shareLinkButton').prop('disabled', true);
       $('#helpAboutButton').prop('disabled', false);
       $('#offCanvasList').foundation('offcanvas', 'show', 'offcanvas-overlap-left');
-      $( "#wikipediaInnerFrame" ).attr("width",(window.innerWidth *.30) - 0); //.attr("height",window.innerHeight - 250);
+      $( "#wikipediaInnerFrame" ).attr("width",(window.innerWidth * .37) - 40); //.attr("height",window.innerHeight - 250);
     } );
 
     /**
@@ -479,7 +479,7 @@
   <script>
     // Throttled resize function
     $(window).on('resize', Foundation.utils.throttle(function(e){
-      $( "#wikipediaInnerFrame" ).attr("width",(window.innerWidth * .30) - 0); //.attr("height",window.innerHeight - 250);
+      $( "#wikipediaInnerFrame" ).attr("width",(window.innerWidth * .37) - 40); //.attr("height",window.innerHeight - 250);
     }, 300));
 
     $("input").keypress(function(event){
@@ -504,8 +504,8 @@
         x = w.innerWidth || e.clientWidth || g.clientWidth,
         y = w.innerHeight|| e.clientHeight|| g.clientHeight;
 
-    var width = x * .40,
-        height = y - 270;
+    var width = x * .50,
+        height = (y - 270) * 1.2;
 
     function loadConceptMap(itemsArg) {
       $( "#conceptMap" ).empty();
@@ -516,7 +516,7 @@
 
       var force = d3.layout.force()
           .size([width, height])
-          .linkDistance(150)
+          .linkDistance(120)
           .charge(-450);
 
       var graphServiceUrl = "http://conceptmap.cfapps.io/graph?items=";
