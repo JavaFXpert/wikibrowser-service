@@ -35,6 +35,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -53,8 +56,9 @@ public class WikiBitlyController {
   }
 
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Object> search(@RequestParam(value = "items", defaultValue="") String items) {
-    // Example endpoint usage is graph?items=Q24, Q30, Q23, Q16, Q20
+  public ResponseEntity<Object> search(@RequestParam(value = "items", defaultValue="") String items,
+                                       @RequestParam(value = "lang") String lang) {
+    // Example endpoint usage is bitly?items=Q24, Q30, Q23, Q16, Q20&lang=fr
     // Scrub the input, and output a string for the Bitly service similar to the following:
     // Q24,Q30,Q23,Q16,Q20
     String argStr = WikiBrowserUtils.scrubItemIds(items, false);
@@ -64,16 +68,18 @@ public class WikiBitlyController {
 
     if (argStr.length() > 0) {
       String blat = wikiBrowserProperties.getBlat();
-      String qa = "https://api-ssl.bitly.com/v3/shorten?access_token=";
-      String qb = blat;
-      String qc = "&longUrl=http://conceptmap.io?items=";
+      String bitlyUrlPart = "https://api-ssl.bitly.com/v3/shorten?access_token=" + blat + "&longUrl=";
 
-      String qd = argStr; // Item IDs
-      String qe = "&format=json";
+      String conceptMapUrlPart = null;
 
-      String requestUrl = qa + qb + qc + qd + qe;
+      try {
+        conceptMapUrlPart = URLEncoder.encode("http://conceptmap.io/?items=" + argStr + "&lang=" + lang, "UTF-8");
+      }
+      catch (UnsupportedEncodingException uee) {
+        log.error("Exception whild encoding for bitly");
+      }
 
-      bitlyResponseNear = bitlyServiceResponse(requestUrl);
+      bitlyResponseNear = bitlyServiceResponse(bitlyUrlPart + conceptMapUrlPart);
     }
     else {
       log.warn("Invalid argument to WikiBitlyController /bitly endpoint: \"" + items + "\"");
@@ -95,7 +101,7 @@ public class WikiBitlyController {
     BitlyResponseFar bitlyResponseFar = null;
     BitlyResponseNear bitlyResponseNear = new BitlyResponseNear();
     try {
-      bitlyResponseFar = new RestTemplate().getForObject(bitlyRequestUrl,
+      bitlyResponseFar = new RestTemplate().getForObject(new URI(bitlyRequestUrl),
           BitlyResponseFar.class);
       log.info("bitlyResponseFar: " + bitlyResponseFar.toString());
 

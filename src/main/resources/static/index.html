@@ -469,7 +469,7 @@
     function revealShareLinkDialog() {
       $.ajax({
             url: '/bitly',
-            data: "items=" + exportItemIds(),
+            data: "items=" + exportItemIds() + "&lang=" + curLang,
             dataType: 'json',
           })
           .done(function(bitly) {
