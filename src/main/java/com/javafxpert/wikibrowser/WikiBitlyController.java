@@ -73,7 +73,7 @@ public class WikiBitlyController {
       String conceptMapUrlPart = null;
 
       try {
-        conceptMapUrlPart = URLEncoder.encode("http://conceptmap.io/?items=" + argStr + "&lang=" + lang, "UTF-8");
+        conceptMapUrlPart = URLEncoder.encode("http://conceptmap.io?items=" + argStr + "&lang=" + lang, "UTF-8");
       }
       catch (UnsupportedEncodingException uee) {
         log.error("Exception whild encoding for bitly");
