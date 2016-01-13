@@ -183,15 +183,26 @@
     var curItemId = "Q1";
     var curNearMatch = "";
     var dispIds = true;
+    var visibleGraphDirty = true;
 
     // TODO: Examine usefulness of, and possibly refactor, functionality in this handler
     window.addEventListener('load', function() {
       $('#searchButton').prop('disabled', true);
       $('#shareLinkButton').prop('disabled', true);
       $('#helpAboutButton').prop('disabled', false);
-      $('#offCanvasList').foundation('offcanvas', 'show', 'offcanvas-overlap-left');
+      $('#offCanvasList').foundation('offcanvas', 'toggle', 'offcanvas-overlap-left');
       $( "#wikipediaInnerFrame" ).attr("width",(window.innerWidth * .37) - 40); //.attr("height",window.innerHeight - 250);
-    } );
+      $(document).foundation({
+        offcanvas : {
+          // Sets method in which offcanvas opens.
+          // [ move | overlap_single | overlap ]
+          open_method: 'move',
+          // Should the menu close when a menu link is clicked?
+          // [ true | false ]
+          close_on_click : true
+        }
+      });
+    });
 
     /**
      * Retrieves Wikipedia article names for a string in an input field. This method is called
@@ -335,6 +346,7 @@
           });
     }
 
+
     // Supply id and lang
     function loadWikipediaPageByItemId(id, lang) {
       $.ajax({
@@ -407,6 +419,8 @@
       }
       $('#offCanvasList').append("</ul>");
 
+      //visibleGraphDirty = true;
+      loadConceptMap(itemIdArray.join(","));
     }
 
     function retrieveLangLinks (title, lang) {
@@ -435,7 +449,17 @@
           var langAutonym = langLink.langAutonym;
           var langCode = langLink.langCode;
           var articleName = langLink.articleName;
-          $('#offCanvasLangLinks').append("<li><a href='#' onclick='loadWikipediaPageByArticleName(\"" + articleName + "\", \"" + langCode + "\")'>" +
+          var articleTitle = langLink.articleTitle;
+
+          // TODO: Continue to attempt to mitigate bad URL (because of hash)
+          var locArticleTitleHash = articleTitle.indexOf("#");
+          if (locArticleTitleHash >= 0) {
+            articleTitle = articleTitle.substring(0, locArticleTitleHash);
+          }
+          // End of todo
+
+          // TODO: Experiment more with this approach:
+          $('#offCanvasLangLinks').append("<li><a href='#' onclick='touchClaimsInItemIdArray(\"" + langCode + "\"); visibleGraphDirty = true; loadWikipediaPageByArticleName(\"" + articleName + "\", \"" + langCode + "\")'>" +
               langName + " / " + langAutonym + "</a></li>");
         }
         $('#offCanvasLangLinks').append("</ul>");
@@ -508,6 +532,12 @@
         height = (y - 270) * 1.2;
 
     function loadConceptMap(itemsArg) {
+      if (!visibleGraphDirty) {
+        return;
+      }
+      else {
+        visibleGraphDirty = false;
+      }
       $( "#conceptMap" ).empty();
       var svg = d3.select("#conceptMap").append("svg")
         .attr("width", width)
@@ -629,22 +659,30 @@
     // Contains item IDs to display in concept map
     var itemIdArray = ["Q1"];
 
-    //alert('Query string: '+self.location.search);
-    // if query string supplied to app, populate item ID array
-    var appQueryString = self.location.search;
-    if (appQueryString !== null) {
-      appQueryString = appQueryString.trim();
-      var itemsArgName = "?items=";
-      if (appQueryString.length > itemsArgName.length) {
-        // Remove the ?items= from the beginning of the query string
-        appQueryString = appQueryString.substring(7);
-        appQueryString = decodeURI(appQueryString);
-        importItemIds(appQueryString);
-      }
+    // Support a language specified as an argument, but need to handle multiple languages in the Neo4j database befor publicizing
+    var langArgStr = getArgumentByName("lang");
+    if (langArgStr.length > 0) {
+      curLang = langArgStr;
     }
 
-    // Load the concept map with the contents of the item ID array
-    loadConceptMap(itemIdArray.join(","));
+    var itemsArgStr = getArgumentByName("items");
+    if (itemsArgStr.length > 0) {
+      importItemIds(itemsArgStr);
+    }
+
+    // Cause each ID in array to be merged into neo4j database
+    touchClaimsInItemIdArray(curLang);
+
+
+    /*
+     * Function that retrieves an argument from the URL (self.location.search)
+     */
+    function getArgumentByName(name) {
+      name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+      var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+          results = regex.exec(self.location.search);
+      return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+    }
 
     /*
      * Scrub a String containing comma-separated item IDs and populate itemIdArray
@@ -692,6 +730,7 @@
         }
       }
       $('#shareLinkButton').prop('disabled', itemIdArray.length == 0);
+      visibleGraphDirty = true;
       loadConceptMap(itemIdArray.join(","));
     }
 
@@ -703,11 +742,34 @@
         }
       }
       $('#shareLinkButton').prop('disabled', itemIdArray.length == 0);
+      visibleGraphDirty = true;
       loadConceptMap(itemIdArray.join(","));
     }
 
     function isItemIdInConceptMap(itemId) {
       return itemIdArray.indexOf(itemId) > -1;
+    }
+
+    /**
+     * Cause the neo4j database to be loaded with item info
+     * @param id
+     * @param lang
+     */
+    function touchClaimsInItemIdArray (lang) {
+      for (var i = 0; i < itemIdArray.length; i++) {
+        var id = itemIdArray[i];
+        $.ajax({
+              url: '/claims',
+              data: "id=" + id + "&lang=" + lang + "",
+              dataType: 'json',
+            })
+            .done(function (data) { // Variable data contains the data we get from serverside
+              //
+            })
+            .error(function (err) {
+              //alert("error: " + err);
+            });
+      }
     }
 
     function handlePinSwitchClick() {
