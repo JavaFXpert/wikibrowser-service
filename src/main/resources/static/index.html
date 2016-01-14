@@ -304,6 +304,7 @@
           language = paramValueArray[1];
         }
       }
+      articleName = trimAnchor(articleName);
       if (articleName != "") {
         refreshClaims(articleName, language);
       }
@@ -452,12 +453,7 @@
           var articleName = langLink.articleName;
           var articleTitle = langLink.articleTitle;
 
-          // TODO: Continue to attempt to mitigate bad URL (because of hash)
-          var locArticleTitleHash = articleTitle.indexOf("#");
-          if (locArticleTitleHash >= 0) {
-            articleTitle = articleTitle.substring(0, locArticleTitleHash);
-          }
-          // End of todo
+          articleTitle = trimAnchor(articleTitle);
 
           // TODO: Experiment more with this approach:
           $('#offCanvasLangLinks').append("<li><a href='#' onclick='touchClaimsInItemIdArray(\"" + langCode + "\"); visibleGraphDirty = true; loadWikipediaPageByArticleName(\"" + articleName + "\", \"" + langCode + "\")'>" +
@@ -497,11 +493,20 @@
       window.open('https://www.wikidata.org/wiki/' + curItemId);
     }
 
+    /**
+     * Trims the anchor, if present, from an article name
+     */
+    function trimAnchor(articleStr) {
+      var retStr = articleStr;
+      if (retStr != null && retStr.length > 0) {
+        var hashPos = retStr.indexOf("#");
+        if (hashPos >= 0) {
+          retStr = retStr.substring(0, hashPos);
+        }
+      }
+      return retStr;
+    }
 
-  </script>
-
-
-  <script>
     // Throttled resize function
     $(window).on('resize', Foundation.utils.throttle(function(e){
       $( "#wikipediaInnerFrame" ).attr("width",(window.innerWidth * .37) - 40); //.attr("height",window.innerHeight - 250);
