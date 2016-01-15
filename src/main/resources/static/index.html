@@ -652,7 +652,6 @@
             .enter().append("svg:path")
             .attr("class", function(d) { return "link " + d.type; })
             .attr("id",function(d,i) { return "linkId_" + i; })
-            //.attr("marker-end", function(d) { return "url(#" + d.type + ")"; });
             .attr("marker-end", function(d) { return "url(#" + "default" + ")"; });
         var linktext = svg.append("svg:g").selectAll("g.linklabelholder").data(force.links());
 
@@ -665,7 +664,6 @@
             .attr("text-anchor", "start")
             .style("fill","#000")
             .append("textPath")
-            //.attr("xlink:href",function(d) { return "hello";})
             .attr("xlink:href",function(d,i) { return "#linkId_" + i;})
             .text(function(d) {
               return d.type;
@@ -710,26 +708,15 @@
         var nextClickSuppressUpdate = false;
 
         function dragstart(d) {
-          //nextClickSuppressUpdate = true;
-          //alert("dragging:" + dragging);
           d3.select(this).classed("fixed", d.fixed = true);
         }
 
-        /*
-        function dragend(d) {
-          dragging = false;
-          nextClickSuppressUpdate = true;
-          //alert("dragging:" + dragging);
-        }
-        */
-
         function dragging(d) {
           nextClickSuppressUpdate = true;
-          //alert("dragging:" + dragging);
         }
 
         function handleMouseClick(d) {
-          if (nextClickSuppressUpdate == false) {
+          if (!nextClickSuppressUpdate) {
             retrieveClaimsAndLoadPage(d.id, curLang);
           }
           nextClickSuppressUpdate = false;
