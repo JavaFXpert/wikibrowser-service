@@ -95,7 +95,7 @@ public class WikiClaimsController {
 
     String language = wikiBrowserProperties.computeLang(lang);
     ClaimsSparqlResponse claimsSparqlResponse = callRelatedClaimsSparqlQuery(itemId, language);
-    ClaimsResponse claimsResponse = convertSparqlResponse(claimsSparqlResponse, language, itemId);
+    ClaimsResponse claimsResponse = convertRelatedClaimsSparqlResponse(claimsSparqlResponse, language, itemId);
 
     //log.info("claimsResponse:" + claimsResponse);
 
@@ -339,5 +339,66 @@ public class WikiClaimsController {
     }
     return claimsResponse;
   }
+
+  private ClaimsResponse convertRelatedClaimsSparqlResponse(ClaimsSparqlResponse claimsSparqlResponse, String lang, String itemId) {
+    ClaimsResponse claimsResponse = new ClaimsResponse();
+    claimsResponse.setLang(lang);
+    claimsResponse.setWdItem(itemId);
+    claimsResponse.setWdItemBase(WIKIDATA_ITEM_BASE);
+    claimsResponse.setWdPropBase(WIKIDATA_PROP_BASE);
+
+    ItemInfoResponse itemInfoResponse = null;
+
+    try {
+      String url = this.wikiBrowserProperties.getLocatorServiceUrl(itemId, lang);
+      itemInfoResponse = new RestTemplate().getForObject(url,
+          ItemInfoResponse.class);
+
+      log.info(itemInfoResponse.toString());
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+      log.info("Caught exception when calling /locator?id=" + itemId + " : " + e);
+    }
+
+    if (itemInfoResponse != null) {
+      claimsResponse.setArticleTitle(itemInfoResponse.getArticleTitle());
+      claimsResponse.setArticleId(itemInfoResponse.getItemId());
+    }
+
+    //TODO: Consider implementing fallback to "en" if Wikipedia article doesn't exist in requested language
+    claimsResponse.setWpBase(String.format(WIKIPEDIA_TEMPLATE, lang));
+
+    //TODO: Consider implementing fallback to "en" if mobile Wikipedia article doesn't exist in requested language
+    claimsResponse.setWpMobileBase(String.format(WIKIPEDIA_MOBILE_TEMPLATE, lang));
+
+    Results results = claimsSparqlResponse.getResults();
+    Iterator bindingsIter = results.getBindings().iterator();
+
+    String lastPropId = "";
+    WikidataClaim wikidataClaim = null; //TODO: Consider using exception handling to make null assignment unnecessary
+    while (bindingsIter.hasNext()) {
+      Bindings bindings = (Bindings)bindingsIter.next(); //TODO: Consider renaming Bindings to Binding
+
+      // There is a 1:many relationship between property IDs and related values
+      String nextPropUrl = bindings.getPropUrl().getValue();
+      String nextPropId = nextPropUrl.substring(nextPropUrl.lastIndexOf("/") + 1);
+      String nextValUrl = bindings.getValUrl().getValue();
+      String nextValId = nextValUrl.substring(nextValUrl.lastIndexOf("/") + 1);
+      //log.info("lastPropId: " + lastPropId + ", nextPropId: " + nextPropId);
+      if (!nextPropId.equals(lastPropId)) {
+        wikidataClaim = new WikidataClaim();
+        wikidataClaim.setProp(new WikidataProperty(nextPropId, bindings.getPropLabel().getValue()));
+        claimsResponse.getClaims().add(wikidataClaim);
+        lastPropId = nextPropId;
+      }
+
+      WikidataItem wikidataItem = new WikidataItem(nextValId, bindings.getValLabel().getValue());
+      wikidataClaim.addItem(wikidataItem);
+
+    }
+    return claimsResponse;
+  }
+
 }
 
