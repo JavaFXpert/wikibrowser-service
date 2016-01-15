@@ -414,8 +414,8 @@
           itemId = resp.claim[cIdx].val[0].id;
           isProperty = itemId.substring(0, 1).toUpperCase() === "P";
           $('#offCanvasList').append("<li><a href='#' onclick='retrieveClaimsAndLoadPage(\"" + itemId + "\", \"" + language + "\")'>" +
-              resp.claim[cIdx].val[0].label + (dispIds ? (" <i>:" + itemId) : "") +
-              (dispIds ? ("</i>") : "") +
+              resp.claim[cIdx].val[0].label + (dispIds ? (" :" + itemId) : "") +
+              (dispIds ? ("") : "") +
               "</a></li>");
         }
         else {
@@ -425,8 +425,8 @@
             itemId = vals[vIdx].id;
             isProperty = itemId.substring(0, 1).toUpperCase() === "P";
             $('#offCanvasList').append("  <li><a href='#' onclick='retrieveClaimsAndLoadPage(\"" + itemId + "\", \"" + language + "\")'>" +
-                vals[vIdx].label + (dispIds ? (" <i>:" + itemId) : "") +
-                (dispIds ? ("</i>") : "") +
+                vals[vIdx].label + (dispIds ? (" :" + itemId) : "") +
+                (dispIds ? ("") : "") +
                 "</a></li>");
           }
           $('#offCanvasList').append("  </ul>");
@@ -440,7 +440,7 @@
 
     function populateFromRelatedItemsList(resp) {
       $('#fromRelatedItemsList').html(''); // Clear out off-canvas list
-      $('#fromRelatedItemsList').append("<b>From Related Items:</b><br/><br/>"); //TODO: Internationalize this label
+      $('#fromRelatedItemsList').append("<b><i>From Related Items:</i></b><br/><br/>"); //TODO: Internationalize this label
 
       var language = resp.lang;
       var itemId = ""
@@ -448,22 +448,22 @@
 
       for (var cIdx in resp.claim) {
         if (resp.claim[cIdx].val.length == 1) {
-          $('#fromRelatedItemsList').append("<li><label>" + resp.claim[cIdx].prop.label + (dispIds ? (" :" + resp.claim[cIdx].prop.id) : "") + "</label></li>");
+          $('#fromRelatedItemsList').append("<li><label><i>" + resp.claim[cIdx].prop.label + (dispIds ? (" :" + resp.claim[cIdx].prop.id) : "") + "</i></label></li>");
           itemId = resp.claim[cIdx].val[0].id;
           isProperty = itemId.substring(0, 1).toUpperCase() === "P";
-          $('#fromRelatedItemsList').append("<li><a href='#' onclick='retrieveClaimsAndLoadPage(\"" + itemId + "\", \"" + language + "\")'>" +
-              resp.claim[cIdx].val[0].label + (dispIds ? (" <i>:" + itemId) : "") +
+          $('#fromRelatedItemsList').append("<li><a href='#' onclick='retrieveClaimsAndLoadPage(\"" + itemId + "\", \"" + language + "\")'><i>" +
+              resp.claim[cIdx].val[0].label + "</i>" + (dispIds ? (" <i>:" + itemId) : "") +
               (dispIds ? ("</i>") : "") +
               "</a></li>");
         }
         else {
-          $('#fromRelatedItemsList').append("<li><label>" + resp.claim[cIdx].prop.label + (dispIds ? (" :" + resp.claim[cIdx].prop.id) : "") + "</label></li>");
+          $('#fromRelatedItemsList').append("<li><label><i>" + resp.claim[cIdx].prop.label + (dispIds ? (" :" + resp.claim[cIdx].prop.id) : "") + "</i></label></li>");
           var vals = resp.claim[cIdx].val;
           for (var vIdx in vals) {
             itemId = vals[vIdx].id;
             isProperty = itemId.substring(0, 1).toUpperCase() === "P";
-            $('#fromRelatedItemsList').append("  <li><a href='#' onclick='retrieveClaimsAndLoadPage(\"" + itemId + "\", \"" + language + "\")'>" +
-                vals[vIdx].label + (dispIds ? (" <i>:" + itemId) : "") +
+            $('#fromRelatedItemsList').append("  <li><a href='#' onclick='retrieveClaimsAndLoadPage(\"" + itemId + "\", \"" + language + "\")'><i>" +
+                vals[vIdx].label + "</i>" + (dispIds ? (" <i>:" + itemId) : "") +
                 (dispIds ? ("</i>") : "") +
                 "</a></li>");
           }
@@ -705,21 +705,21 @@
           return "translate(" + d.x + "," + d.y + ")";
         }
 
-        var nextClickSuppressUpdate = false;
+        var isDragging = false;
 
         function dragstart(d) {
           d3.select(this).classed("fixed", d.fixed = true);
         }
 
         function dragging(d) {
-          nextClickSuppressUpdate = true;
+          isDragging = true;
         }
 
         function handleMouseClick(d) {
-          if (!nextClickSuppressUpdate) {
+          if (!isDragging) {
             retrieveClaimsAndLoadPage(d.id, curLang);
           }
-          nextClickSuppressUpdate = false;
+          isDragging = false;
         }
       });
     }
