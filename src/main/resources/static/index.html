@@ -128,6 +128,8 @@
           <div class="small-2 columns" style="margin-top: 10px;">
             <ul id="offCanvasList" class="side-nav panel"  style="padding-left:10px">
             </ul>
+            <ul id="fromRelatedItemsList" class="side-nav panel"  style="padding-left:10px">
+            </ul>
           </div>
           <div class="small-4 columns">
             <iframe id="wikipediaInnerFrame" src="/wikipage?name=Universe&lang=en" frameborder="0" scrolling="no" width="300"
@@ -191,7 +193,7 @@
       $('#searchButton').prop('disabled', true);
       $('#shareLinkButton').prop('disabled', true);
       $('#helpAboutButton').prop('disabled', false);
-      $('#offCanvasList').foundation('offcanvas', 'toggle', 'offcanvas-overlap-left');
+      //$('#offCanvasList').foundation('offcanvas', 'toggle', 'offcanvas-overlap-left');
       $( "#wikipediaInnerFrame" ).attr("width",(window.innerWidth * .37) - 40); //.attr("height",window.innerHeight - 250);
       $(document).foundation({
         offcanvas : {
@@ -332,9 +334,6 @@
     }
 
     function retrieveClaimsByItemId (id, lang) {
-      // Cause Concept Map model to be updated
-      // addItemId(id);
-
       $.ajax({
             url: '/claims',
             data: "id=" + id + "&lang=" + lang + "",
@@ -342,6 +341,21 @@
           })
           .done(function(data) { // Variable data contains the data we get from serverside
             populateOffCanvasList(data)
+            retrieveRelatedClaimsByItemId(id, lang)
+          })
+          .error(function(err) {
+            //alert("error: " + err);
+          });
+    }
+
+    function retrieveRelatedClaimsByItemId (id, lang) {
+      $.ajax({
+            url: '/relatedclaims',
+            data: "id=" + id + "&lang=" + lang + "",
+            dataType: 'json',
+          })
+          .done(function(data) { // Variable data contains the data we get from serverside
+            populateFromRelatedItemsList(data)
           })
           .error(function(err) {
             //alert("error: " + err);
@@ -421,7 +435,44 @@
       }
       $('#offCanvasList').append("</ul>");
 
-      //visibleGraphDirty = true;
+      //loadConceptMap(itemIdArray.join(","));
+    }
+
+    function populateFromRelatedItemsList(resp) {
+      $('#fromRelatedItemsList').html(''); // Clear out off-canvas list
+      $('#fromRelatedItemsList').append("<b>From Related Items:</b><br/><br/>"); //TODO: Internationalize this label
+
+      var language = resp.lang;
+      var itemId = ""
+      var isProperty;
+
+      for (var cIdx in resp.claim) {
+        if (resp.claim[cIdx].val.length == 1) {
+          $('#fromRelatedItemsList').append("<li><label>" + resp.claim[cIdx].prop.label + (dispIds ? (" :" + resp.claim[cIdx].prop.id) : "") + "</label></li>");
+          itemId = resp.claim[cIdx].val[0].id;
+          isProperty = itemId.substring(0, 1).toUpperCase() === "P";
+          $('#fromRelatedItemsList').append("<li><a href='#' onclick='retrieveClaimsAndLoadPage(\"" + itemId + "\", \"" + language + "\")'>" +
+              resp.claim[cIdx].val[0].label + (dispIds ? (" <i>:" + itemId) : "") +
+              (dispIds ? ("</i>") : "") +
+              "</a></li>");
+        }
+        else {
+          $('#fromRelatedItemsList').append("<li><label>" + resp.claim[cIdx].prop.label + (dispIds ? (" :" + resp.claim[cIdx].prop.id) : "") + "</label></li>");
+          var vals = resp.claim[cIdx].val;
+          for (var vIdx in vals) {
+            itemId = vals[vIdx].id;
+            isProperty = itemId.substring(0, 1).toUpperCase() === "P";
+            $('#fromRelatedItemsList').append("  <li><a href='#' onclick='retrieveClaimsAndLoadPage(\"" + itemId + "\", \"" + language + "\")'>" +
+                vals[vIdx].label + (dispIds ? (" <i>:" + itemId) : "") +
+                (dispIds ? ("</i>") : "") +
+                "</a></li>");
+          }
+          $('#fromRelatedItemsList').append("  </ul>");
+          $('#fromRelatedItemsList').append("</li>");
+        }
+      }
+      $('#fromRelatedItemsList').append("</ul>");
+
       loadConceptMap(itemIdArray.join(","));
     }
 
