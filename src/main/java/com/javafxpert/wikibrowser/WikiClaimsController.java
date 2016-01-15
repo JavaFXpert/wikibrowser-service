@@ -87,6 +87,24 @@ public class WikiClaimsController {
 
   }
 
+  @RequestMapping(value = "/relatedclaims", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Object> renderRelatedClaims(@RequestParam(value = "id", defaultValue="Q7259")
+                                             String itemId,
+                                             @RequestParam(value = "lang")
+                                             String lang) {
+
+    String language = wikiBrowserProperties.computeLang(lang);
+    ClaimsSparqlResponse claimsSparqlResponse = callRelatedClaimsSparqlQuery(itemId, language);
+    ClaimsResponse claimsResponse = convertSparqlResponse(claimsSparqlResponse, language, itemId);
+
+    //log.info("claimsResponse:" + claimsResponse);
+
+    return Optional.ofNullable(claimsResponse)
+        .map(cr -> new ResponseEntity<>((Object)cr, HttpStatus.OK))
+        .orElse(new ResponseEntity<>("Wikidata related query unsuccessful", HttpStatus.INTERNAL_SERVER_ERROR));
+
+  }
+
 
   @RequestMapping(value = "/claimsxml", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
   public ResponseEntity<Object> renderClaimsXml(@RequestParam(value = "id", defaultValue="Q7259")
@@ -105,6 +123,30 @@ public class WikiClaimsController {
   }
 
   private ClaimsSparqlResponse callClaimsSparqlQuery(String itemId, String lang) {
+    // Here is the SPARQL query that this method invokes (using Q42 as an example)
+    /*
+      PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema%23>
+      PREFIX wikibase: <http://wikiba.se/ontology%23>
+      PREFIX entity: <http://www.wikidata.org/entity/>
+      PREFIX p: <http://www.wikidata.org/prop/direct/>
+
+      SELECT ?propUrl ?propLabel ?valUrl ?valLabel
+      WHERE {
+        hint:Query hint:optimizer 'None' .
+        entity:Q42 ?propUrl ?valUrl .
+        ?valUrl rdfs:label ?valLabel
+
+        FILTER (LANG(?valLabel) = 'en') .
+
+        ?property ?ref ?propUrl .
+        ?property a wikibase:Property .
+        ?property rdfs:label ?propLabel
+
+        FILTER (lang(?propLabel) = 'en' )
+        }
+      ORDER BY ?propUrl ?valUrl LIMIT 100
+    */
+
     //TODO: Implement better way of creating the query represented by the following variables
     String wdqa = "https://query.wikidata.org/bigdata/namespace/wdq/sparql?format=json&query=";
     String wdqb = "PREFIX%20rdfs:%20%3Chttp://www.w3.org/2000/01/rdf-schema%23%3E%20";
@@ -141,6 +183,71 @@ public class WikiClaimsController {
     catch (Exception e) {
       e.printStackTrace();
       log.info("Caught exception when calling wikidata sparql query " + e);
+    }
+
+    return claimsSparqlResponse;
+  }
+
+  private ClaimsSparqlResponse callRelatedClaimsSparqlQuery(String itemId, String lang) {
+    // Here is the SPARQL query that this method invokes (using Q42 as an example)
+    /*
+      PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema%23>
+      PREFIX wikibase: <http://wikiba.se/ontology%23>
+      PREFIX entity: <http://www.wikidata.org/entity/>
+      PREFIX p: <http://www.wikidata.org/prop/direct/>
+      SELECT ?propUrl ?propLabel ?valUrl ?valLabel
+      WHERE {
+          hint:Query hint:optimizer 'None' .
+          ?valUrl ?propUrl entity:Q42 .
+          ?valUrl rdfs:label ?valLabel .
+
+          FILTER (LANG(?valLabel) = 'en') .
+
+          ?property ?ref ?propUrl .
+          ?property a wikibase:Property .
+          ?property rdfs:label ?propLabel
+
+          FILTER (lang(?propLabel) = 'en' )
+      }
+      ORDER BY ?propUrl ?valUrl LIMIT 200
+    */
+
+    //TODO: Implement better way of creating the query represented by the following variables
+    String wdqa = "https://query.wikidata.org/bigdata/namespace/wdq/sparql?format=json&query=";
+    String wdqb = "PREFIX%20rdfs:%20%3Chttp://www.w3.org/2000/01/rdf-schema%23%3E%20";
+    String wdqc = "PREFIX%20wikibase:%20%3Chttp://wikiba.se/ontology%23%3E%20";
+    String wdqd = "PREFIX%20entity:%20%3Chttp://www.wikidata.org/entity/%3E%20";
+    String wdqe = "PREFIX%20p:%20%3Chttp://www.wikidata.org/prop/direct/%3E%20";
+    String wdqf = "SELECT%20?propUrl%20?propLabel%20?valUrl%20?valLabel%20";
+    String wdqg = "WHERE%20%7B%20hint:Query%20hint:optimizer%20'None'%20.%20?valUrl%20?propUrl%20entity:";
+    String wdqh = ""; // Some item ID e.g. Q7259
+    String wdqi = "%20.%20?valUrl%20rdfs:label%20?valLabel%20.%20FILTER%20(LANG(?valLabel)%20=%20'";
+    String wdqj = ""; // Some language code e.g. en
+    String wdqk = "')%20.%20?property%20?ref%20?propUrl%20.%20?property%20a%20wikibase:Property%20.%20";
+    String wdql = "?property%20rdfs:label%20?propLabel%20FILTER%20(lang(?propLabel)%20=%20'";
+    String wdqm = ""; // Some language code e.g. en
+    String wdqn = "'%20)%20%7D%20ORDER%20BY%20?propUrl%20?valUrl%20LIMIT%20200";
+
+    ClaimsSparqlResponse claimsSparqlResponse = null;
+
+    wdqh = itemId;
+    wdqj = lang;
+    wdqm = lang;
+    String wdQuery = wdqa + wdqb + wdqc + wdqd + wdqe + wdqf + wdqg + wdqh + wdqi + wdqj + wdqk + wdql + wdqm + wdqn;
+    wdQuery = wdQuery.replaceAll(" ", "%20");
+    log.info("wdQuery: " + wdQuery);
+
+    try {
+
+      claimsSparqlResponse = new RestTemplate().getForObject(new URI(wdQuery),
+          ClaimsSparqlResponse.class);
+
+      //log.info(claimsSparqlResponse.toString());
+
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+      log.info("Caught exception when calling related wikidata sparql query " + e);
     }
 
     return claimsSparqlResponse;
