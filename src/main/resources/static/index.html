@@ -267,14 +267,6 @@
     }
 
     /**
-     * Convenience method to call multiple functions
-     */
-    function retrieveClaimsAndLoadPage(id, lang) {
-      retrieveClaimsByItemId(id, lang);
-      loadWikipediaPageByItemId(id, lang);
-    }
-
-    /**
      * Parses the
      * @param wikipageEndpointWithParams
      *
@@ -414,7 +406,7 @@
           $('#offCanvasList').append("<li><label>" + resp.claim[cIdx].prop.label + (dispIds ? (" :" + resp.claim[cIdx].prop.id) : "") + "</label></li>");
           itemId = resp.claim[cIdx].val[0].id;
           isProperty = itemId.substring(0, 1).toUpperCase() === "P";
-          $('#offCanvasList').append("<li><a href='#' onclick='retrieveClaimsAndLoadPage(\"" + itemId + "\", \"" + language + "\")'>" +
+          $('#offCanvasList').append("<li><a href='#' onclick='loadWikipediaPageByItemId(\"" + itemId + "\", \"" + language + "\")'>" +
               resp.claim[cIdx].val[0].label + (dispIds ? (" :" + itemId) : "") +
               (dispIds ? ("") : "") +
               "</a></li>");
@@ -425,7 +417,7 @@
           for (var vIdx in vals) {
             itemId = vals[vIdx].id;
             isProperty = itemId.substring(0, 1).toUpperCase() === "P";
-            $('#offCanvasList').append("  <li><a href='#' onclick='retrieveClaimsAndLoadPage(\"" + itemId + "\", \"" + language + "\")'>" +
+            $('#offCanvasList').append("  <li><a href='#' onclick='loadWikipediaPageByItemId(\"" + itemId + "\", \"" + language + "\")'>" +
                 vals[vIdx].label + (dispIds ? (" :" + itemId) : "") +
                 (dispIds ? ("") : "") +
                 "</a></li>");
@@ -452,7 +444,7 @@
           $('#fromRelatedItemsList').append("<li><label><i>" + resp.claim[cIdx].prop.label + (dispIds ? (" :" + resp.claim[cIdx].prop.id) : "") + "</i></label></li>");
           itemId = resp.claim[cIdx].val[0].id;
           isProperty = itemId.substring(0, 1).toUpperCase() === "P";
-          $('#fromRelatedItemsList').append("<li><a href='#' onclick='retrieveClaimsAndLoadPage(\"" + itemId + "\", \"" + language + "\")'><i>" +
+          $('#fromRelatedItemsList').append("<li><a href='#' onclick='loadWikipediaPageByItemId(\"" + itemId + "\", \"" + language + "\")'><i>" +
               resp.claim[cIdx].val[0].label + "</i>" + (dispIds ? (" <i>:" + itemId) : "") +
               (dispIds ? ("</i>") : "") +
               "</a></li>");
@@ -463,7 +455,7 @@
           for (var vIdx in vals) {
             itemId = vals[vIdx].id;
             isProperty = itemId.substring(0, 1).toUpperCase() === "P";
-            $('#fromRelatedItemsList').append("  <li><a href='#' onclick='retrieveClaimsAndLoadPage(\"" + itemId + "\", \"" + language + "\")'><i>" +
+            $('#fromRelatedItemsList').append("  <li><a href='#' onclick='loadWikipediaPageByItemId(\"" + itemId + "\", \"" + language + "\")'><i>" +
                 vals[vIdx].label + "</i>" + (dispIds ? (" <i>:" + itemId) : "") +
                 (dispIds ? ("</i>") : "") +
                 "</a></li>");
@@ -718,7 +710,7 @@
 
         function handleMouseClick(d) {
           if (!isDragging) {
-            retrieveClaimsAndLoadPage(d.id, curLang);
+            loadWikipediaPageByItemId(d.id, curLang);
           }
           isDragging = false;
         }
@@ -772,7 +764,7 @@
       // Set the current item ID to the first ID in the supplied list of items
       if (itemIdArray.length > 0) {
         curItemId = itemIdArray[0];
-        retrieveClaimsAndLoadPage(curItemId, curLang);
+        loadWikipediaPageByItemId(curItemId, curLang);
       }
     }
 
