@@ -1161,6 +1161,9 @@ public interface ItemRepository extends GraphRepository<GraphItem> {
   @Query("MATCH (a:Item {itemId:{itemIdA}}), (b:Item {itemId:{itemIdB}}) MERGE (a)-[:ORIGINAL_COMBINATION {propId:{propId}, label:{propLabel}}]->(b)")
   void addRelP1403(@Param("itemIdA") String itemIdA, @Param("itemIdB") String itemIdB, @Param("propId") String propId, @Param("propLabel") String propLabel);
 
+  @Query("MATCH (a:Item {itemId:{itemIdA}}), (b:Item {itemId:{itemIdB}}) MERGE (a)-[:LICENSED_TO_BROADCAST_TO {propId:{propId}, label:{propLabel}}]->(b)")
+  void addRelP1408(@Param("itemIdA") String itemIdA, @Param("itemIdB") String itemIdB, @Param("propId") String propId, @Param("propLabel") String propLabel);
+
   @Query("MATCH (a:Item {itemId:{itemIdA}}), (b:Item {itemId:{itemIdB}}) MERGE (a)-[:NOMINATED_FOR {propId:{propId}, label:{propLabel}}]->(b)")
   void addRelP1411(@Param("itemIdA") String itemIdA, @Param("itemIdB") String itemIdB, @Param("propId") String propId, @Param("propLabel") String propLabel);
 
