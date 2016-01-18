@@ -340,7 +340,7 @@
             dataType: 'json',
           })
           .done(function(data) { // Variable data contains the data we get from serverside
-            populateOffCanvasList(data)
+            populateOffCanvasList(data);
             retrieveRelatedClaimsByItemId(id, lang)
           })
           .error(function(err) {
@@ -358,7 +358,7 @@
             populateFromRelatedItemsList(data)
           })
           .error(function(err) {
-            //alert("error: " + err);
+            $('#fromRelatedItemsList').html('<label>Error loading related items</label>');
           });
     }
 
@@ -388,6 +388,7 @@
 
     function populateOffCanvasList(resp) {
       $('#offCanvasList').html(''); // Clear out off-canvas list
+      $('#fromRelatedItemsList').html('<label>Loading...</label>'); // Clear out off-canvas list for related items
       $('#offCanvasList').append("<b>Wikidata Relationships:</b><br/><br/>"); //TODO: Internationalize this label
       var title = resp.articleTitle;
       curTitle = title;
