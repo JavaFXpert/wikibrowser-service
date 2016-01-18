@@ -367,6 +367,9 @@
             if (artName !== null) {
               $("#wikipediaInnerFrame").attr("src", "/wikipage?name=" + itemInfo.articleName + "&lang=" + lang);
             }
+            else {
+              retrieveClaimsByItemId(id, lang);
+            }
           })
           .error(function(err) {
             //alert("error: " + err);
