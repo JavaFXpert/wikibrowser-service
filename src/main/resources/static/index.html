@@ -184,6 +184,7 @@
     var curLang = "en";
     var curTitle = "";
     var curItemId = "Q1";
+    var curPageItemId = "Q1";  //Id of page currently being displayed
     var curNearMatch = "";
     var dispIds = true;
     var visibleGraphDirty = true;
@@ -317,6 +318,7 @@
               dataType: 'json',
             })
             .done(function (itemInfo) {
+              curPageItemId = itemInfo.itemId;
               retrieveClaimsByItemId(itemInfo.itemId, lang);
             })
             .error(function (err) {
@@ -365,6 +367,12 @@
           .done(function(itemInfo) {
             var artName = itemInfo.articleName;
             if (artName !== null) {
+              if (id === curPageItemId) {
+                // If the page hasn't changed, force the claims info to be refreshed, because it won't be performed
+                // as a result of the page in the iFrame being replaced.
+                retrieveClaimsByItemId(id, lang);
+              }
+              curPageItemId = id;
               $("#wikipediaInnerFrame").attr("src", "/wikipage?name=" + itemInfo.articleName + "&lang=" + lang);
             }
             else {
