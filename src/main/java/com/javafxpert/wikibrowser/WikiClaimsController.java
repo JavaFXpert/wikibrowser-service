@@ -161,7 +161,7 @@ public class WikiClaimsController {
     String wdqk = "')%20.%20?property%20?ref%20?propUrl%20.%20?property%20a%20wikibase:Property%20.%20";
     String wdql = "?property%20rdfs:label%20?propLabel%20FILTER%20(lang(?propLabel)%20=%20'";
     String wdqm = ""; // Some language code e.g. en
-    String wdqn = "'%20)%20%7D%20ORDER%20BY%20?propUrl%20?valUrl%20LIMIT%20100";
+    String wdqn = "'%20)%20%7D%20ORDER%20BY%20?propLabel%20?valLabel%20LIMIT%20100";
 
     ClaimsSparqlResponse claimsSparqlResponse = null;
 
@@ -226,7 +226,7 @@ public class WikiClaimsController {
     String wdqk = "')%20.%20?property%20?ref%20?propUrl%20.%20?property%20a%20wikibase:Property%20.%20";
     String wdql = "?property%20rdfs:label%20?propLabel%20FILTER%20(lang(?propLabel)%20=%20'";
     String wdqm = ""; // Some language code e.g. en
-    String wdqn = "'%20)%20%7D%20ORDER%20BY%20?propUrl%20?valUrl%20LIMIT%20200";
+    String wdqn = "'%20)%20%7D%20ORDER%20BY%20?propLabel%20?valLabel%20LIMIT%20200";
 
     ClaimsSparqlResponse claimsSparqlResponse = null;
 
