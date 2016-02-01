@@ -2,6 +2,10 @@
 Facility that browses Wikipedia augmented with semantic capabilities
 
 ## Enhancements to consider
+* Implement authentication
+* Enable user to save a concept map for later retrieval
+* Enable user to associate external resources with Q items
+* Allow users to associate links that they supply with topics.
 * Create Getting Started guide for ConceptMap in Slides
 * Put Wikipedia header on right side of app
 * Highlight node that is represented by selected Wikipedia article
@@ -27,15 +31,13 @@ Facility that browses Wikipedia augmented with semantic capabilities
 ## Cloud-native related features to consider implementing
 * Implement configuration server (override configurable items such as those in application.properties, and make starting Q item a configurable item in application.properties)
 
-* Implement authentication so that user can save a concept map for later retrieval, and associate external links with Q items
-
 * Break up the one microservice into several, each implementing one or more of the following endpoints?
-  /articlesearch, /idlocator, /langlinks (calls https://xx.wikipedia.org/w/api.php?action=query&...)
-  /claims, /claimsxml, /relatedclaims (calls https://query.wikidata.org/bigdata/namespace/wdq/sparql?... and populates Neo4j database using Spring Data Neo4j)
-  /locator (calls https://www.wikidata.org/w/api.php?action=wbgetentities&...)
-  /wikipage (retrieves mobile wikipedia page https://xx.m.wikipedia.org/...)
-  /bitly (calls https://api-ssl.bitly.com/v3/shorten?...)  
-  /graph (calls hosted Neo4j Cypher transactional endpoint)
+  1. /articlesearch, /idlocator, /langlinks (calls https://xx.wikipedia.org/w/api.php?action=query&...)
+  2. /claims, /claimsxml, /relatedclaims (calls https://query.wikidata.org/bigdata/namespace/wdq/sparql?... and populates Neo4j database using Spring Data Neo4j)
+  3. /locator (calls https://www.wikidata.org/w/api.php?action=wbgetentities&...)
+  4. /wikipage (retrieves mobile wikipedia page https://xx.m.wikipedia.org/...)
+  5. /bitly (calls https://api-ssl.bitly.com/v3/shorten?...)  
+  6. /graph (calls hosted Neo4j Cypher transactional endpoint)
 
 * Implement an API gateway?
   (perhaps not necessary or even advisable if endpoint aren't broken up into several microservices)?
@@ -68,14 +70,13 @@ Facility that browses Wikipedia augmented with semantic capabilities
 02:25:53.431 [main] WARN  o.s.d.n.m.Neo4jPersistentProperty - No identity field found for class of type: com.javafxpert.wikibrowser.model.conceptmap.GraphRelationFar when creating persistent property for field: private java.lang.String com.javafxpert.wikibrowser.model.conceptmap.GraphRelationFar.startNode
 
 ## Code refactoring
-[] Organize/eliminate duplication in classes that hold deserialized objects
-  [] Start with renaming idlocator package to wpquery and IdLocatorResponse to WpQueryResponse
-  [] Standardize on Near/Far naming?
-  [] Add @JsonProperty("foo") to all JSON deserialize classes, adjusting singular/plural as makes sense
-[] Change IdLocator endpoint parameter from name to title
-[] Move WIKIDATA_ITEM_BASE, etc. to WikiBrowserProperties class
+* Organize/eliminate duplication in classes that hold deserialized objects
+  1. Start with renaming idlocator package to wpquery and IdLocatorResponse to WpQueryResponse
+  1. Standardize on Near/Far naming?
+  1. Add @JsonProperty("foo") to all JSON deserialize classes, adjusting singular/plural as makes sense
+* Change IdLocator endpoint parameter from name to title
+* Move WIKIDATA_ITEM_BASE, etc. to WikiBrowserProperties class
 
 ## I18N considerations:
-[] Make WikiPageController#generateWikiBrowserPage() write the lang in generated links e.g. href=wikipage?name=Terre&lang=fr
-[] Create topic map from pinned articles, that is fully editable (unpin topics, associate additional URL, etc)
-[] Allow users to associate links that they supply with topics.
+* Make WikiPageController#generateWikiBrowserPage() write the lang in generated links e.g. href=wikipage?name=Terre&lang=fr
+
