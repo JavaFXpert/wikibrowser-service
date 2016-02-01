@@ -71,9 +71,9 @@ Facility that browses Wikipedia augmented with semantic capabilities
 
 ## Code refactoring
 * Organize/eliminate duplication in classes that hold deserialized objects
-  1. Start with renaming idlocator package to wpquery and IdLocatorResponse to WpQueryResponse
-  1. Standardize on Near/Far naming?
-  1. Add @JsonProperty("foo") to all JSON deserialize classes, adjusting singular/plural as makes sense
+  * Start with renaming idlocator package to wpquery and IdLocatorResponse to WpQueryResponse
+  * Standardize on Near/Far naming?
+  * Add @JsonProperty("foo") to all JSON deserialize classes, adjusting singular/plural as makes sense
 * Change IdLocator endpoint parameter from name to title
 * Move WIKIDATA_ITEM_BASE, etc. to WikiBrowserProperties class
 
