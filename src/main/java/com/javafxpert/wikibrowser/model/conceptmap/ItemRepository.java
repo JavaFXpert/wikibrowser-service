@@ -65,7 +65,10 @@ public interface ItemRepository extends GraphRepository<GraphItem> {
     Method method = ReflectionUtils.findMethod(ItemRepository.class, methodStr, new Class[]{String.class, String.class, String.class, String.class});
     if (method != null) {
       try {
-        ReflectionUtils.invokeMethod(method, this, itemIdA, itemIdB, propId, propLabel);
+        //ReflectionUtils.invokeMethod(method, this, itemIdA, itemIdB, propId, propLabel);
+
+        //TODO: Ascertain whether blank propLabel is OK, as it would avoid dups
+        ReflectionUtils.invokeMethod(method, this, itemIdA, itemIdB, propId, propId.toLowerCase());
       }
       catch (Exception e) {
         System.out.println("Exception in invokeMethod " + methodStr + ": " + e);
@@ -73,7 +76,10 @@ public interface ItemRepository extends GraphRepository<GraphItem> {
       }
     }
     else {
-      addRel(itemIdA, itemIdB, propId, propLabel);
+      //addRel(itemIdA, itemIdB, propId, propLabel);
+
+      //TODO: Ascertain whether blank propLabel is OK, as it would avoid dups
+      addRel(itemIdA, itemIdB, propId, propId.toLowerCase());
 
       // Temporary code to populate the properties-related code in this class
 
