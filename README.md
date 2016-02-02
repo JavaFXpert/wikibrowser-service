@@ -3,7 +3,10 @@ Facility that browses Wikipedia augmented with semantic capabilities
 
 ## Enhancements to consider
 * [] Implement authentication
+  * Use GitHub / OAUTH
+  * https://spring.io/guides/tutorials/spring-boot-oauth2/
 * [] Enable user to save a concept map for later retrieval
+  * Relationship between user and the nodes in the map, as well as an indication of main node and language 
 * [] Enable user to associate external resources with Q items
 * Implement visjs library for directed graph functionality
   * Make the concept map not jump around so much when drawing
@@ -80,3 +83,5 @@ Facility that browses Wikipedia augmented with semantic capabilities
 ## I18N considerations:
 * Make WikiPageController#generateWikiBrowserPage() write the lang in generated links e.g. href=wikipage?name=Terre&lang=fr
 
+## Miscellaneous notes:
+* For Neo4j performance, CREATE INDEX ON :Item(itemId)
