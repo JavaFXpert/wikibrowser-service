@@ -84,4 +84,5 @@ Facility that browses Wikipedia augmented with semantic capabilities
 * Make WikiPageController#generateWikiBrowserPage() write the lang in generated links e.g. href=wikipage?name=Terre&lang=fr
 
 ## Miscellaneous notes:
+* Create utility that loads Neo4j from Wikidata dump
 * For Neo4j performance, CREATE INDEX ON :Item(itemId)

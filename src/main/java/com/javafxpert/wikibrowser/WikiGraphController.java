@@ -105,7 +105,7 @@ RETURN a, collect(rel)
 
       String qa = "{\"statements\":[{\"statement\":\"MATCH (a) WHERE a.itemId IN [";
       String qb = argStr; // Item IDs
-      String qc = "] OPTIONAL MATCH (a)-[rel]-(b) WHERE b.itemId IN [";
+      String qc = "] WITH a OPTIONAL MATCH (a)-[rel]-(b) WHERE b.itemId IN [";
       String qd = argStr; // Item IDs
       String qe = "] RETURN a, b, collect(rel)\",";
       String qf = "\"resultDataContents\":[\"graph\"]}]}";
@@ -146,6 +146,7 @@ RETURN a, collect(rel)
       ResponseEntity<GraphResponseFar> result = restTemplate.exchange(neoCypherUrl, HttpMethod.POST, request,
           GraphResponseFar.class);
       graphResponseFar = result.getBody();
+      log.info("graphResponseFar: " + graphResponseFar);
 
       // Populate GraphResponseNear instance from GraphResponseFar instance
       HashMap<String, GraphNodeNear> graphNodeNearMap = new HashMap<>();
