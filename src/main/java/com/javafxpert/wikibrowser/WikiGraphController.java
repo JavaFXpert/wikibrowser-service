@@ -96,16 +96,16 @@ public class WikiGraphController {
       */
 
       /*
-MATCH (a)
+MATCH (a:Item)
 WHERE a.itemId IN ['Q2', 'Q24', 'Q30', 'Q23', 'Q16', 'Q20']
 OPTIONAL MATCH (a)-[rel]-()
 RETURN a, collect(rel)
 
      */
 
-      String qa = "{\"statements\":[{\"statement\":\"MATCH (a) WHERE a.itemId IN [";
+      String qa = "{\"statements\":[{\"statement\":\"MATCH (a:Item) WHERE a.itemId IN [";
       String qb = argStr; // Item IDs
-      String qc = "] WITH a OPTIONAL MATCH (a)-[rel]-(b) WHERE b.itemId IN [";
+      String qc = "] OPTIONAL MATCH (a)-[rel]-(b) WHERE b.itemId IN [";
       String qd = argStr; // Item IDs
       String qe = "] RETURN a, b, collect(rel)\",";
       String qf = "\"resultDataContents\":[\"graph\"]}]}";
