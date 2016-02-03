@@ -8,6 +8,7 @@ Facility that browses Wikipedia augmented with semantic capabilities
 * [] Enable user to save a concept map for later retrieval
   * Relationship between user and the nodes in the map, as well as an indication of main node and language 
 * [] Enable user to associate external resources with Q items
+* Show tabs for Wikibooks, Wikinews, Wikiquote, Wikisource, Wikivoyage, commons, and Wikiversity when present
 * Implement visjs library for directed graph functionality
   * Make the concept map not jump around so much when drawing
 * Create Getting Started guide for ConceptMap in Slides
@@ -15,10 +16,12 @@ Facility that browses Wikipedia augmented with semantic capabilities
 * Highlight node that is represented by selected Wikipedia article
 * Consider showing all relationships for a node when double-clicking it:
   (perhaps showing nodes as dashed line borders that may be pinned/unpinned)
-* Compute and display nodes for shortest path between two selected nodes
+* Compute and display nodes for shortest path between two selected nodes. Related ideas:
+  * Allow specification of relationship types
+  * Implement using techniques like AngryLoki uses in https://github.com/AngryLoki/wikidata-graph-builder like https://wiki.blazegraph.com/wiki/index.php/RDF_GAS_API
 * Create UI for editing Wikidata items
 * Enable user to change panel widths
-* Enable full screen concept map
+* Enable full screen concept map, perhaps automatically so on small mobile devices
 * Export concept map to PDF
 * Implement caching of /claims results
 * Import Wikidata data into Neo4j
@@ -56,6 +59,7 @@ Facility that browses Wikipedia augmented with semantic capabilities
 
 * [] Create unit tests
 * [] Handle issues like when SPARQL query failed more gracefully
+* Diagnose why service seems to hang when used by and client when the batch client is running. Deadlocks?
 * [] Make the graph not so jumpy, and consider implementing sigmajs or visjs
 * WikiSearchController search() method probably needs to do a query to get the article URL for the article title (as it currently returns titles with spaces)
 * If relationship is removed from Wikidata, delete it from Neo4j at the same point at which relationships are added (MERGE)

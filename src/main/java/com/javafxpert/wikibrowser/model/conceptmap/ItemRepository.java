@@ -780,7 +780,7 @@ public interface ItemRepository extends GraphRepository<GraphItem> {
   @Query("MATCH (a:Item {itemId:{itemIdA}}), (b:Item {itemId:{itemIdB}}) MERGE (a)-[:VOICE_TYPE {propId:{propId}, label:{propLabel}}]->(b)")
   void addRelP412(@Param("itemIdA") String itemIdA, @Param("itemIdB") String itemIdB, @Param("propId") String propId, @Param("propLabel") String propLabel);
 
-  @Query("MATCH (a:Item {itemId:{itemIdA}}), (b:Item {itemId:{itemIdB}}) MERGE (a)-[:POSITION_PLAYED_ON_TEAM_/_SPECIALITY {propId:{propId}, label:{propLabel}}]->(b)")
+  @Query("MATCH (a:Item {itemId:{itemIdA}}), (b:Item {itemId:{itemIdB}}) MERGE (a)-[:POSITION_PLAYED_ON_TEAM_SPECIALITY {propId:{propId}, label:{propLabel}}]->(b)")
   void addRelP413(@Param("itemIdA") String itemIdA, @Param("itemIdB") String itemIdB, @Param("propId") String propId, @Param("propLabel") String propLabel);
 
   @Query("MATCH (a:Item {itemId:{itemIdA}}), (b:Item {itemId:{itemIdB}}) MERGE (a)-[:STOCK_EXCHANGE {propId:{propId}, label:{propLabel}}]->(b)")
