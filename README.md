@@ -18,6 +18,7 @@ Facility that browses Wikipedia augmented with semantic capabilities
   (perhaps showing nodes as dashed line borders that may be pinned/unpinned)
 * Compute and display nodes for shortest path between two selected nodes. Related ideas:
   * Allow specification of relationship types
+  * Allow showing all related items in the concept map in a relationship by clicking the property name in the center section. Holding shift down recursively shows all of them in the concept map.
   * Implement using techniques like AngryLoki uses in https://github.com/AngryLoki/wikidata-graph-builder like https://wiki.blazegraph.com/wiki/index.php/RDF_GAS_API
 * Create UI for editing Wikidata items
 * Enable user to change panel widths
@@ -50,7 +51,10 @@ Facility that browses Wikipedia augmented with semantic capabilities
   
 * Implement service discovery?
 
-* Implement bulkhead / circuit-breaker patterns?
+* Implement patterns like bulkhead and circuit-breaker so that external services like Neo4j, wikimedia REST call, etc. don't cause:
+  * services to hang
+  * service to require restart
+  * give bad messages?
 
 * Implement blue/green deploy for zero downtime
 
