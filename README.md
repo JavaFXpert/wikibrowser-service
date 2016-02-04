@@ -30,7 +30,6 @@ Facility that browses Wikipedia augmented with semantic capabilities
 * Provide ability to associate links to external articles
 * Consider inferring Neo4j labels from properties (e.g. instance of human is a person)
 * Make concept map resize when browser window is resized (without requiring reloading)
-* Performance suggestion from Brian Underwood Neo4j advocate: Consider querying Neo4j by labels and have an index on Label(itemId)
 * Associate image with each Q item
 * Create embeddable mini concept map viewer
 * Create image/snippet component that steps though ordered list of Q items
@@ -63,10 +62,9 @@ Facility that browses Wikipedia augmented with semantic capabilities
 
 * [] Create unit tests
 * [] Handle issues like when SPARQL query failed more gracefully
-* Diagnose why service seems to hang when used by and client when the batch client is running. Deadlocks?
+* If relationship is removed from Wikidata, delete it from Neo4j at the same point at which relationships are added (MERGE)
 * [] Make the graph not so jumpy, and consider implementing sigmajs or visjs
 * WikiSearchController search() method probably needs to do a query to get the article URL for the article title (as it currently returns titles with spaces)
-* If relationship is removed from Wikidata, delete it from Neo4j at the same point at which relationships are added (MERGE)
 * Make iFrame height resize when new web page loads
 * Draw a line for each relationship in the same direction between two nodes
 * Diagnose issue on Safari/Mac where bitly link isn't created when app started with conceptmap.cfapps.io but it did when started with conceptmap.io
