@@ -8,6 +8,7 @@ Facility that browses Wikipedia augmented with semantic capabilities
 * [] Enable user to save a concept map for later retrieval
   * Relationship between user and the nodes in the map, as well as an indication of main node and language 
 * [] Enable user to associate external resources with Q items
+* Put level of detail in properties that enables traversing lists such as US Presidents
 * Show tabs for Wikibooks, Wikinews, Wikiquote, Wikisource, Wikivoyage, commons, and Wikiversity when present
 * Implement visjs library for directed graph functionality
   * Make the concept map not jump around so much when drawing
@@ -16,10 +17,12 @@ Facility that browses Wikipedia augmented with semantic capabilities
 * Highlight node that is represented by selected Wikipedia article
 * Consider showing all relationships for a node when double-clicking it:
   (perhaps showing nodes as dashed line borders that may be pinned/unpinned)
+* On a node that represents a person, if there are family relationships then show options to traverse br CHILD relationship (forward, reverse, forward all levels, reverse all levels) 
+  * Investigate other such relationship types (e.g. parent taxon, subclass of, child, followed by)   
+  * Related task: Consider inferring Neo4j labels from properties (e.g. instance of human is a person)
 * Compute and display nodes for shortest path between two selected nodes. Related ideas:
-  * Allow specification of relationship types
-  * Allow showing all related items in the concept map in a relationship by clicking the property name in the center section. Holding shift down recursively shows all of them in the concept map.
-  * Implement using techniques like AngryLoki uses in https://github.com/AngryLoki/wikidata-graph-builder like https://wiki.blazegraph.com/wiki/index.php/RDF_GAS_API
+  * Allow specification of relationship types (e.g. CAST_MEMBER, SHARES_BORDER_WITH, MEMBER_OF)
+* Investigate techniques like AngryLoki uses in https://github.com/AngryLoki/wikidata-graph-builder like https://wiki.blazegraph.com/wiki/index.php/RDF_GAS_API
 * Create UI for editing Wikidata items
 * Enable user to change panel widths
 * Enable full screen concept map, perhaps automatically so on small mobile devices
@@ -28,11 +31,11 @@ Facility that browses Wikipedia augmented with semantic capabilities
 * Import Wikidata data into Neo4j
 * Implement erase map button
 * Provide ability to associate links to external articles
-* Consider inferring Neo4j labels from properties (e.g. instance of human is a person)
 * Make concept map resize when browser window is resized (without requiring reloading)
 * Associate image with each Q item
 * Create embeddable mini concept map viewer
 * Create image/snippet component that steps though ordered list of Q items
+* In the /claims and /relatedclaims (and /claimsxml) endpoints, consider returning Q-numbers when there isn't an article in the requested language.
 
 ## [] Cloud-native related features to consider implementing
 * Implement configuration server (override configurable items such as those in application.properties, and make starting Q item a configurable item in application.properties)
@@ -63,6 +66,7 @@ Facility that browses Wikipedia augmented with semantic capabilities
 * [] Create unit tests
 * [] Handle issues like when SPARQL query failed more gracefully
 * If relationship is removed from Wikidata, delete it from Neo4j at the same point at which relationships are added (MERGE)
+* Create process that generates MERGE code for missing properties in ItemRepository.java 
 * [] Make the graph not so jumpy, and consider implementing sigmajs or visjs
 * WikiSearchController search() method probably needs to do a query to get the article URL for the article title (as it currently returns titles with spaces)
 * Make iFrame height resize when new web page loads
