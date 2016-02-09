@@ -804,7 +804,6 @@
       }
       $('#shareLinkButton').prop('disabled', itemIdArray.length == 0);
       visibleGraphDirty = true;
-      loadConceptMap(itemIdArray.join(","));
     }
 
     function removeItemId(itemId) {
@@ -816,7 +815,6 @@
       }
       $('#shareLinkButton').prop('disabled', itemIdArray.length == 0);
       visibleGraphDirty = true;
-      loadConceptMap(itemIdArray.join(","));
     }
 
     function isItemIdInConceptMap(itemId) {
@@ -853,6 +851,7 @@
       else {
         removeItemId(curItemId);
       }
+      loadConceptMap(itemIdArray.join(","));
     }
 
     /**

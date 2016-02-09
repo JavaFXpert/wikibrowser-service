@@ -23,6 +23,8 @@ Facility that browses Wikipedia augmented with semantic capabilities
 * Compute and display nodes for shortest path between two selected nodes. Related ideas:
   * Allow specification of relationship types (e.g. CAST_MEMBER, SHARES_BORDER_WITH, MEMBER_OF)
 * Investigate techniques like AngryLoki uses in https://github.com/AngryLoki/wikidata-graph-builder like https://wiki.blazegraph.com/wiki/index.php/RDF_GAS_API
+* Implement Item and Property autocompletion using Select2 (see https://github.com/AngryLoki/wikidata-graph-builder and https://select2.github.io/)
+* Explore idea of associating tags from external systems (e.g. StackOverflow) to Q items, and inferring relationships among them
 * Create UI for editing Wikidata items
 * Enable user to change panel widths
 * Enable full screen concept map, perhaps automatically so on small mobile devices
