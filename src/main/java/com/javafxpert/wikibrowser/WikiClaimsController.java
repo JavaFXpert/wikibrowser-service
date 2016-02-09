@@ -407,7 +407,7 @@ public class WikiClaimsController {
    *
    * @param itemId
    * @param propId
-   * @param travDirection "f" for forward, "r" for reverse
+   * @param travDirectionArg "f" for forward, "r" for reverse
    * @param depthStr number of levels to traverse, defaults to 100 for now
    * @param targetId specifies the target item when this is used for shortest path calculation
    * @param limitStr maximum number of items to return, defaults to 100 for now
@@ -467,7 +467,7 @@ public class WikiClaimsController {
     }
 
     TraversalSparqlResponse traversalSparqlResponse = callTraversalSparqlQuery(itemId, propId, travDirection, depth, targetId, limit, lang);
-    TraversalResponse traversalResponse = convertTraversalSparqlResponse(traversalSparqlResponse);
+    TraversalResponse traversalResponse = convertTraversalSparqlResponse(traversalSparqlResponse, lang);
 
     //log.info("claimsResponse:" + claimsResponse);
 
@@ -571,7 +571,7 @@ public class WikiClaimsController {
     return traversalSparqlResponse;
   }
 
-  private TraversalResponse convertTraversalSparqlResponse(TraversalSparqlResponse traversalSparqlResponse) {
+  private TraversalResponse convertTraversalSparqlResponse(TraversalSparqlResponse traversalSparqlResponse, String lang) {
     TraversalResponse traversalResponse = new TraversalResponse();
 
     TraversalResultsFar results = traversalSparqlResponse.getTraversalResultsFar();
@@ -582,6 +582,9 @@ public class WikiClaimsController {
 
       String nextItemUrl = bindings.getItemUrlFar().getValue();
       String nextItemId = nextItemUrl.substring(nextItemUrl.lastIndexOf("/") + 1);
+
+      //TODO: Put following call in a long-running process so that any item shown in the concept map are eventually refreshed in Neo4j?
+      //renderClaims(nextItemId, lang); //Commented because too much of a load
 
       WikidataItem wikidataItem = new WikidataItem(nextItemId, bindings.getItemLabelFar().getValue());
       traversalResponse.addItem(wikidataItem);

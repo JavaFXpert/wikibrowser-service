@@ -356,6 +356,37 @@
           });
     }
 
+    /*
+     * Traverse breadth-first an item
+     * @param id Wikidata item ID
+     * @param prop Wikidata property ID
+     * @param direction "f" for forward, "r" for reverse, "u" for undirected
+     * @param depth number of levels to traverse (0 defaults to a reasonable maximum)
+     * @param limit maximum number of items to return (0 defaults to a reasonable maximum)
+     */
+    function traverseItems (id, prop, direction, depth, limit) {
+      $('#pinSwitch').prop('checked', true); // In case pin checkbox isn't already set
+
+      // Scroll the main page to the top
+      window.scrollTo(0, 0);
+
+      $.ajax({
+            url: '/traversal',
+            data: "id=" + id + "&prop=" + prop + "&direction=" + direction + "&depth=" + depth + "&limit=" + limit + "",
+            dataType: 'json',
+          })
+          .done(function(results) { // Variable data contains the data we get from serverside
+            var items = results.item;
+            for (var idx in items) {
+              var itemId = items[idx].id;
+              addItemId(itemId);
+            }
+            loadConceptMap();
+          })
+          .error(function(err) {
+            //alert("error: " + err);
+          });
+    }
 
     // Supply id and lang
     function loadWikipediaPageByItemId(id, lang) {
@@ -413,8 +444,10 @@
       $('#offCanvasTitle').text(title + (dispIds ? (" :" + curItemId) : "") + " [" + language + "]");
 
       for (var cIdx in resp.claim) {
+        var propId = resp.claim[cIdx].prop.id;
         if (resp.claim[cIdx].val.length == 1) {
-          $('#offCanvasList').append("<li><label>" + resp.claim[cIdx].prop.label + (dispIds ? (" :" + resp.claim[cIdx].prop.id) : "") + "</label></li>");
+          $('#offCanvasList').append("<li><label onclick='traverseItems(curItemId,\"" + propId + "\", \"f\", 1, 0)'>" + resp.claim[cIdx].prop.label + "</label>" +
+              "<label onclick='traverseItems(curItemId,\"" + propId + "\", \"f\", 0, 0)'>" + (dispIds ? (" :" + propId) : "+") + "</label></li>");
           itemId = resp.claim[cIdx].val[0].id;
           isProperty = itemId.substring(0, 1).toUpperCase() === "P";
           $('#offCanvasList').append("<li><a href='#' onclick='loadWikipediaPageByItemId(\"" + itemId + "\", \"" + language + "\")'>" +
@@ -423,7 +456,8 @@
               "</a></li>");
         }
         else {
-          $('#offCanvasList').append("<li><label>" + resp.claim[cIdx].prop.label + (dispIds ? (" :" + resp.claim[cIdx].prop.id) : "") + "</label></li>");
+          $('#offCanvasList').append("<li><label onclick='traverseItems(curItemId,\"" + propId + "\", \"f\", 1, 0)'>" + resp.claim[cIdx].prop.label + "</label>" +
+              "<label onclick='traverseItems(curItemId,\"" + propId + "\", \"f\", 0, 0)'>" + (dispIds ? (" :" + propId) : "+") + "</label></li>");
           var vals = resp.claim[cIdx].val;
           for (var vIdx in vals) {
             itemId = vals[vIdx].id;
@@ -438,8 +472,6 @@
         }
       }
       $('#offCanvasList').append("</ul>");
-
-      //loadConceptMap(itemIdArray.join(","));
     }
 
     function populateFromRelatedItemsList(resp) {
@@ -451,8 +483,11 @@
       var isProperty;
 
       for (var cIdx in resp.claim) {
+        var propId = resp.claim[cIdx].prop.id;
         if (resp.claim[cIdx].val.length == 1) {
-          $('#fromRelatedItemsList').append("<li><label><i>" + resp.claim[cIdx].prop.label + (dispIds ? (" :" + resp.claim[cIdx].prop.id) : "") + "</i></label></li>");
+          $('#fromRelatedItemsList').append("<li><label onclick='traverseItems(curItemId,\"" + propId + "\", \"f\", 1, 0)'>" + resp.claim[cIdx].prop.label + "</label>" +
+              "<label onclick='traverseItems(curItemId,\"" + propId + "\", \"r\", 0, 0)'>" + (dispIds ? (" :" + propId) : "+") + "</label></li>");
+          //$('#fromRelatedItemsList').append("<li><label><i>" + resp.claim[cIdx].prop.label + (dispIds ? (" :" + resp.claim[cIdx].prop.id) : "") + "</i></label></li>");
           itemId = resp.claim[cIdx].val[0].id;
           isProperty = itemId.substring(0, 1).toUpperCase() === "P";
           $('#fromRelatedItemsList').append("<li><a href='#' onclick='loadWikipediaPageByItemId(\"" + itemId + "\", \"" + language + "\")'><i>" +
@@ -461,7 +496,9 @@
               "</a></li>");
         }
         else {
-          $('#fromRelatedItemsList').append("<li><label><i>" + resp.claim[cIdx].prop.label + (dispIds ? (" :" + resp.claim[cIdx].prop.id) : "") + "</i></label></li>");
+          $('#fromRelatedItemsList').append("<li><label onclick='traverseItems(curItemId,\"" + propId + "\", \"f\", 1, 0)'>" + resp.claim[cIdx].prop.label + "</label>" +
+              "<label onclick='traverseItems(curItemId,\"" + propId + "\", \"r\", 0, 0)'>" + (dispIds ? (" :" + propId) : "+") + "</label></li>");
+          //$('#fromRelatedItemsList').append("<li><label><i>" + resp.claim[cIdx].prop.label + (dispIds ? (" :" + resp.claim[cIdx].prop.id) : "") + "</i></label></li>");
           var vals = resp.claim[cIdx].val;
           for (var vIdx in vals) {
             itemId = vals[vIdx].id;
@@ -477,7 +514,7 @@
       }
       $('#fromRelatedItemsList').append("</ul>");
 
-      loadConceptMap(itemIdArray.join(","));
+      loadConceptMap();
     }
 
     function retrieveLangLinks (title, lang) {
@@ -592,7 +629,8 @@
     var width = x * .50,
         height = (y - 270) * 1.2;
 
-    function loadConceptMap(itemsArg) {
+    function loadConceptMap() {
+      var itemsStr = itemIdArray.join(",");
       if (!visibleGraphDirty) {
         return;
       }
@@ -612,7 +650,7 @@
 
       var graphServiceUrl = "http://conceptmap.cfapps.io/graph?items=";
 
-      d3.json(graphServiceUrl + itemsArg, function (error, graph) {
+      d3.json(graphServiceUrl + itemsStr, function (error, graph) {
         if (error) throw error;
 
         var nodeById = d3.map();
@@ -851,7 +889,7 @@
       else {
         removeItemId(curItemId);
       }
-      loadConceptMap(itemIdArray.join(","));
+      loadConceptMap();
     }
 
     /**
