@@ -2,12 +2,14 @@
 Facility that browses Wikipedia augmented with semantic capabilities
 
 ## Enhancements to consider
+* Add ?parent to results from traversal sparql query & merge into neo4j?  (or just do a batch load periodically) 
 * [] Implement authentication
   * Use GitHub / OAUTH
   * https://spring.io/guides/tutorials/spring-boot-oauth2/
 * [] Enable user to save a concept map for later retrieval
   * Relationship between user and the nodes in the map, as well as an indication of main node and language 
 * [] Enable user to associate external resources with Q items
+* [] Create utility that loads Neo4j from Wikidata dump
 * Put level of detail in properties that enables traversing lists such as US Presidents
 * Show tabs for Wikibooks, Wikinews, Wikiquote, Wikisource, Wikivoyage, commons, and Wikiversity when present
 * Implement visjs library for directed graph functionality
@@ -96,5 +98,4 @@ Facility that browses Wikipedia augmented with semantic capabilities
 * Make WikiPageController#generateWikiBrowserPage() write the lang in generated links e.g. href=wikipage?name=Terre&lang=fr
 
 ## Miscellaneous notes:
-* Create utility that loads Neo4j from Wikidata dump
 * For Neo4j performance, CREATE INDEX ON :Item(itemId)

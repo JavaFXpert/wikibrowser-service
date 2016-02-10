@@ -583,9 +583,6 @@ public class WikiClaimsController {
       String nextItemUrl = bindings.getItemUrlFar().getValue();
       String nextItemId = nextItemUrl.substring(nextItemUrl.lastIndexOf("/") + 1);
 
-      //TODO: Put following call in a long-running process so that any item shown in the concept map are eventually refreshed in Neo4j?
-      //renderClaims(nextItemId, lang); //Commented because too much of a load
-
       WikidataItem wikidataItem = new WikidataItem(nextItemId, bindings.getItemLabelFar().getValue());
       traversalResponse.addItem(wikidataItem);
 
