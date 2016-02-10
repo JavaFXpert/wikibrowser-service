@@ -460,10 +460,11 @@
       for (var cIdx in resp.claim) {
         var propId = resp.claim[cIdx].prop.id;
         if (resp.claim[cIdx].val.length == 1) {
-          $('#offCanvasList').append("<li><label onclick='traverseItems(curItemId,\"" + propId + "\", \"f\", 1, 0)'>" + resp.claim[cIdx].prop.label + "</label>" +
-              "<label onclick='traverseItems(curItemId,\"" + propId + "\", \"f\", 0, 0)'>" + (dispIds ? (" :" + propId) : "+") + "</label>" +
-              "<label onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"u\")'>" + " [u]" + "</label>" +
-              "<label onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"f\")'>" + " [f]" + "</label></li>");
+          $('#offCanvasList').append("<li>" +
+              "<input type='button' value='spu' onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"u\")'></input>" + "&nbsp;" +
+              "<input type='button' value='spf' onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"f\")'></input>" +
+              "<label onclick='traverseItems(curItemId,\"" + propId + "\", \"f\", 1, 0)'>" + resp.claim[cIdx].prop.label + "</label>" +
+              "<label onclick='traverseItems(curItemId,\"" + propId + "\", \"f\", 0, 0)'>" + (dispIds ? (" :" + propId) : "+") + "</label></li>");
           itemId = resp.claim[cIdx].val[0].id;
           isProperty = itemId.substring(0, 1).toUpperCase() === "P";
           $('#offCanvasList').append("<li><a href='#' onclick='loadWikipediaPageByItemId(\"" + itemId + "\", \"" + language + "\")'>" +
@@ -472,10 +473,11 @@
               "</a></li>");
         }
         else {
-          $('#offCanvasList').append("<li><label onclick='traverseItems(curItemId,\"" + propId + "\", \"f\", 1, 0)'>" + resp.claim[cIdx].prop.label + "</label>" +
-              "<label onclick='traverseItems(curItemId,\"" + propId + "\", \"f\", 0, 0)'>" + (dispIds ? (" :" + propId) : "+") + "</label>" +
-              "<label onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"u\")'>" + " [u]" + "</label>" +
-              "<label onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"f\")'>" + " [f]" + "</label></li>");
+          $('#offCanvasList').append("<li>" +
+              "<input type='button' value='spu' onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"u\")'></input>" + "&nbsp;" +
+              "<input type='button' value='spf' onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"f\")'></input>" +
+              "<label onclick='traverseItems(curItemId,\"" + propId + "\", \"f\", 1, 0)'>" + resp.claim[cIdx].prop.label + "</label>" +
+              "<label onclick='traverseItems(curItemId,\"" + propId + "\", \"f\", 0, 0)'>" + (dispIds ? (" :" + propId) : "+") + "</label></li>");
           var vals = resp.claim[cIdx].val;
           for (var vIdx in vals) {
             itemId = vals[vIdx].id;
@@ -503,10 +505,11 @@
       for (var cIdx in resp.claim) {
         var propId = resp.claim[cIdx].prop.id;
         if (resp.claim[cIdx].val.length == 1) {
-          $('#fromRelatedItemsList').append("<li><label onclick='traverseItems(curItemId,\"" + propId + "\", \"r\", 1, 0)'><i>" + resp.claim[cIdx].prop.label + "</i></label>" +
-              "<label onclick='traverseItems(curItemId,\"" + propId + "\", \"r\", 0, 0)'><i>" + (dispIds ? (" :" + propId) : "+") + "</i></label>" +
-              "<label onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"u\")'><i>" + " [u]" + "</i></label>" +
-              "<label onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"r\")'><i>" + " [r]" + "</i></label></li>");
+          $('#fromRelatedItemsList').append("<li>" +
+              "<input type='button' value='spu' onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"u\")'></input>" + "&nbsp;" +
+              "<input type='button' value='spr' onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"r\")'></input>" +
+              "<label onclick='traverseItems(curItemId,\"" + propId + "\", \"f\", 1, 0)'>" + resp.claim[cIdx].prop.label + "</label>" +
+              "<label onclick='traverseItems(curItemId,\"" + propId + "\", \"f\", 0, 0)'>" + (dispIds ? (" :" + propId) : "+") + "</label></li>");
           itemId = resp.claim[cIdx].val[0].id;
           isProperty = itemId.substring(0, 1).toUpperCase() === "P";
           $('#fromRelatedItemsList').append("<li><a href='#' onclick='loadWikipediaPageByItemId(\"" + itemId + "\", \"" + language + "\")'><i>" +
@@ -515,10 +518,11 @@
               "</a></li>");
         }
         else {
-          $('#fromRelatedItemsList').append("<li><label onclick='traverseItems(curItemId,\"" + propId + "\", \"r\", 1, 0)'><i>" + resp.claim[cIdx].prop.label + "</i></label>" +
-              "<label onclick='traverseItems(curItemId,\"" + propId + "\", \"r\", 0, 0)'><i>" + (dispIds ? (" :" + propId) : "+") + "</i></label>" +
-              "<label onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"u\")'><i>" + " [u]" + "</i></label>" +
-              "<label onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"r\")'><i>" + " [r]" + "</i></label></li>");
+          $('#fromRelatedItemsList').append("<li>" +
+              "<input type='button' value='spu' onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"u\")'></input>" + "&nbsp;" +
+              "<input type='button' value='spr' onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"r\")'></input>" +
+              "<label onclick='traverseItems(curItemId,\"" + propId + "\", \"f\", 1, 0)'>" + resp.claim[cIdx].prop.label + "</label>" +
+              "<label onclick='traverseItems(curItemId,\"" + propId + "\", \"f\", 0, 0)'>" + (dispIds ? (" :" + propId) : "+") + "</label></li>");
           var vals = resp.claim[cIdx].val;
           for (var vIdx in vals) {
             itemId = vals[vIdx].id;
