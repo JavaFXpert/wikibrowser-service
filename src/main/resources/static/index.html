@@ -189,10 +189,10 @@
     var dispIds = true;
     var visibleGraphDirty = true;
 
-    // These variables hold the most recent item ID, property ID, and direction, for the start node of a shortest path request
-    var shortestPathStartItemId = "Q1";
-    var shortestPathStartPropId = "P793";
-    var shortestPathTravDirection = "f";
+    // These variables hold the item ID, property ID, and direction for the start node of a shortest path pending request
+    var shortestPathStartItemId = "";
+    var shortestPathStartPropId = "";
+    var shortestPathTravDirection = "";
 
     // TODO: Examine usefulness of, and possibly refactor, functionality in this handler
     window.addEventListener('load', function() {
@@ -394,9 +394,47 @@
     }
 
     /*
+     * Ascertain shortest path between two items
+     * @param id Wikidata item ID for start of path
+     * @param prop Wikidata property ID
+     * @param direction "f" for forward, "r" for reverse, "u" for undirected
+     * @param depth number of levels to traverse (0 defaults to a reasonable maximum)
+     * @param target Wikidata property ID for end of path
+     * @param limit maximum number of items to return (0 defaults to a reasonable maximum)
+     */
+    function shortestPathNavigation (id, prop, direction, depth, target, limit) {
+      //$('#pinSwitch').prop('checked', true); // In case pin checkbox isn't already set
+
+      // Scroll the main page to the top
+      //window.scrollTo(0, 0);
+
+      $.ajax({
+            url: '/traversal',
+            data: "id=" + id + "&prop=" + prop + "&direction=" + direction + "&depth=" + depth + "&target=" + target + "&limit=" + limit + "",
+            dataType: 'json',
+          })
+          .done(function(results) { // Variable data contains the data we get from serverside
+            var items = results.item;
+            for (var idx in items) {
+              var itemId = items[idx].id;
+              addItemId(itemId);
+            }
+            loadConceptMap();
+          })
+          .error(function(err) {
+            //alert("error: " + err);
+          });
+    }
+
+    /*
      * Note the most recent item ID, property ID, and direction for the start node of a shortest path request
      */
     function noteShortestPathStartInfo(itemId, propId, travDirection) {
+      $('#pinSwitch').prop('checked', true); // In case pin checkbox isn't already set
+
+      // Scroll the main page to the top
+      window.scrollTo(0, 0);
+
       shortestPathStartItemId = itemId;
       shortestPathStartPropId = propId;
       shortestPathTravDirection = travDirection;
@@ -783,7 +821,16 @@
 
         function handleMouseClick(d) {
           if (!isDragging) {
-            loadWikipediaPageByItemId(d.id, curLang);
+            if (shortestPathStartItemId.length > 0) {
+              // There is a pending request to do a shortest path navigation
+              shortestPathNavigation (shortestPathStartItemId, shortestPathStartPropId, shortestPathTravDirection, 0, d.id ,0);
+              shortestPathStartItemId = "";
+              shortestPathStartPropId = "";
+              shortestPathTravDirection = "";
+            }
+            else {
+              loadWikipediaPageByItemId(d.id, curLang);
+            }
           }
           isDragging = false;
         }
