@@ -430,7 +430,7 @@
      * Note the most recent item ID, property ID, and direction for the start node of a shortest path request
      */
     function noteShortestPathStartInfo(itemId, propId, travDirection) {
-      $('#pinSwitch').prop('checked', true); // In case pin checkbox isn't already set
+      //$('#pinSwitch').prop('checked', true); // In case pin checkbox isn't already set
 
       // Scroll the main page to the top
       window.scrollTo(0, 0);
@@ -546,8 +546,8 @@
           $('#fromRelatedItemsList').append("<li>" +
               "<input type='button' value='spu' onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"u\")'></input>" + "&nbsp;" +
               "<input type='button' value='spr' onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"r\")'></input>" +
-              "<label onclick='traverseItems(curItemId,\"" + propId + "\", \"f\", 1, 0)'>" + resp.claim[cIdx].prop.label + "</label>" +
-              "<label onclick='traverseItems(curItemId,\"" + propId + "\", \"f\", 0, 0)'>" + (dispIds ? (" :" + propId) : "+") + "</label></li>");
+              "<i><label onclick='traverseItems(curItemId,\"" + propId + "\", \"r\", 1, 0)'>" + resp.claim[cIdx].prop.label + "</label>" +
+              "<label onclick='traverseItems(curItemId,\"" + propId + "\", \"r\", 0, 0)'>" + (dispIds ? (" :" + propId) : "+") + "</label></i></li>");
           itemId = resp.claim[cIdx].val[0].id;
           isProperty = itemId.substring(0, 1).toUpperCase() === "P";
           $('#fromRelatedItemsList').append("<li><a href='#' onclick='loadWikipediaPageByItemId(\"" + itemId + "\", \"" + language + "\")'><i>" +
@@ -559,8 +559,8 @@
           $('#fromRelatedItemsList').append("<li>" +
               "<input type='button' value='spu' onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"u\")'></input>" + "&nbsp;" +
               "<input type='button' value='spr' onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"r\")'></input>" +
-              "<label onclick='traverseItems(curItemId,\"" + propId + "\", \"f\", 1, 0)'>" + resp.claim[cIdx].prop.label + "</label>" +
-              "<label onclick='traverseItems(curItemId,\"" + propId + "\", \"f\", 0, 0)'>" + (dispIds ? (" :" + propId) : "+") + "</label></li>");
+              "<i><label onclick='traverseItems(curItemId,\"" + propId + "\", \"r\", 1, 0)'>" + resp.claim[cIdx].prop.label + "</label>" +
+              "<label onclick='traverseItems(curItemId,\"" + propId + "\", \"r\", 0, 0)'>" + (dispIds ? (" :" + propId) : "+") + "</label></i></li>");
           var vals = resp.claim[cIdx].val;
           for (var vIdx in vals) {
             itemId = vals[vIdx].id;
