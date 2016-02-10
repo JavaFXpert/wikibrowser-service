@@ -485,8 +485,8 @@
       for (var cIdx in resp.claim) {
         var propId = resp.claim[cIdx].prop.id;
         if (resp.claim[cIdx].val.length == 1) {
-          $('#fromRelatedItemsList').append("<li><label onclick='traverseItems(curItemId,\"" + propId + "\", \"f\", 1, 0)'>" + resp.claim[cIdx].prop.label + "</label>" +
-              "<label onclick='traverseItems(curItemId,\"" + propId + "\", \"r\", 0, 0)'>" + (dispIds ? (" :" + propId) : "+") + "</label></li>");
+          $('#fromRelatedItemsList').append("<li><label onclick='traverseItems(curItemId,\"" + propId + "\", \"r\", 1, 0)'><i>" + resp.claim[cIdx].prop.label + "</i></label>" +
+              "<label onclick='traverseItems(curItemId,\"" + propId + "\", \"r\", 0, 0)'><i>" + (dispIds ? (" :" + propId) : "+") + "</i></label></li>");
           //$('#fromRelatedItemsList').append("<li><label><i>" + resp.claim[cIdx].prop.label + (dispIds ? (" :" + resp.claim[cIdx].prop.id) : "") + "</i></label></li>");
           itemId = resp.claim[cIdx].val[0].id;
           isProperty = itemId.substring(0, 1).toUpperCase() === "P";
@@ -496,8 +496,8 @@
               "</a></li>");
         }
         else {
-          $('#fromRelatedItemsList').append("<li><label onclick='traverseItems(curItemId,\"" + propId + "\", \"f\", 1, 0)'>" + resp.claim[cIdx].prop.label + "</label>" +
-              "<label onclick='traverseItems(curItemId,\"" + propId + "\", \"r\", 0, 0)'>" + (dispIds ? (" :" + propId) : "+") + "</label></li>");
+          $('#fromRelatedItemsList').append("<li><label onclick='traverseItems(curItemId,\"" + propId + "\", \"r\", 1, 0)'><i>" + resp.claim[cIdx].prop.label + "</i></label>" +
+              "<label onclick='traverseItems(curItemId,\"" + propId + "\", \"r\", 0, 0)'><i>" + (dispIds ? (" :" + propId) : "+") + "</i></label></li>");
           //$('#fromRelatedItemsList').append("<li><label><i>" + resp.claim[cIdx].prop.label + (dispIds ? (" :" + resp.claim[cIdx].prop.id) : "") + "</i></label></li>");
           var vals = resp.claim[cIdx].val;
           for (var vIdx in vals) {
