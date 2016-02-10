@@ -10,6 +10,9 @@ Facility that browses Wikipedia augmented with semantic capabilities
   * Relationship between user and the nodes in the map, as well as an indication of main node and language 
 * [] Enable user to associate external resources with Q items
 * [] Create utility that loads Neo4j from Wikidata dump
+* Create option that displays only those relationship types that were used in the latest traversal (or some other way of displaying a single type of relationship)
+* Associate image with each Q item
+  * Hovering over a graph node displays image for the Q item and a wikipedia title/snippet
 * Put level of detail in properties that enables traversing lists such as US Presidents
 * Show tabs for Wikibooks, Wikinews, Wikiquote, Wikisource, Wikivoyage, commons, and Wikiversity when present
 * Implement visjs library for directed graph functionality
@@ -36,7 +39,6 @@ Facility that browses Wikipedia augmented with semantic capabilities
 * Implement erase map button
 * Provide ability to associate links to external articles
 * Make concept map resize when browser window is resized (without requiring reloading)
-* Associate image with each Q item
 * Create embeddable mini concept map viewer
 * Create image/snippet component that steps though ordered list of Q items
 * In the /claims and /relatedclaims (and /claimsxml) endpoints, consider returning Q-numbers when there isn't an article in the requested language.
