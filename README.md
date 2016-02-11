@@ -2,6 +2,9 @@
 Facility that browses Wikipedia augmented with semantic capabilities
 
 ## Enhancements to consider
+* Move Wikidata relationships to left side, and concept map to middle?
+* Have option to automatically show nodes that have relationships between two pinned nodes
+* Put tooltips on spu, spf and spr butttons
 * Add ?parent to results from traversal sparql query & merge into neo4j?  (or just do a batch load periodically) 
 * [] Implement authentication
   * Use GitHub / OAUTH
