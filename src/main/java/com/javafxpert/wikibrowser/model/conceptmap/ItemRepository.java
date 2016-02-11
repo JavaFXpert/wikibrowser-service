@@ -45,6 +45,15 @@ public interface ItemRepository extends GraphRepository<GraphItem> {
   void addItem(@Param("itemId") String itemId, @Param("itemTitle") String itemTitle);
 
   /**
+   * Adds an item ID  without a title (before it is known) to the repository
+   * @param itemId
+   */
+  // MERGE (Q2:Item {itemId:"Q2"})
+  //@Query("MERGE (:Item {itemId:{itemId}})")
+  @Query("MERGE (a:Item {itemId:{itemId}})")
+  void addItem(@Param("itemId") String itemId);
+
+  /**
    * Adds an relationship to the repository
    * @param itemIdA
    * @param itemIdB

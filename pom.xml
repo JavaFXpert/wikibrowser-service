@@ -50,7 +50,12 @@
             <version>4.1.4</version>
         </dependency>
 
-    </dependencies>
+		<dependency>
+			<groupId>org.wikidata.wdtk</groupId>
+			<artifactId>wdtk-dumpfiles</artifactId>
+			<version>0.6.0</version>
+		</dependency>
+	</dependencies>
 
 	<build>
 		<plugins>
