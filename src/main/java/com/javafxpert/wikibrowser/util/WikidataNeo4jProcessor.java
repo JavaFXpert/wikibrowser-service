@@ -45,10 +45,14 @@ class WikidataNeo4jProcessor implements EntityDocumentProcessor {
 	private Log log = LogFactory.getLog(getClass());
 	private ItemRepository itemRepository;
 	private String language;
+	private int onesDigitInt;
+	private int startNum;
 
-	public WikidataNeo4jProcessor(ItemRepository itemRepository, String language) {
+	public WikidataNeo4jProcessor(ItemRepository itemRepository, String language, int onesDigitInt, int startNum) {
 		this.itemRepository = itemRepository;
 		this.language = language;
+		this.onesDigitInt = onesDigitInt;
+		this.startNum = startNum;
 	}
 
 	@Override
@@ -57,10 +61,22 @@ class WikidataNeo4jProcessor implements EntityDocumentProcessor {
 		String itemId = itemIdValue.getId();
 		String itemLabel = itemDocument.findLabel(language);
 
-		if (itemId != null && itemId.length() >= 2 && itemLabel != null & itemLabel.length() > 0) {
-			//log.info("====== itemRepository.addItem: " + itemId + ", " + itemLabel);
-			itemRepository.addItem(itemId, itemLabel);
+		if (itemId != null && itemId.length() >= 2 && itemLabel != null && itemLabel.length() > 0) {
 
+			if (itemId.substring(0,1).equalsIgnoreCase("Q")) {
+				int qNum = Integer.parseInt(itemId.substring(1));
+				if ((qNum % 10) == onesDigitInt && qNum >= startNum) {
+					log.info("====== itemRepository.addItem: " + itemId + ", " + itemLabel);
+					try {
+						itemRepository.addItem(itemId, itemLabel);
+					}
+					catch (Exception e) {
+						log.error("!!!!!!!!! itemRepository.addItem: " + itemId + ", " + itemLabel + "FAILED!!!!!!");
+					}
+				}
+			}
+
+			/* TODO: Put back in for relationship pass
 			Iterator<Statement> statementsIterator = itemDocument.getAllStatements();
 			while (statementsIterator.hasNext()) {
 				Statement statement = statementsIterator.next();
@@ -84,6 +100,7 @@ class WikidataNeo4jProcessor implements EntityDocumentProcessor {
 					}
 				}
 			}
+			*/
 		}
 	}
 

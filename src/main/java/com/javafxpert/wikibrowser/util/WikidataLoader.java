@@ -70,26 +70,40 @@ public class WikidataLoader {
   }
 
   @RequestMapping(value = "/wikidataload", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
-  public ResponseEntity<Object> loadWikidata(@RequestParam(value = "confirm") String confirm,
+  public ResponseEntity<Object> loadWikidata(@RequestParam(value = "onesdigit") String onesDigit,
+                                             @RequestParam(value = "startnum") String startNum,
                                              @RequestParam(value = "lang", defaultValue="en") String lang) {
 
     String language = wikiBrowserProperties.computeLang(lang);
     String status = "OK";
     String userDir = System.getProperty("user.dir");
 
-    log.info("WikidataLoader starting, confirm=" + confirm + ", userDir: " + userDir);
+    log.info("WikidataLoader starting, onesDigit=" + onesDigit + ", startNum: " + startNum+ ", userDir: " + userDir);
 
-    if (confirm.equals("yes") && userDir.equals("/Users/jamesweaver/spring-guides/wikibrowser-service")) {
-      log.info("Will begin processing");
+    int onesDigitInt = 0;
+    int startNumInt = 0;
+    try {
+      onesDigit = onesDigit.trim();
+      onesDigitInt = Integer.parseInt(onesDigit);
+      startNum = startNum.trim();
+      startNumInt = Integer.parseInt(startNum);
+      if (userDir.equals("/Users/jamesweaver/wikidata-stuff/wikidata-loader")) {
+      //if (userDir.equals("/Users/jamesweaver/spring-guides/wikibrowser-service")) {
+        log.info("********* Will begin processing, onesDigit=" + onesDigit + ", onesDigitInt =" + onesDigitInt + "**********");
+        WikidataNeo4jProcessor wikidataNeo4jProcessor = new WikidataNeo4jProcessor(itemRepository, language, onesDigitInt, startNumInt);
+        ExampleHelpers
+            .processEntitiesFromWikidataDump(wikidataNeo4jProcessor);
+      }
+      else {
+        status = "Criteria for running not satisfied";
+        log.info(status);
+      }
     }
-    else {
-      status = "Criteria for running not satisfied";
-      log.info(status);
+    catch (NumberFormatException nfe) {
+      log.info("Invalid onesdigit, must be 0-9");
     }
 
-    WikidataNeo4jProcessor wikidataNeo4jProcessor = new WikidataNeo4jProcessor(itemRepository, language);
-    ExampleHelpers
-        .processEntitiesFromWikidataDump(wikidataNeo4jProcessor);
+
 
     /*
     if (itemInfoResponse != null) {
