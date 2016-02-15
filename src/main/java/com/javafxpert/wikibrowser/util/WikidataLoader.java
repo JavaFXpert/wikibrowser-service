@@ -69,9 +69,18 @@ public class WikidataLoader {
     itemRepository = itemService.getItemRepository();
   }
 
+  /*
+   * Invokes bulk data load to Neo4j from Wikidata dumps.  To speed up loading data, this endpoint takes a parameter
+   * that indicates the subset (ending in a given digit) of the Wikidata items should be processed.
+   *
+   * @param onesdigit Subset (ending in a given digit) of the Wikidata items to be processed
+   * @param startnum ID number (without the leading Q) of the item to begin processing
+   * @param process Either "items" or "relationships".  Items must be processed successfully before processing relationships
+   */
   @RequestMapping(value = "/wikidataload", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
   public ResponseEntity<Object> loadWikidata(@RequestParam(value = "onesdigit") String onesDigit,
                                              @RequestParam(value = "startnum") String startNum,
+                                             @RequestParam(value = "process", defaultValue="items") String processType,
                                              @RequestParam(value = "lang", defaultValue="en") String lang) {
 
     String language = wikiBrowserProperties.computeLang(lang);
@@ -87,10 +96,10 @@ public class WikidataLoader {
       onesDigitInt = Integer.parseInt(onesDigit);
       startNum = startNum.trim();
       startNumInt = Integer.parseInt(startNum);
-      if (userDir.equals("/Users/jamesweaver/wikidata-stuff/wikidata-loader")) {
-      //if (userDir.equals("/Users/jamesweaver/spring-guides/wikibrowser-service")) {
+      //if (userDir.equals("/Users/jamesweaver/wikidata-stuff/wikidata-loader")) {
+      if (userDir.equals("/Users/jamesweaver/spring-guides/wikibrowser-service")) {
         log.info("********* Will begin processing, onesDigit=" + onesDigit + ", onesDigitInt =" + onesDigitInt + "**********");
-        WikidataNeo4jProcessor wikidataNeo4jProcessor = new WikidataNeo4jProcessor(itemRepository, language, onesDigitInt, startNumInt);
+        WikidataNeo4jProcessor wikidataNeo4jProcessor = new WikidataNeo4jProcessor(itemRepository, language, onesDigitInt, startNumInt, processType);
         ExampleHelpers
             .processEntitiesFromWikidataDump(wikidataNeo4jProcessor);
       }
@@ -102,75 +111,6 @@ public class WikidataLoader {
     catch (NumberFormatException nfe) {
       log.info("Invalid onesdigit, must be 0-9");
     }
-
-
-
-    /*
-    if (itemInfoResponse != null) {
-      claimsResponse.setArticleTitle(itemInfoResponse.getArticleTitle());
-      claimsResponse.setArticleId(itemInfoResponse.getItemId());
-
-      // MERGE item into Neo4j graph
-      if (claimsResponse.getArticleId() != null && claimsResponse.getArticleTitle() != null) {
-        //log.info("====== itemRepository.addItem: " + claimsResponse.getArticleId() + ", " + claimsResponse.getArticleTitle());
-        itemRepository.addItem(claimsResponse.getArticleId(), claimsResponse.getArticleTitle());
-      }
-    }
-
-    //TODO: Consider implementing fallback to "en" if Wikipedia article doesn't exist in requested language
-    claimsResponse.setWpBase(String.format(WIKIPEDIA_TEMPLATE, lang));
-
-    //TODO: Consider implementing fallback to "en" if mobile Wikipedia article doesn't exist in requested language
-    claimsResponse.setWpMobileBase(String.format(WIKIPEDIA_MOBILE_TEMPLATE, lang));
-
-    Results results = claimsSparqlResponse.getResults();
-    Iterator bindingsIter = results.getBindings().iterator();
-
-    String lastPropId = "";
-    WikidataClaim wikidataClaim = null; //TODO: Consider using exception handling to make null assignment unnecessary
-    while (bindingsIter.hasNext()) {
-      Bindings bindings = (Bindings)bindingsIter.next(); //TODO: Consider renaming Bindings to Binding
-
-      // There is a 1:many relationship between property IDs and related values
-      String nextPropUrl = bindings.getPropUrl().getValue();
-      String nextPropId = nextPropUrl.substring(nextPropUrl.lastIndexOf("/") + 1);
-      String nextValUrl = bindings.getValUrl().getValue();
-      String nextValId = nextValUrl.substring(nextValUrl.lastIndexOf("/") + 1);
-      //log.info("lastPropId: " + lastPropId + ", nextPropId: " + nextPropId);
-      if (!nextPropId.equals(lastPropId)) {
-        wikidataClaim = new WikidataClaim();
-        wikidataClaim.setProp(new WikidataProperty(nextPropId, bindings.getPropLabel().getValue()));
-        claimsResponse.getClaims().add(wikidataClaim);
-        lastPropId = nextPropId;
-      }
-
-      WikidataItem wikidataItem = new WikidataItem(nextValId, bindings.getValLabel().getValue());
-      wikidataClaim.addItem(wikidataItem);
-
-      // MERGE item and relationships into Neo4j graph
-      if (itemId != null &&
-          wikidataItem.getId() != null &&
-          wikidataClaim.getProp().getId() != null &&
-          wikidataClaim.getProp().getLabel() != null) {
-
-        // Write item
-        //log.info("++++++ itemRepository.addItem: " + wikidataItem.getId() + ", " + wikidataItem.getLabel());
-        itemRepository.addItem(wikidataItem.getId(), wikidataItem.getLabel());
-
-        // Write relationship
-        //log.info("------ itemRepository.addRelationship: " + itemId + ", " +
-        //                 wikidataItem.getId() + ", " +
-        //                 wikidataClaim.getProp().getId() + ", " +
-        //                 wikidataClaim.getProp().getLabel());
-
-        itemRepository.addRelationship(itemId,
-            wikidataItem.getId(),
-            wikidataClaim.getProp().getId(),
-            wikidataClaim.getProp().getLabel());
-      }
-    }
-    */
-
 
     return Optional.ofNullable(status)  //TODO: Replace with indicator of how it went
         .map(cr -> new ResponseEntity<>((Object)cr, HttpStatus.OK))
