@@ -49,6 +49,9 @@ class WikidataNeo4jProcessor implements EntityDocumentProcessor {
 	private int startNum;
 	private String processType;
 
+	private boolean startNumReached = false;
+
+
 	public WikidataNeo4jProcessor(ItemRepository itemRepository, String language, int onesDigitInt, int startNum, String processType) {
 		this.itemRepository = itemRepository;
 		this.language = language;
@@ -67,9 +70,15 @@ class WikidataNeo4jProcessor implements EntityDocumentProcessor {
 
 			if (itemId.substring(0,1).equalsIgnoreCase("Q")) {
 				int qNum = Integer.parseInt(itemId.substring(1));
-				if ((qNum % 10) == onesDigitInt && qNum >= startNum) {
+				if ((qNum % 10) == onesDigitInt && qNum == startNum) {
+					startNumReached = true;
+				}
+				if ((qNum % 10) == onesDigitInt && startNumReached) {
+					//log.info("itemId: " + itemId);
 					if (!processType.equalsIgnoreCase("relationships")) {
-						log.info("====== itemRepository.addItem: " + itemId + ", " + itemLabel);
+
+						log.info("====== itemRepository.addItem: " + itemId);
+
 						try {
 							itemRepository.addItem(itemId, itemLabel);
 						} catch (Exception e) {
@@ -89,15 +98,12 @@ class WikidataNeo4jProcessor implements EntityDocumentProcessor {
 
 								if (valueItemId != null && valueItemId.length() >= 2 &&
 										propId != null && propId.length() > 0 &&
-										propLabel != null && propLabel.length() > 0 ) {
-
-									//log.info("++++++ itemRepository.addItem: " + valueItemId + ", [title not known yet]");
-									//itemRepository.addItem(valueItemId); //Commented, as assumption is that all the items exist in DB
+										propLabel != null && propLabel.length() > 0) {
 
 									log.info("------ itemRepository.addRelationship: " + itemId + ", " +
 											valueItemId + ", " + propId + ", " + propLabel);
 									try {
-										//itemRepository.addRelationship(itemId, valueItemId, propId,	propLabel);
+										itemRepository.addRelationship(itemId, valueItemId, propId,	propLabel);
 									} catch (Exception e) {
 										log.error("!!!!!!!!! itemRepository.addRelationship: " + itemId + ", " + valueItemId + ", " +
 												propId + ", " + propLabel + "FAILED!!!!!!");
@@ -110,32 +116,6 @@ class WikidataNeo4jProcessor implements EntityDocumentProcessor {
 					}
 				}
 			}
-
-			/* TODO: Put back in for relationship pass
-			Iterator<Statement> statementsIterator = itemDocument.getAllStatements();
-			while (statementsIterator.hasNext()) {
-				Statement statement = statementsIterator.next();
-				Snak snak = statement.getClaim().getMainSnak();
-				String propId = snak.getPropertyId().getId();
-				Value value = snak.getValue();
-				if (value instanceof ItemIdValue) {
-					String valueItemId = ((ItemIdValue) value).getId();
-					String propLabel = propId.toLowerCase();
-
-					if (valueItemId != null && valueItemId.length() >= 2 &&
-							propId != null && propId.length() > 0 &&
-							propLabel != null && propLabel.length() > 0 ) {
-
-						//log.info("++++++ itemRepository.addItem: " + valueItemId + ", [title not known yet]");
-						itemRepository.addItem(valueItemId);
-
-						//log.info("------ itemRepository.addRelationship: " + itemId + ", " +
-						//		valueItemId + ", " + propId + ", " + propLabel);
-						itemRepository.addRelationship(itemId, valueItemId, propId,	propLabel);
-					}
-				}
-			}
-			*/
 		}
 	}
 

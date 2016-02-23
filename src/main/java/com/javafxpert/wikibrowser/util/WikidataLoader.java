@@ -79,7 +79,7 @@ public class WikidataLoader {
    */
   @RequestMapping(value = "/wikidataload", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
   public ResponseEntity<Object> loadWikidata(@RequestParam(value = "onesdigit") String onesDigit,
-                                             @RequestParam(value = "startnum") String startNum,
+                                             @RequestParam(value = "startnum", defaultValue="1") String startNum,
                                              @RequestParam(value = "process", defaultValue="items") String processType,
                                              @RequestParam(value = "lang", defaultValue="en") String lang) {
 
@@ -96,9 +96,9 @@ public class WikidataLoader {
       onesDigitInt = Integer.parseInt(onesDigit);
       startNum = startNum.trim();
       startNumInt = Integer.parseInt(startNum);
-      //if (userDir.equals("/Users/jamesweaver/wikidata-stuff/wikidata-loader")) {
-      if (userDir.equals("/Users/jamesweaver/spring-guides/wikibrowser-service")) {
-        log.info("********* Will begin processing, onesDigit=" + onesDigit + ", onesDigitInt =" + onesDigitInt + "**********");
+      if (userDir.equals("/Users/jamesweaver/wikidata-stuff/wikidata-loader")) {
+      //if (userDir.equals("/Users/jamesweaver/spring-guides/wikibrowser-service")) {
+        log.info("********* Will begin processing, onesDigit=" + onesDigit + ", onesDigitInt =" + onesDigitInt + ", startNumInt =" + startNumInt + ", processType =" + processType + "**********");
         WikidataNeo4jProcessor wikidataNeo4jProcessor = new WikidataNeo4jProcessor(itemRepository, language, onesDigitInt, startNumInt, processType);
         ExampleHelpers
             .processEntitiesFromWikidataDump(wikidataNeo4jProcessor);
