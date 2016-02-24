@@ -58,6 +58,10 @@ class WikidataNeo4jProcessor implements EntityDocumentProcessor {
 		this.onesDigitInt = onesDigitInt;
 		this.startNum = startNum;
 		this.processType = processType;
+
+		if (startNum == 1) {
+			startNumReached = true;
+		}
 	}
 
 	@Override

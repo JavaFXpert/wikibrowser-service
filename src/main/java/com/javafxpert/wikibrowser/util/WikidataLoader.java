@@ -75,6 +75,7 @@ public class WikidataLoader {
    *
    * @param onesdigit Subset (ending in a given digit) of the Wikidata items to be processed
    * @param startnum ID number (without the leading Q) of the item to begin processing
+   *     IMPORTANT NOTE: The item are *not* in numeric order in the dump file
    * @param process Either "items" or "relationships".  Items must be processed successfully before processing relationships
    */
   @RequestMapping(value = "/wikidataload", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
