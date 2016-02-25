@@ -104,9 +104,15 @@ class WikidataNeo4jProcessor implements EntityDocumentProcessor {
 										propId != null && propId.length() > 0 &&
 										propLabel != null && propLabel.length() > 0) {
 
-									//TODO: Comment next two lines if all items already exist in DB. Also if keeping in, wrap in exception handling and investigate if item label is available
-									//log.info("++++++ itemRepository.addItem: " + valueItemId + ", [title not known yet]");
-									itemRepository.addItem(valueItemId);
+									//TODO: Comment next five lines if all items already exist in DB. Also when using, investigate if item label is available
+									/*
+									try {
+										itemRepository.addItem(valueItemId);
+									}
+									catch (Exception e) {
+										log.error("!!!!!!!!! itemRepository.addItem: " + valueItemId + "FAILED!!!!!!");
+									}
+									*/
 
 									log.info("------ itemRepository.addRelationship: " + itemId + ", " +
 											valueItemId + ", " + propId + ", " + propLabel);

@@ -2,6 +2,7 @@
 Facility that browses Wikipedia augmented with semantic capabilities
 
 ## Enhancements to consider
+* Add spu, spf and spr buttons to the two top-level relationship headings
 * Implement in SPARQL a query similar to the Neo4j query that returns results necessary to disply pinned nodes and their relationship.  This could potentially eliminate the need for such a large Neo4j DB.
 * Move Wikidata relationships to left side, and concept map to middle?
 * Have option to automatically show nodes that have relationships between two pinned nodes
