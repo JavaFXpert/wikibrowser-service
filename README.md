@@ -3,6 +3,18 @@ Facility that browses Wikipedia augmented with semantic capabilities
 
 ## Enhancements to consider
 * Add spu, spf, spr, exp1, exp* buttons to the two top-level relationship headings
+  * Perhaps the spu button could return all shortest paths, or just one shortest path that exclude obvious connections.  Here are a couple of queries for reference:
+  
+    * The returned collection of paths does not contain any path that contains an Item node whose itemId is equal to “Q5”:
+      MATCH p=allShortestPaths( (a:Item {itemId:"Q6294"})-[*]-(b:Item {itemId:"Q359442"}) )
+      WHERE NONE(x IN NODES(p) WHERE x:Item AND x.itemId = "Q5")
+      RETURN p;
+      
+    * The returned collection of paths does not contain any path that contains a relationship whose propId is equal to “P31”:
+      MATCH p=allShortestPaths( (a:Item {itemId:"Q6294"})-[*]-(b:Item {itemId:"Q359442"}) )
+      WHERE NONE(x IN RELATIONSHIPS(p) WHERE x.propId = "P31")
+      RETURN p;
+  
 * Implement in SPARQL a query similar to the Neo4j query that returns results necessary to disply pinned nodes and their relationship.  This could potentially eliminate the need for such a large Neo4j DB.
 * Move Wikidata relationships to left side, and concept map to middle?
 * Have option to automatically show nodes that have relationships between two pinned nodes
