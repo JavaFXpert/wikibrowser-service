@@ -118,3 +118,4 @@ Facility that browses Wikipedia augmented with semantic capabilities
 
 ## Miscellaneous notes:
 * For Neo4j performance, CREATE INDEX ON :Item(itemId)
+* To remove all outgoing relationships from a node, MATCH (a:Item {itemId: "Q43274"})-[r]->(b) DELETE r
