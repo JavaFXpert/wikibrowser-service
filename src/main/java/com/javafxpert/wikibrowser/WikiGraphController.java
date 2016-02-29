@@ -40,7 +40,6 @@ import java.util.*;
  * Created by jamesweaver on 10/13/15.
  */
 @RestController
-@RequestMapping("/graph")
 public class WikiGraphController {
   private Log log = LogFactory.getLog(getClass());
 
@@ -51,28 +50,17 @@ public class WikiGraphController {
     this.wikiBrowserProperties = wikiBrowserProperties;
   }
 
-
-  @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  /**
+   * Query Neo4j for all relationships between given set of item IDs
+   * @param items
+   * @return
+   */
+  @RequestMapping(value = "/graph", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Object> search(@RequestParam(value = "items", defaultValue="") String items) {
     // Example endpoint usage is graph?items=Q24, Q30, Q23, Q16, Q20
     // Scrub the input, and output a string for the Cypher query similar to the following:
     // 'Q24','Q30','Q23','Q16','Q20'
     String argStr = WikiBrowserUtils.scrubItemIds(items, true);
-
-/* TODO: Remove
-    String[] itemsArray = items.split(",");
-    String argStr = "";
-    for (int i = 0; i < itemsArray.length; i++) {
-      String itemStr = itemsArray[i];
-      itemStr = itemStr.trim().toUpperCase();
-      if (itemStr.length() > 0 && itemStr.substring(0, 1).equals("Q")) {
-        argStr += "'" + itemStr + "'";
-        if (i < itemsArray.length - 1) {
-          argStr += ",";
-        }
-      }
-    }
-*/
 
     log.info("argStr=" + argStr);
 
@@ -118,6 +106,53 @@ RETURN a, collect(rel)
     return Optional.ofNullable(graphResponseNear)
         .map(cr -> new ResponseEntity<>((Object)cr, HttpStatus.OK))
         .orElse(new ResponseEntity<>("Graph query unsuccessful", HttpStatus.INTERNAL_SERVER_ERROR));
+  }
+
+  /**
+   * Retrieve all paths through any properties, with a length of one or two hops, between two given item IDs
+   * @param itemId
+   * @param targetId
+   * @return
+   */
+  @RequestMapping(value = "/shortpaths", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Object> retrieveShortPaths(@RequestParam(value = "id", defaultValue="Q1")
+                                              String itemId,
+                                              @RequestParam(value = "target", defaultValue="Q323")
+                                              String targetId) {
+    // Example endpoint usage is shortpaths?id=Q23&target=Q9696
+
+    GraphResponseNear graphResponseNear = null;
+
+    String neoCypherUrl = wikiBrowserProperties.getNeoCypherUrl();
+
+    /*  Example Cypher query POST
+    {
+      "statements" : [ {
+        "statement" : "MATCH p=allShortestPaths( (a:Item {itemId:'Q23'})-[*..2]-(b:Item {itemId:'Q9696'}) ) RETURN p",
+        "resultDataContents" : ["graph" ]
+      } ]
+    }
+    */
+
+    /*
+MATCH p=allShortestPaths( (a:Item {itemId:'Q23'})-[*..2]-(b:Item {itemId:'Q9696'}) )
+RETURN p
+   */
+
+    String qa = "{\"statements\":[{\"statement\":\"MATCH p=allShortestPaths( (a:Item {itemId:'";
+    String qb = itemId; // starting item ID
+    String qc = "'})-[*..2]-(b:Item {itemId:'";
+    String qd = targetId; // target item ID
+    String qe = "'}) ) RETURN p\",";
+    String qf = "\"resultDataContents\":[\"graph\"]}]}";
+
+    String postString = qa + qb + qc + qd + qe + qf;
+
+    graphResponseNear = queryProcessSearchResponse(neoCypherUrl, postString);
+
+    return Optional.ofNullable(graphResponseNear)
+        .map(cr -> new ResponseEntity<>((Object)cr, HttpStatus.OK))
+        .orElse(new ResponseEntity<>("shortpaths query unsuccessful", HttpStatus.INTERNAL_SERVER_ERROR));
   }
 
   /**

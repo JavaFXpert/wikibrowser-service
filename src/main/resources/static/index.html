@@ -728,6 +728,7 @@
           .linkDistance(120)
           .charge(-450);
 
+      // TODO: Make the following statement configurable:
       var graphServiceUrl = "http://conceptmap.cfapps.io/graph?items=";
 
       d3.json(graphServiceUrl + itemsStr, function (error, graph) {

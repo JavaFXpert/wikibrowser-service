@@ -14,6 +14,11 @@ Facility that browses Wikipedia augmented with semantic capabilities
       MATCH p=allShortestPaths( (a:Item {itemId:"Q6294"})-[*]-(b:Item {itemId:"Q359442"}) )
       WHERE NONE(x IN RELATIONSHIPS(p) WHERE x.propId = "P31")
       RETURN p;
+      
+    * The returned collection of paths does not contain any path that contains a relationship whose propId is equal to “P1343” or whose itemId is equal to “Q5”:
+      MATCH p=allShortestPaths( (a:Item {itemId:"Q23"})-[*..2]-(b:Item {itemId:"Q9696"}) )
+      WHERE NONE(x IN NODES(p) WHERE x:Item AND x.itemId = "Q5") AND NONE(y IN RELATIONSHIPS(p) WHERE y.propId = "P1343")
+      RETURN p;
   
 * Implement in SPARQL a query similar to the Neo4j query that returns results necessary to disply pinned nodes and their relationship.  This could potentially eliminate the need for such a large Neo4j DB.
 * Move Wikidata relationships to left side, and concept map to middle?
