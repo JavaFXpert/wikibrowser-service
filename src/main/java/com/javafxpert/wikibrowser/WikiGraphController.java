@@ -109,7 +109,8 @@ RETURN a, collect(rel)
   }
 
   /**
-   * Retrieve all paths through any properties, with a length of one or two hops, between two given item IDs
+   * Retrieve all paths through any properties, with a length of one or two hops, between two given item IDs.
+   * TODO: Consider adding a LIMIT parameter
    * @param itemId
    * @param targetId
    * @return
@@ -136,14 +137,14 @@ RETURN a, collect(rel)
 
     /*
 MATCH p=allShortestPaths( (a:Item {itemId:'Q23'})-[*..2]-(b:Item {itemId:'Q9696'}) )
-RETURN p
+RETURN p LIMIT 100
    */
 
     String qa = "{\"statements\":[{\"statement\":\"MATCH p=allShortestPaths( (a:Item {itemId:'";
     String qb = itemId; // starting item ID
     String qc = "'})-[*..2]-(b:Item {itemId:'";
     String qd = targetId; // target item ID
-    String qe = "'}) ) RETURN p\",";
+    String qe = "'}) ) RETURN p LIMIT 100\",";
     String qf = "\"resultDataContents\":[\"graph\"]}]}";
 
     String postString = qa + qb + qc + qd + qe + qf;
