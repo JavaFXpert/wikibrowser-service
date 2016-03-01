@@ -144,10 +144,11 @@ RETURN p LIMIT 100
     String qb = itemId; // starting item ID
     String qc = "'})-[*..2]-(b:Item {itemId:'";
     String qd = targetId; // target item ID
-    String qe = "'}) ) RETURN p LIMIT 100\",";
-    String qf = "\"resultDataContents\":[\"graph\"]}]}";
+    String qe = "'}) ) WHERE NONE(x IN NODES(p) WHERE x:Item AND x.itemId = 'Q5') "; // Don't return paths that contain human item ID, or gender/described by relationships (slows query down)
+    String qf = "AND NONE(y IN RELATIONSHIPS(p) WHERE y.propId = 'P21') AND NONE(y IN RELATIONSHIPS(p) WHERE y.propId = 'P1343') RETURN p LIMIT 100\",";
+    String qg = "\"resultDataContents\":[\"graph\"]}]}";
 
-    String postString = qa + qb + qc + qd + qe + qf;
+    String postString = qa + qb + qc + qd + qe + qf + qg;
 
     graphResponseNear = queryProcessSearchResponse(neoCypherUrl, postString);
 
