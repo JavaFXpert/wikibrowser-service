@@ -158,6 +158,55 @@ RETURN p LIMIT 100
   }
 
   /**
+   * Retrieve shortest path from a given item ID to the root of the items (Entity Q35120) that contains only
+   * subclass-of (P279), instance-of (P31), and part-of
+   * @param itemId
+   * @return
+   */
+  @RequestMapping(value = "/rootpaths", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Object> retrieveShortestPathsToRoot(@RequestParam(value = "id", defaultValue="Q2") String itemId) {
+    // Example endpoint usage is rootpath?id=Q319
+
+    String targetId = "Q35120"; // Wikidata Entity item ID
+
+    GraphResponseNear graphResponseNear = null;
+
+    String neoCypherUrl = wikiBrowserProperties.getNeoCypherUrl();
+
+    /*  Example Cypher query POST
+    {
+      "statements" : [ {
+        "statement" : "MATCH p=allShortestPaths( (a:Item {itemId:'Q319'})-[*]->(b:Item {itemId:'Q35120'}) ) WHERE NONE(x IN RELATIONSHIPS(p) WHERE (x.propId <> 'P279') AND (x.propId <> 'P31') AND (x.propId <> 'P361')) RETURN p",
+        "resultDataContents" : ["graph" ]
+      } ]
+    }
+    */
+
+    /*
+MATCH p=shortestPath( (a:Item {itemId:'Q319'})-[*]->(b:Item {itemId:'Q35120'}) )
+WHERE NONE(x IN RELATIONSHIPS(p) WHERE (x.propId <> 'P279') AND (x.propId <> 'P31') AND (x.propId <> 'P361'))
+RETURN p
+   */
+
+    String qa = "{\"statements\":[{\"statement\":\"MATCH p=allShortestPaths( (a:Item {itemId:'";
+    String qb = itemId; // starting item ID
+    String qc = "'})-[*]->(b:Item {itemId:'";
+    String qd = targetId; // target item ID
+    // Regard a path if it contains only subclass-of, instance-of, and part-of relationships
+    String qe = "'}) ) WHERE NONE(x IN RELATIONSHIPS(p) WHERE (x.propId <> 'P279') AND (x.propId <> 'P31') AND (x.propId <> 'P361')) ";
+    String qf = "RETURN p\",";
+    String qg = "\"resultDataContents\":[\"graph\"]}]}";
+
+    String postString = qa + qb + qc + qd + qe + qf + qg;
+
+    graphResponseNear = queryProcessSearchResponse(neoCypherUrl, postString);
+
+    return Optional.ofNullable(graphResponseNear)
+        .map(cr -> new ResponseEntity<>((Object)cr, HttpStatus.OK))
+        .orElse(new ResponseEntity<>("rootpaths query unsuccessful", HttpStatus.INTERNAL_SERVER_ERROR));
+  }
+
+  /**
    * Calls the Neo4j Transactional Cypher service and returns an object that holds results
    * @param neoCypherUrl
    * @param postString

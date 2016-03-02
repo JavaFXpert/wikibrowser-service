@@ -134,6 +134,9 @@ public interface ItemRepository extends GraphRepository<GraphItem> {
 
   // Newly discovered properties
 
+  @Query("MATCH (a:Item {itemId:{itemIdA}}), (b:Item {itemId:{itemIdB}}) MERGE (a)-[:TAXON_AUTHOR {propId:{propId}, label:{propLabel}}]->(b)")
+  void addRelP405(@Param("itemIdA") String itemIdA, @Param("itemIdB") String itemIdB, @Param("propId") String propId, @Param("propLabel") String propLabel);
+
   @Query("MATCH (a:Item {itemId:{itemIdA}}), (b:Item {itemId:{itemIdB}}) MERGE (a)-[:DIPLOMATIC_MISSION_SENT {propId:{propId}, label:{propLabel}}]->(b)")
   void addRelP531(@Param("itemIdA") String itemIdA, @Param("itemIdB") String itemIdB, @Param("propId") String propId, @Param("propLabel") String propLabel);
 
