@@ -40,7 +40,6 @@ public interface ItemRepository extends GraphRepository<GraphItem> {
    * @param itemTitle
    */
   // MERGE (Q2:Item {itemId:"Q2", title:"Earth"})
-  //@Query("MERGE (:Item {itemId:{itemId}, title:{itemTitle}})")
   @Query("MERGE (a:Item {itemId:{itemId}}) SET a.title = {itemTitle}")
   void addItem(@Param("itemId") String itemId, @Param("itemTitle") String itemTitle);
 
@@ -49,7 +48,6 @@ public interface ItemRepository extends GraphRepository<GraphItem> {
    * @param itemId
    */
   // MERGE (Q2:Item {itemId:"Q2"})
-  //@Query("MERGE (:Item {itemId:{itemId}})")
   @Query("MERGE (a:Item {itemId:{itemId}})")
   void addItem(@Param("itemId") String itemId);
 
@@ -133,6 +131,15 @@ public interface ItemRepository extends GraphRepository<GraphItem> {
   }
 
   // Newly discovered properties
+
+  @Query("MATCH (a:Item {itemId:{itemIdA}}), (b:Item {itemId:{itemIdB}}) MERGE (a)-[:LANGUAGE_FAMILY {propId:{propId}, label:{propLabel}}]->(b)")
+  void addRelP133(@Param("itemIdA") String itemIdA, @Param("itemIdB") String itemIdB, @Param("propId") String propId, @Param("propLabel") String propLabel);
+
+  @Query("MATCH (a:Item {itemId:{itemIdA}}), (b:Item {itemId:{itemIdB}}) MERGE (a)-[:DEFENDER {propId:{propId}, label:{propLabel}}]->(b)")
+  void addRelP1593(@Param("itemIdA") String itemIdA, @Param("itemIdB") String itemIdB, @Param("propId") String propId, @Param("propLabel") String propLabel);
+
+  @Query("MATCH (a:Item {itemId:{itemIdA}}), (b:Item {itemId:{itemIdB}}) MERGE (a)-[:EXCEPTION_TO_CONSTRAINT {propId:{propId}, label:{propLabel}}]->(b)")
+  void addRelP2303(@Param("itemIdA") String itemIdA, @Param("itemIdB") String itemIdB, @Param("propId") String propId, @Param("propLabel") String propLabel);
 
   @Query("MATCH (a:Item {itemId:{itemIdA}}), (b:Item {itemId:{itemIdB}}) MERGE (a)-[:TAXON_AUTHOR {propId:{propId}, label:{propLabel}}]->(b)")
   void addRelP405(@Param("itemIdA") String itemIdA, @Param("itemIdB") String itemIdB, @Param("propId") String propId, @Param("propLabel") String propLabel);
