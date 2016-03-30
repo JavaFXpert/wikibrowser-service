@@ -95,12 +95,16 @@
       </div>
 
       <div class="row">
-        <div class="small-2 small-offset-2 columns">
+        <div class="small-2 small-offset-0 columns">
           <button id="searchDropdown" type="button" class="tiny" disabled="true" data-dropdown="searchDrop" style="padding: 0px; margin-top: 10px; margin-left: 0px; margin-right: 0px;" onclick="searchPopulateArticleNameMatches()"><img src="img/dropdown-arrow-icon.png" width="44"/></button>
         </div>
 
         <div class="small-2 small-offset-0 columns">
           <button id="searchButton" type="button" class="tiny" disabled="true" style="padding: 0px;margin-top: 10px; margin-left: 0px; margin-right: 0px;" onclick="loadWikipediaPageByArticleName(curNearMatch, curLang)"><img src="img/magnifying-glass.png" width="44"/></button>
+        </div>
+
+        <div class="small-2 small-offset-0 columns">
+          <button id="clearMapButton" type="button" class="tiny" disabled="false" style="padding: 0px;margin-top: 10px; margin-left: 0px; margin-right: 0px;" onclick="clearConceptMap()"><img src="img/erase.png" width="44"/></button>
         </div>
 
         <div class="small-2 small-offset-0 columns">
@@ -218,6 +222,7 @@
     // TODO: Examine usefulness of, and possibly refactor, functionality in this handler
     window.addEventListener('load', function() {
       $('#searchButton').prop('disabled', true);
+      $('#clearMapButton').prop('disabled', false);
       $('#shareLinkButton').prop('disabled', true);
       $('#helpAboutButton').prop('disabled', false);
       //$('#offCanvasList').foundation('offcanvas', 'toggle', 'offcanvas-overlap-left');
@@ -1116,6 +1121,13 @@
       else {
         removeItemId(curItemId);
       }
+      loadConceptMap();
+    }
+
+    function clearConceptMap(itemId) {
+      itemIdArray = [];
+      $('#pinSwitch').prop('checked', false);
+      visibleGraphDirty = true;
       loadConceptMap();
     }
 
