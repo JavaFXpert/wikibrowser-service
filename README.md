@@ -20,6 +20,8 @@ Facility that browses Wikipedia augmented with semantic capabilities
       WHERE NONE(x IN NODES(p) WHERE x:Item AND x.itemId = "Q5") AND NONE(y IN RELATIONSHIPS(p) WHERE y.propId = "P1343")
       RETURN p;
   
+* Include all items (not just ones with English labels) in WikidataNeo4jProcessor, by using getLabels() if findLabel() returns null
+  * http://wikidata.github.io/Wikidata-Toolkit/org/wikidata/wdtk/datamodel/interfaces/TermedDocument.html#getLabels()
 * Implement in SPARQL a query similar to the Neo4j query that returns results necessary to disply pinned nodes and their relationship.  This could potentially eliminate the need for such a large Neo4j DB.
 * Move Wikidata relationships to left side, and concept map to middle?
 * Have option to automatically show nodes that have relationships between two pinned nodes
