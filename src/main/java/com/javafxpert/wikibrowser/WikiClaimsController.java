@@ -407,7 +407,7 @@ public class WikiClaimsController {
    *
    * @param itemId
    * @param propId
-   * @param travDirectionArg "f" for forward, "r" for reverse
+   * @param travDirectionArg "f" for forward, "r" for reverse, "u" for undirectied
    * @param depthStr number of levels to traverse, defaults to 100 for now
    * @param targetId specifies the target item when this is used for shortest path calculation
    * @param limitStr maximum number of items to return, defaults to 100 for now
