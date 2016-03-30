@@ -369,6 +369,7 @@
     }
 
     function retrieveRelatedClaimsByItemId (id, lang) {
+      $('#fromRelatedItemsList').html('<label>Loading related items ...</label>'); // Clear out off-canvas list for related items
       $.ajax({
             url: '/relatedclaims',
             data: "id=" + id + "&lang=" + lang + "",
@@ -553,9 +554,29 @@
       $("#wikipediaInnerFrame").attr("src", "/wikipage?name=" + name.trim() + "&lang=" + lang);
     }
 
-    function populateOffCanvasList(resp) {
+    var chosenPropId = "";
+    function popOffCanvasList(propArg) {
+      if (propArg === chosenPropId) {
+        chosenPropId = "";
+      }
+      else {
+        chosenPropId = propArg;
+      }
+      populateOffCanvasList(null);
+    }
+
+    var lastResp = null;
+    function populateOffCanvasList(respArg) {
+      var resp = null;
+      if (respArg == null) {
+        resp = lastResp;
+      }
+      else {
+        lastResp = respArg;
+        resp = respArg;
+      }
       $('#offCanvasList').html(''); // Clear out off-canvas list
-      $('#fromRelatedItemsList').html('<label>Loading related items ...</label>'); // Clear out off-canvas list for related items
+      //$('#fromRelatedItemsList').html('<label>Loading related items ...</label>'); // Clear out off-canvas list for related items
 
       // Create button that enables user to find the items in common between two item IDs that aren't already directly related.  Note that an empty property is passed
       // into noteShortestPathStartInfo() to indicate that any paths may consist of any relationships.  Paths computed will be maximum of two hops.
@@ -590,13 +611,19 @@
               "<input type='button' value='x*' onclick='traverseItems(curItemId,\"" + propId + "\", \"f\", 0, 0)' title='Expand items to multiple levels'></input>" + "&nbsp;" +
               "<input type='button' value='pu' onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"u\")' title='Find shortest path undirected'></input>" + "&nbsp;" +
               "<input type='button' value='pf' onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"f\")' title='Find shortest path in forward direction'></input>" +
-              "<label>" + resp.claim[cIdx].prop.label + (dispIds ? (" :" + propId) : "+") + "</label></li>");
-          itemId = resp.claim[cIdx].val[0].id;
-          isProperty = itemId.substring(0, 1).toUpperCase() === "P";
-          $('#offCanvasList').append("<li><a href='#' onclick='loadWikipediaPageByItemId(\"" + itemId + "\", \"" + language + "\")'>" +
-              resp.claim[cIdx].val[0].label + (dispIds ? (" :" + itemId) : "") +
-              (dispIds ? ("") : "") +
-              "</a></li>");
+              "<label onclick='popOffCanvasList(\"" + propId + "\")'><b>" +
+                  ((propId === chosenPropId) ? ("- ") : ("+ ")) + "</b>" +
+                  resp.claim[cIdx].prop.label + (dispIds ? (" :" + propId) : "+") + "</label></li>");
+
+          if (propId === chosenPropId) {
+            itemId = resp.claim[cIdx].val[0].id;
+            isProperty = itemId.substring(0, 1).toUpperCase() === "P";
+            $('#offCanvasList').append("<li><a href='#' onclick='loadWikipediaPageByItemId(\"" + itemId + "\", \"" + language + "\")'>" +
+                resp.claim[cIdx].val[0].label + (dispIds ? (" :" + itemId) : "") +
+                (dispIds ? ("") : "") +
+                "</a></li>");
+          }
+
         }
         else {
           $('#offCanvasList').append("<li>" +
@@ -604,16 +631,22 @@
               "<input type='button' value='x*' onclick='traverseItems(curItemId,\"" + propId + "\", \"f\", 0, 0)' title='Expand items to multiple levels'></input>" + "&nbsp;" +
               "<input type='button' value='pu' onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"u\")' title='Find shortest path undirected'></input>" + "&nbsp;" +
               "<input type='button' value='pf' onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"f\")' title='Find shortest path in forward direction'></input>" +
-              "<label>" + resp.claim[cIdx].prop.label + (dispIds ? (" :" + propId) : "+") + "</label></li>");
-          var vals = resp.claim[cIdx].val;
-          for (var vIdx in vals) {
-            itemId = vals[vIdx].id;
-            isProperty = itemId.substring(0, 1).toUpperCase() === "P";
-            $('#offCanvasList').append("  <li><a href='#' onclick='loadWikipediaPageByItemId(\"" + itemId + "\", \"" + language + "\")'>" +
-                vals[vIdx].label + (dispIds ? (" :" + itemId) : "") +
-                (dispIds ? ("") : "") +
-                "</a></li>");
+              "<label onclick='popOffCanvasList(\"" + propId + "\")'><b>" +
+                  ((propId === chosenPropId) ? ("- ") : ("+ ")) + "</b>" +
+                  resp.claim[cIdx].prop.label + (dispIds ? (" :" + propId) : "+") + "</label></li>");
+
+          if (propId === chosenPropId) {
+            var vals = resp.claim[cIdx].val;
+            for (var vIdx in vals) {
+              itemId = vals[vIdx].id;
+              isProperty = itemId.substring(0, 1).toUpperCase() === "P";
+              $('#offCanvasList').append("  <li><a href='#' onclick='loadWikipediaPageByItemId(\"" + itemId + "\", \"" + language + "\")'>" +
+                  vals[vIdx].label + (dispIds ? (" :" + itemId) : "") +
+                  (dispIds ? ("") : "") +
+                  "</a></li>");
+            }
           }
+
           $('#offCanvasList').append("  </ul>");
           $('#offCanvasList').append("</li>");
         }
@@ -621,7 +654,27 @@
       $('#offCanvasList').append("</ul>");
     }
 
-    function populateFromRelatedItemsList(resp) {
+    var chosenRelatedPropId = "";
+    function popFromRelatedItemsList(propArg) {
+      if (propArg === chosenRelatedPropId) {
+        chosenRelatedPropId = "";
+      }
+      else {
+        chosenRelatedPropId = propArg;
+      }
+      populateFromRelatedItemsList(null);
+    }
+
+    var lastRelatedResp = null;
+    function populateFromRelatedItemsList(respArg) {
+      var resp = null;
+      if (respArg == null) {
+        resp = lastRelatedResp;
+      }
+      else {
+        lastRelatedResp = respArg;
+        resp = respArg;
+      }
       $('#fromRelatedItemsList').html(''); // Clear out off-canvas list
       $('#fromRelatedItemsList').append("<b><i>From Related Items:</i></b><br/><br/>"); //TODO: Internationalize this label
 
@@ -637,13 +690,18 @@
               "<input type='button' value='x*' onclick='traverseItems(curItemId,\"" + propId + "\", \"r\", 0, 0)' title='Expand items to multiple levels'></input>" + "&nbsp;" +
               "<input type='button' value='pu' onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"u\")' title='Find shortest path undirected'></input>" + "&nbsp;" +
               "<input type='button' value='pr' onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"r\")' title='Find shortest path in reverse direction'></input>" +
-              "<i><label>" + resp.claim[cIdx].prop.label + (dispIds ? (" :" + propId) : "+") + "</label></i></li>");
-          itemId = resp.claim[cIdx].val[0].id;
-          isProperty = itemId.substring(0, 1).toUpperCase() === "P";
-          $('#fromRelatedItemsList').append("<li><a href='#' onclick='loadWikipediaPageByItemId(\"" + itemId + "\", \"" + language + "\")'><i>" +
-              resp.claim[cIdx].val[0].label + "</i>" + (dispIds ? (" <i>:" + itemId) : "") +
-              (dispIds ? ("</i>") : "") +
-              "</a></li>");
+              "<i><label onclick='popFromRelatedItemsList(\"" + propId + "\")'><b>" +
+              ((propId === chosenRelatedPropId) ? ("- ") : ("+ ")) + "</b>" +
+              resp.claim[cIdx].prop.label + (dispIds ? (" :" + propId) : "+") + "</label></i></li>");
+
+          if (propId === chosenRelatedPropId) {
+            itemId = resp.claim[cIdx].val[0].id;
+            isProperty = itemId.substring(0, 1).toUpperCase() === "P";
+            $('#fromRelatedItemsList').append("<li><a href='#' onclick='loadWikipediaPageByItemId(\"" + itemId + "\", \"" + language + "\")'><i>" +
+                resp.claim[cIdx].val[0].label + "</i>" + (dispIds ? (" <i>:" + itemId) : "") +
+                (dispIds ? ("</i>") : "") +
+                "</a></li>");
+          }
         }
         else {
           $('#fromRelatedItemsList').append("<li>" +
@@ -651,16 +709,22 @@
               "<input type='button' value='x*' onclick='traverseItems(curItemId,\"" + propId + "\", \"r\", 0, 0)' title='Expand items to multiple levels'></input>" + "&nbsp;" +
               "<input type='button' value='pu' onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"u\")' title='Find shortest path undirected'></input>" + "&nbsp;" +
               "<input type='button' value='pr' onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"r\")' title='Find shortest path in reverse direction'></input>" +
-              "<i><label>" + resp.claim[cIdx].prop.label + (dispIds ? (" :" + propId) : "+") + "</label></i></li>");
-          var vals = resp.claim[cIdx].val;
-          for (var vIdx in vals) {
-            itemId = vals[vIdx].id;
-            isProperty = itemId.substring(0, 1).toUpperCase() === "P";
-            $('#fromRelatedItemsList').append("  <li><a href='#' onclick='loadWikipediaPageByItemId(\"" + itemId + "\", \"" + language + "\")'><i>" +
-                vals[vIdx].label + "</i>" + (dispIds ? (" <i>:" + itemId) : "") +
-                (dispIds ? ("</i>") : "") +
-                "</a></li>");
+              "<i><label onclick='popFromRelatedItemsList(\"" + propId + "\")'><b>" +
+              ((propId === chosenRelatedPropId) ? ("- ") : ("+ ")) + "</b>" +
+              resp.claim[cIdx].prop.label + (dispIds ? (" :" + propId) : "+") + "</label></i></li>");
+
+          if (propId === chosenRelatedPropId) {
+            var vals = resp.claim[cIdx].val;
+            for (var vIdx in vals) {
+              itemId = vals[vIdx].id;
+              isProperty = itemId.substring(0, 1).toUpperCase() === "P";
+              $('#fromRelatedItemsList').append("  <li><a href='#' onclick='loadWikipediaPageByItemId(\"" + itemId + "\", \"" + language + "\")'><i>" +
+                  vals[vIdx].label + "</i>" + (dispIds ? (" <i>:" + itemId) : "") +
+                  (dispIds ? ("</i>") : "") +
+                  "</a></li>");
+            }
           }
+
           $('#fromRelatedItemsList').append("  </ul>");
           $('#fromRelatedItemsList').append("</li>");
         }
