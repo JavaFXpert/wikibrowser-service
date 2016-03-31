@@ -126,7 +126,7 @@ public class WikiClaimsController {
 
         FILTER (lang(?propLabel) = 'en' )
         }
-      ORDER BY ?propUrl ?valUrl LIMIT 100
+      ORDER BY ?propUrl ?valUrl LIMIT 200
     */
 
     //TODO: Implement better way of creating the query represented by the following variables
@@ -143,7 +143,7 @@ public class WikiClaimsController {
     String wdqk = "')%20.%20?property%20?ref%20?propUrl%20.%20?property%20a%20wikibase:Property%20.%20";
     String wdql = "?property%20rdfs:label%20?propLabel%20FILTER%20(lang(?propLabel)%20=%20'";
     String wdqm = ""; // Some language code e.g. en
-    String wdqn = "'%20)%20%7D%20ORDER%20BY%20?propLabel%20?valLabel%20LIMIT%20100";
+    String wdqn = "'%20)%20%7D%20ORDER%20BY%20?propLabel%20?valLabel%20LIMIT%20200";
 
     ClaimsSparqlResponse claimsSparqlResponse = null;
 
@@ -408,9 +408,9 @@ public class WikiClaimsController {
    * @param itemId
    * @param propId
    * @param travDirectionArg "f" for forward, "r" for reverse, "u" for undirectied
-   * @param depthStr number of levels to traverse, defaults to 100 for now
+   * @param depthStr number of levels to traverse, defaults to 200 for now
    * @param targetId specifies the target item when this is used for shortest path calculation
-   * @param limitStr maximum number of items to return, defaults to 100 for now
+   * @param limitStr maximum number of items to return, defaults to 200 for now
    * @return
    */
 
@@ -421,17 +421,17 @@ public class WikiClaimsController {
                                               String propId,
                                               @RequestParam(value = "direction", defaultValue="f")
                                               String travDirectionArg,
-                                              @RequestParam(value = "depth", defaultValue="100")
+                                              @RequestParam(value = "depth", defaultValue="200")
                                               String depthStr,
                                               @RequestParam(value = "target", defaultValue="")
                                               String targetId,
-                                              @RequestParam(value = "limit", defaultValue="100")
+                                              @RequestParam(value = "limit", defaultValue="200")
                                               String limitStr,
                                               @RequestParam(value = "lang", defaultValue="en")
                                               String lang) {
 
-    int depthDefault = 100;  //TODO: Perhaps make a constant or configuration parameter
-    int limitDefault = 100;  //TODO: Perhaps make a constant or configuration parameter
+    int depthDefault = 200;  //TODO: Perhaps make a constant or configuration parameter
+    int limitDefault = 200;  //TODO: Perhaps make a constant or configuration parameter
 
     int depth;
     try {
@@ -500,7 +500,7 @@ public class WikiClaimsController {
         }
         SERVICE wikibase:label {bd:serviceParam wikibase:language "en" }
       }
-      LIMIT 100
+      LIMIT 200
     */
 
     // Here is the SPARQL query that this method invokes (using Q1, P793,  as an example) for shortest path traversal
@@ -518,13 +518,13 @@ public class WikiClaimsController {
                        gas:traversalDirection "Forward";
                        gas:out ?item;
                        gas:out1 ?depth;
-                       gas:maxIterations 100;
+                       gas:maxIterations 200;
                        gas:linkType wdt:P793 .
           }
         }
         SERVICE wikibase:label {bd:serviceParam wikibase:language "en" }
       }
-      LIMIT 100
+      LIMIT 200
     */
 
     String wdqa = "https://query.wikidata.org/bigdata/namespace/wdq/sparql?format=json&query=";

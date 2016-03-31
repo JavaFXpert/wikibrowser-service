@@ -22,10 +22,9 @@ Facility that browses Wikipedia augmented with semantic capabilities
   
 * Include all items (not just ones with English labels) in WikidataNeo4jProcessor, by using getLabels() if findLabel() returns null
   * http://wikidata.github.io/Wikidata-Toolkit/org/wikidata/wdtk/datamodel/interfaces/TermedDocument.html#getLabels()
+* Make query limits (# of rows returned in a given query) configurable, or at least a constant that may be changed one place
 * Implement in SPARQL a query similar to the Neo4j query that returns results necessary to disply pinned nodes and their relationship.  This could potentially eliminate the need for such a large Neo4j DB.
 * Move Wikidata relationships to left side, and concept map to middle?
-* Have option to automatically show nodes that have relationships between two pinned nodes
-* Put tooltips on spu, spf and spr butttons
 * Add ?parent to results from traversal sparql query & merge into neo4j?  (or just do a batch load periodically) 
 * [] Implement authentication
   * Use GitHub / OAUTH
@@ -33,7 +32,7 @@ Facility that browses Wikipedia augmented with semantic capabilities
 * [] Enable user to save a concept map for later retrieval
   * Relationship between user and the nodes in the map, as well as an indication of main node and language 
 * [] Enable user to associate external resources with Q items
-* [] Create utility that loads Neo4j from Wikidata dump
+* [] Create utility that loads Neo4j QUICKLY from Wikidata dump
 * Create option that displays only those relationship types that were used in the latest traversal (or some other way of displaying a single type of relationship)
 * Associate image with each Q item
   * Hovering over a graph node displays image for the Q item and a wikipedia title/snippet

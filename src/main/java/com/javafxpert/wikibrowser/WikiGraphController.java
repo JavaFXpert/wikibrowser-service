@@ -85,15 +85,15 @@ public class WikiGraphController {
 
       /*
 MATCH (a:Item)
-WHERE a.itemId IN ['Q2', 'Q24', 'Q30', 'Q23', 'Q16', 'Q20']
-OPTIONAL MATCH (a)-[rel]-()
-RETURN a, collect(rel)
-
+WHERE a.itemId IN ['Q2', 'Q24', 'Q30']
+OPTIONAL MATCH (a:Item)-[rel]-(b:Item)
+WHERE b.itemId IN ['Q2', 'Q24', 'Q30']
+RETURN a, b, collect(rel)
      */
 
       String qa = "{\"statements\":[{\"statement\":\"MATCH (a:Item) WHERE a.itemId IN [";
       String qb = argStr; // Item IDs
-      String qc = "] OPTIONAL MATCH (a)-[rel]-(b) WHERE b.itemId IN [";
+      String qc = "] OPTIONAL MATCH (a:Item)-[rel]-(b:Item) WHERE b.itemId IN [";
       String qd = argStr; // Item IDs
       String qe = "] RETURN a, b, collect(rel)\",";
       String qf = "\"resultDataContents\":[\"graph\"]}]}";
@@ -137,7 +137,7 @@ RETURN a, collect(rel)
 
     /*
 MATCH p=allShortestPaths( (a:Item {itemId:'Q23'})-[*..2]-(b:Item {itemId:'Q9696'}) )
-RETURN p LIMIT 100
+RETURN p LIMIT 200
    */
 
     String qa = "{\"statements\":[{\"statement\":\"MATCH p=allShortestPaths( (a:Item {itemId:'";
@@ -145,7 +145,7 @@ RETURN p LIMIT 100
     String qc = "'})-[*..2]-(b:Item {itemId:'";
     String qd = targetId; // target item ID
     String qe = "'}) ) WHERE NONE(x IN NODES(p) WHERE x:Item AND x.itemId = 'Q5') "; // Don't return paths that contain human item ID, or gender/described by relationships (slows query down)
-    String qf = "AND NONE(y IN RELATIONSHIPS(p) WHERE y.propId = 'P21') AND NONE(y IN RELATIONSHIPS(p) WHERE y.propId = 'P1343') RETURN p LIMIT 100\",";
+    String qf = "AND NONE(y IN RELATIONSHIPS(p) WHERE y.propId = 'P21') AND NONE(y IN RELATIONSHIPS(p) WHERE y.propId = 'P1343') RETURN p LIMIT 200\",";
     String qg = "\"resultDataContents\":[\"graph\"]}]}";
 
     String postString = qa + qb + qc + qd + qe + qf + qg;
