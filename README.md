@@ -20,6 +20,7 @@ Facility that browses Wikipedia augmented with semantic capabilities
       WHERE NONE(x IN NODES(p) WHERE x:Item AND x.itemId = "Q5") AND NONE(y IN RELATIONSHIPS(p) WHERE y.propId = "P1343")
       RETURN p;
   
+* Sort the languages that appear in the language selection slide-out menu
 * Include all items (not just ones with English labels) in WikidataNeo4jProcessor, by using getLabels() if findLabel() returns null
   * http://wikidata.github.io/Wikidata-Toolkit/org/wikidata/wdtk/datamodel/interfaces/TermedDocument.html#getLabels()
 * Make query limits (# of rows returned in a given query) configurable, or at least a constant that may be changed one place
@@ -36,6 +37,7 @@ Facility that browses Wikipedia augmented with semantic capabilities
 * Create option that displays only those relationship types that were used in the latest traversal (or some other way of displaying a single type of relationship)
 * Associate image with each Q item
   * Hovering over a graph node displays image for the Q item and a wikipedia title/snippet
+  * Use this example for reference: http://bl.ocks.org/eesur/be2abfb3155a38be4de4
 * Put level of detail in properties that enables traversing lists such as US Presidents
 * Show tabs for Wikibooks, Wikinews, Wikiquote, Wikisource, Wikivoyage, commons, and Wikiversity when present
 * Implement visjs library for directed graph functionality
