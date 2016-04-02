@@ -16,6 +16,7 @@
 
 package com.javafxpert.wikibrowser;
 
+import com.javafxpert.wikibrowser.model.locator.ItemInfoResponse;
 import com.javafxpert.wikibrowser.model.thumbnail.ThumbnailFar;
 import com.javafxpert.wikibrowser.model.thumbnail.ThumbnailPagesFar;
 import com.javafxpert.wikibrowser.model.thumbnail.ThumbnailQueryFar;
@@ -54,6 +55,8 @@ public class WikiThumbnailController {
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Object> locatorEndpoint(@RequestParam(value = "title", defaultValue="")
                                                 String articleTitle,
+                                                @RequestParam(value = "id", defaultValue="")
+                                                String itemId,
                                                 @RequestParam(value = "lang")
                                                 String lang) {
 
@@ -61,7 +64,26 @@ public class WikiThumbnailController {
 
     String thumbnailUrlStr = null;
     if (!articleTitle.equals("")) {
-      thumbnailUrlStr = name2Thumbnail(articleTitle, language);
+      thumbnailUrlStr = title2Thumbnail(articleTitle, language);
+    }
+    else if (!itemId.equals("")) {
+      ItemInfoResponse itemInfoResponse = null;
+
+      try {
+        String url = this.wikiBrowserProperties.getLocatorServiceUrl(itemId, lang);
+        itemInfoResponse = new RestTemplate().getForObject(url,
+            ItemInfoResponse.class);
+
+        log.info(itemInfoResponse.toString());
+      }
+      catch (Exception e) {
+        e.printStackTrace();
+        log.info("Caught exception when calling /locator?id=" + itemId + " : " + e);
+      }
+
+      if (itemInfoResponse != null) {
+        thumbnailUrlStr = title2Thumbnail(itemInfoResponse.getArticleTitle(), language);
+      }
     }
 
     return Optional.ofNullable(thumbnailUrlStr)
@@ -69,7 +91,7 @@ public class WikiThumbnailController {
         .orElse(new ResponseEntity<>("Wikipedia thumbnail query unsuccessful", HttpStatus.INTERNAL_SERVER_ERROR));
   }
 
-  public String name2Thumbnail(String articleName, String lang) {
+  public String title2Thumbnail(String articleTitle, String lang) {
 
     //TODO: Implement better way of creating the query represented by the following variables
     String n2iqa = "https://";
@@ -78,7 +100,7 @@ public class WikiThumbnailController {
     String n2iqd = ""; // Some article name e.g. Ada Lovelace
 
     n2iqb = lang;
-    n2iqd = articleName;
+    n2iqd = articleTitle;
 
     String wpQuery = n2iqa + n2iqb + n2iqc + n2iqd;
 
@@ -102,7 +124,9 @@ public class WikiThumbnailController {
         ThumbnailPagesFar thumbnailPageFar = thumbnailPagesFarList.get(0);
         ThumbnailFar thumbnailFar = thumbnailPageFar.getThumbnailFar();
 
-        thumbnailUrlStr = thumbnailFar.getSource();
+        if (thumbnailFar != null) {
+          thumbnailUrlStr = thumbnailFar.getSource();
+        }
       }
       else {
         log.info("no pages in results");
