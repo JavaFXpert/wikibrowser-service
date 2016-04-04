@@ -851,6 +851,158 @@
     var width = x * .50,
         height = (y - 270) * 1.2;
 
+    /*
+     * Directed functionality implemented with visjs
+     */
+    function loadConceptMap() {
+      var itemsStr = itemIdArray.join(",");
+      if (!visibleGraphDirty) {
+        return;
+      }
+      else {
+        visibleGraphDirty = false;
+      }
+      $( "#conceptMap" ).empty();
+      var svg = d3.select("#conceptMap").append("svg")
+          .attr("width", width)
+          .attr("height", height)
+          .style("background" ,"#FFFFFF");
+
+      var force = d3.layout.force()
+          .size([width, height])
+          .linkDistance(50)
+          .charge(-1000);
+
+      // TODO: Make the following statement configurable:
+      var graphServiceUrl = "http://conceptmap.cfapps.io/graph?items=";
+
+      d3.json(graphServiceUrl + itemsStr, function (error, graph) {
+        if (error) throw error;
+
+        var nodeById = d3.map();
+
+        graph.nodes.forEach(function (node) {
+          nodeById.set(node.id, node);
+        });
+
+        graph.links.forEach(function (link) {
+          link.source = nodeById.get(link.source);
+          link.target = nodeById.get(link.target);
+        });
+
+        // TODO: Decide whether to enable
+        var drag = force.drag()
+            .on("dragstart", dragstart)
+            .on("drag", dragging);
+
+        force
+            .nodes(graph.nodes)
+            .links(graph.links)
+            .on("tick", tick)
+            .start();
+
+        // Per-type markers, as they don't inherit styles.
+        svg.append("defs").selectAll("marker")
+            .data(["default"])
+            .enter().append("marker")
+            .attr("id", String)
+            .attr("viewBox", "0 -5 10 10")
+            .attr("refX", 30)
+            .attr("refY", -4.5)
+            .attr("markerWidth", 6)
+            .attr("markerHeight", 6)
+            .attr("orient", "auto")
+            .append("path")
+            .attr("d", "M0,-5L10,0L0,5");
+
+        var path = svg.append("svg:g").selectAll("path")
+            .data(force.links())
+            .enter().append("svg:path")
+            .attr("class", function(d) { return "link " + d.type; })
+            .attr("id",function(d,i) { return "linkId_" + i; })
+            .attr("marker-end", function(d) { return "url(#" + "default" + ")"; });
+        var linktext = svg.append("svg:g").selectAll("g.linklabelholder").data(force.links());
+
+        linktext.enter().append("g").attr("class", "linklabelholder")
+            .append("text")
+            .attr("class", "linklabel")
+            .style("font-size", "8px")
+            .attr("x", "30")
+            .attr("y", "-20")
+            .attr("text-anchor", "start")
+            .style("fill","#000")
+            .append("textPath")
+            .attr("xlink:href",function(d,i) { return "#linkId_" + i;})
+            .text(function(d) {
+              return d.type;
+            });
+
+
+        var circle = svg.append("g").selectAll("circle")
+            .data(force.nodes())
+            .enter().append("circle")
+            .attr("r", 20)
+            .on("click", handleMouseClick)
+            .on("touch", handleMouseClick)
+            .call(force.drag);
+
+        var text = svg.append("g").selectAll("text")
+            .data(force.nodes())
+            .enter().append("text")
+            .attr("x", -12)
+            .attr("y", ".31em")
+            .text(function (d) {
+              return d.title;
+            });
+
+        // Use elliptical arc path segments to doubly-encode directionality.
+        function tick() {
+          path.attr("d", linkArc);
+          circle.attr("transform", transform);
+          text.attr("transform", transform);
+        }
+
+        function linkArc(d) {
+          var dx = d.target.x - d.source.x,
+              dy = d.target.y - d.source.y,
+              dr = Math.sqrt(dx * dx + dy * dy);
+          return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
+        }
+
+        function transform(d) {
+          return "translate(" + d.x + "," + d.y + ")";
+        }
+
+        var isDragging = false;
+
+        function dragstart(d) {
+          d3.select(this).classed("fixed", d.fixed = true);
+        }
+
+        function dragging(d) {
+          isDragging = true;
+        }
+
+        function handleMouseClick(d) {
+          if (!isDragging) {
+            if (shortestPathStartItemId.length > 0) {
+              // There is a pending request to do a shortest path navigation
+              shortestPathNavigation (shortestPathStartItemId, shortestPathStartPropId, shortestPathTravDirection, 0, d.id ,0);
+              shortestPathStartItemId = "";
+              shortestPathStartPropId = "";
+              shortestPathTravDirection = "";
+            }
+            else {
+              loadWikipediaPageByItemId(d.id, curLang);
+            }
+          }
+          isDragging = false;
+        }
+      });
+    }
+
+
+    /*
     function loadConceptMap() {
       var itemsStr = itemIdArray.join(",");
       if (!visibleGraphDirty) {
@@ -997,6 +1149,7 @@
         }
       });
     }
+    */
 
     loadWikipediaPageByItemId("Q1", curLang);
 

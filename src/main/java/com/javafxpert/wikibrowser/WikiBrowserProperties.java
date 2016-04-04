@@ -30,6 +30,8 @@ public class WikiBrowserProperties {
   private String locatorEndpoint;
   private String lang;
 
+  private String thumbnailEndpoint;
+
   private String cypherUsername;
   private String cypherPassword;
 
@@ -53,6 +55,14 @@ public class WikiBrowserProperties {
 
   public void setLocatorEndpoint(String locatorEndpoint) {
     this.locatorEndpoint = locatorEndpoint;
+  }
+
+  public String getThumbnailEndpoint() {
+    return thumbnailEndpoint;
+  }
+
+  public void setThumbnailEndpoint(String thumbnailEndpoint) {
+    this.thumbnailEndpoint = thumbnailEndpoint;
   }
 
   public String getLang() {
@@ -130,6 +140,15 @@ public class WikiBrowserProperties {
    */
   public String getLocatorServiceUrl(String itemId, String lang) {
     String url = this.host + String.format(this.getLocatorEndpoint(), itemId, computeLang(lang));
+    return url;
+  }
+
+  /**
+   * Provide the URL to the thumbnail service method
+   *
+   */
+  public String getThumbnailServiceUrl(String articleTitle, String lang) {
+    String url = this.host + String.format(this.getThumbnailEndpoint(), articleTitle, computeLang(lang));
     return url;
   }
 
