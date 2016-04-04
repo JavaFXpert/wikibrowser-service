@@ -98,7 +98,7 @@ Facility that browses Wikipedia augmented with semantic capabilities
 * [] Handle issues like when SPARQL query failed more gracefully
 * If relationship is removed from Wikidata, delete it from Neo4j at the same point at which relationships are added (MERGE)
 * [] Add a language property to Item nodes stored in Neo4j that aren't currently in English, and use that property to invoke
-     the /thumbnail endpoint from WikiVisGraphController
+     the /thumbnail endpoint from WikiVisGraphController.  Perhaps, in addition or instead of, use the item ID to get thumbnails (currently slower though)
 * Create process that generates MERGE code for missing properties in ItemRepository.java 
 * [] Make the graph not so jumpy, and consider implementing sigmajs or visjs
 * WikiSearchController search() method probably needs to do a query to get the article URL for the article title (as it currently returns titles with spaces)

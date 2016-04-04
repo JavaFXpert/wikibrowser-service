@@ -18,6 +18,7 @@ package com.javafxpert.wikibrowser;
 
 import com.javafxpert.wikibrowser.model.conceptmap.*;
 import com.javafxpert.wikibrowser.model.locator.ItemInfoResponse;
+import com.javafxpert.wikibrowser.model.thumbnail.ThumbnailCache;
 import com.javafxpert.wikibrowser.model.thumbnail.ThumbnailResponse;
 import com.javafxpert.wikibrowser.model.visgraph.VisGraphEdgeNear;
 import com.javafxpert.wikibrowser.model.visgraph.VisGraphNodeNear;
@@ -266,22 +267,27 @@ RETURN p
             // TODO: Add a language property to Item nodes stored in Neo4j that aren't currently in English,
             //       and use that property to mutate articleTitleLang
 
-            try {
-              String url = this.wikiBrowserProperties.getThumbnailServiceUrl(articleTitle, articleTitleLang);
-              thumbnailUrl = new RestTemplate().getForObject(url,
-                  String.class);
+            // Check cache for thumbnail
+            thumbnailUrl = ThumbnailCache.getThumbnailUrl(articleTitle, articleTitleLang);
 
-              //log.info("thumbnailUrl:" + thumbnailUrl);
-            }
-            catch (Exception e) {
-              e.printStackTrace();
-              log.info("Caught exception when calling /thumbnail?title=" + articleTitle + " : " + e);
+            if (thumbnailUrl == null || thumbnailUrl.length() == 0) {
+              log.info("Thumbnail not found in cache for articleTitle: " + articleTitle + ", lang: " + articleTitleLang);
+
+              try {
+                String url = this.wikiBrowserProperties.getThumbnailServiceUrl(articleTitle, articleTitleLang);
+                thumbnailUrl = new RestTemplate().getForObject(url,
+                    String.class);
+
+                //log.info("thumbnailUrl:" + thumbnailUrl);
+              } catch (Exception e) {
+                e.printStackTrace();
+                log.info("Caught exception when calling /thumbnail?title=" + articleTitle + " : " + e);
+              }
             }
 
             if (thumbnailUrl != null) {
               visGraphNodeNear.setImageUrl(thumbnailUrl);
-            }
-            else {
+            } else {
               visGraphNodeNear.setImageUrl("");
             }
 
