@@ -271,7 +271,7 @@ RETURN p
               thumbnailUrl = new RestTemplate().getForObject(url,
                   String.class);
 
-              log.info("thumbnailUrl:" + thumbnailUrl);
+              //log.info("thumbnailUrl:" + thumbnailUrl);
             }
             catch (Exception e) {
               e.printStackTrace();

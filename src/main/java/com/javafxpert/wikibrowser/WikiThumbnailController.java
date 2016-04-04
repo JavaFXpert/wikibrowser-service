@@ -17,10 +17,7 @@
 package com.javafxpert.wikibrowser;
 
 import com.javafxpert.wikibrowser.model.locator.ItemInfoResponse;
-import com.javafxpert.wikibrowser.model.thumbnail.ThumbnailFar;
-import com.javafxpert.wikibrowser.model.thumbnail.ThumbnailPagesFar;
-import com.javafxpert.wikibrowser.model.thumbnail.ThumbnailQueryFar;
-import com.javafxpert.wikibrowser.model.thumbnail.ThumbnailResponse;
+import com.javafxpert.wikibrowser.model.thumbnail.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +31,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -64,7 +63,15 @@ public class WikiThumbnailController {
 
     String thumbnailUrlStr = null;
     if (!articleTitle.equals("")) {
-      thumbnailUrlStr = title2Thumbnail(articleTitle, language);
+      // Check cache for thumbnail
+      thumbnailUrlStr = ThumbnailCache.getThumbnailUrl(articleTitle, language);
+
+      if (thumbnailUrlStr == null || thumbnailUrlStr.length() == 0) {
+        log.info("Thumbnail NOT found in cache for articleTitle: " + articleTitle + ", lang: " + lang);
+
+        thumbnailUrlStr = title2Thumbnail(articleTitle, language);
+        ThumbnailCache.setThumbnailUrl(articleTitle, language, thumbnailUrlStr);
+      }
     }
     else if (!itemId.equals("")) {
       ItemInfoResponse itemInfoResponse = null;
