@@ -253,11 +253,14 @@ RETURN p
             GraphNodeFar graphNodeFar = graphNodeFarIterator.next();
             VisGraphNodeNear visGraphNodeNear = new VisGraphNodeNear();
 
-            visGraphNodeNear.setDbId(graphNodeFar.getId());  // Database ID for this node
+            //visGraphNodeNear.setDbId(graphNodeFar.getId());  // Database ID for this node
+            visGraphNodeNear.setDbId(graphNodeFar.getGraphNodePropsFar().getItemId().substring(1));
+
             visGraphNodeNear.setTitle(graphNodeFar.getGraphNodePropsFar().getTitle());
             visGraphNodeNear.setLabelsList(graphNodeFar.getLabelsList());
             visGraphNodeNear.setItemId(graphNodeFar.getGraphNodePropsFar().getItemId());
 
+            String itemId = visGraphNodeNear.getItemId();
             String articleTitle = visGraphNodeNear.getTitle();
 
             // Retrieve the article's image
@@ -268,13 +271,13 @@ RETURN p
             //       and use that property to mutate articleTitleLang
 
             // Check cache for thumbnail
-            thumbnailUrl = ThumbnailCache.getThumbnailUrl(articleTitle, articleTitleLang);
+            thumbnailUrl = ThumbnailCache.getThumbnailUrlByTitle(articleTitle, articleTitleLang);
 
-            if (thumbnailUrl == null || thumbnailUrl.length() == 0) {
-              log.info("Thumbnail not found in cache for articleTitle: " + articleTitle + ", lang: " + articleTitleLang);
+            if (thumbnailUrl == null) {
+              log.info("Thumbnail not previously requested for articleTitle: " + articleTitle + ", lang: " + articleTitleLang);
 
               try {
-                String url = this.wikiBrowserProperties.getThumbnailServiceUrl(articleTitle, articleTitleLang);
+                String url = this.wikiBrowserProperties.getThumbnailByTitleServiceUrl(articleTitle, articleTitleLang);
                 thumbnailUrl = new RestTemplate().getForObject(url,
                     String.class);
 
@@ -287,8 +290,31 @@ RETURN p
 
             if (thumbnailUrl != null) {
               visGraphNodeNear.setImageUrl(thumbnailUrl);
-            } else {
-              visGraphNodeNear.setImageUrl("");
+            }
+            else {
+              log.info("Thumbnail not found for articleTitle: " + articleTitle + ", trying by itemId: " + itemId);
+
+              try {
+                String url = this.wikiBrowserProperties.getThumbnailByIdServiceUrl(itemId, articleTitleLang);
+                thumbnailUrl = new RestTemplate().getForObject(url,
+                    String.class);
+
+                if (thumbnailUrl != null) {
+                  visGraphNodeNear.setImageUrl(thumbnailUrl);
+
+                  // Because successful, cache by article title
+                  ThumbnailCache.setThumbnailUrlByTitle(articleTitle, articleTitleLang, thumbnailUrl);
+                }
+                else {
+                  visGraphNodeNear.setImageUrl("");
+                }
+                //log.info("thumbnailUrl:" + thumbnailUrl);
+              }
+              catch (Exception e) {
+                e.printStackTrace();
+                log.info("Caught exception when calling /thumbnail?id=" + itemId + " : " + e);
+              }
+
             }
 
             // Note: The key in the graphNodeNearMap is the Neo4j node id, not the Wikidata item ID
@@ -308,8 +334,12 @@ RETURN p
             String neo4jEndNodeId = graphRelationFar.getEndNode();
             String wikidataEndNodeItemId = visGraphNodeNearMap.get(neo4jEndNodeId).getItemId();
 
-            visGraphEdgeNear.setFromDbId(neo4jStartNodeId);
-            visGraphEdgeNear.setToDbId(neo4jEndNodeId);
+            //visGraphEdgeNear.setFromDbId(neo4jStartNodeId);
+            visGraphEdgeNear.setFromDbId(wikidataStartNodeItemId.substring(1));
+
+            //visGraphEdgeNear.setToDbId(neo4jEndNodeId);
+            visGraphEdgeNear.setToDbId(wikidataEndNodeItemId.substring(1));
+
             visGraphEdgeNear.setLabel(graphRelationFar.getType());
             visGraphEdgeNear.setArrowDirection("to");
             visGraphEdgeNear.setPropId(graphRelationFar.getGraphRelationPropsFar().getPropId());

@@ -26,16 +26,39 @@ import java.util.Map;
 public class ThumbnailCache {
 
   private static Map<String, String> thumbnailsByTitleAndLang = new HashMap<>();
+  private static Map<String, String> thumbnailsByIdAndLang = new HashMap<>();
 
-  public static String getThumbnailUrl(String articleTitle, String lang) {
+  public static String getThumbnailUrlByTitle(String articleTitle, String lang) {
     String thumbnailUrl = thumbnailsByTitleAndLang.get(articleTitle + "^" + lang);
+
+    /*
     if (thumbnailUrl == null) {
       thumbnailUrl = "";
     }
+    */
+
     return thumbnailUrl;
   }
 
-  public static void setThumbnailUrl(String articleTitle, String lang, String thumbnailUrl) {
+  public static void setThumbnailUrlByTitle(String articleTitle, String lang, String thumbnailUrl) {
     thumbnailsByTitleAndLang.put(articleTitle + "^" + lang, thumbnailUrl);
   }
+
+
+  public static String getThumbnailUrlById(String itemId, String lang) {
+    String thumbnailUrl = thumbnailsByIdAndLang.get(itemId + "^" + lang);
+
+    /*
+    if (thumbnailUrl == null) {
+      thumbnailUrl = "";
+    }
+    */
+
+    return thumbnailUrl;
+  }
+
+  public static void setThumbnailUrlById(String itemId, String lang, String thumbnailUrl) {
+    thumbnailsByIdAndLang.put(itemId + "^" + lang, thumbnailUrl);
+  }
+
 }

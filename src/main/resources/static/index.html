@@ -22,6 +22,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ConceptMap</title>
   <link rel="stylesheet" href="css/foundation.css"/>
+  <link rel="stylesheet" href="css/vis.min.css"/>
   <link rel="stylesheet" href="css/concept-map.css"/>
   <script src="js/vendor/modernizr.js"></script>
 
@@ -189,6 +190,7 @@
 
 
   <script src="js/d3.min.js"></script>
+  <script src="js/vis.min.js"></script>
   <script src="js/vendor/jquery.js"></script>
   <script src="js/foundation.min.js"></script>
   <script>
@@ -863,142 +865,74 @@
         visibleGraphDirty = false;
       }
       $( "#conceptMap" ).empty();
-      var svg = d3.select("#conceptMap").append("svg")
-          .attr("width", width)
-          .attr("height", height)
-          .style("background" ,"#FFFFFF");
+      $( "#conceptMap" ).css("width", width);
+      $( "#conceptMap" ).css("height", height);
 
-      var force = d3.layout.force()
-          .size([width, height])
-          .linkDistance(50)
-          .charge(-1000);
+      //var network;
+      //var nodes;
+      //var edges;
 
-      // TODO: Make the following statement configurable:
-      var graphServiceUrl = "http://conceptmap.cfapps.io/graph?items=";
+      $.ajax({
+            //url: 'http://conceptmap.cfapps.io/visgraph',
+            url: 'http://localhost:8080/visgraph',
+            data: "items=" + itemsStr,
+            dataType: 'json'
+          })
+          .done(function(results) {
+            var nodes = new vis.DataSet(results.nodes);
+            var edges = new vis.DataSet(results.edges);
 
-      d3.json(graphServiceUrl + itemsStr, function (error, graph) {
-        if (error) throw error;
+            // create a network
+            var container = document.getElementById('conceptMap');
+            var data = {
+              nodes: nodes,
+              edges: edges
+            };
+            var options = {
+              nodes: {
+                borderWidth:1,
+                size: 30,
+                color: {
+                  border: '#406897',
+                  background: '#6AAFFF'
+                },
+                font:{color:'#000000'},
+                shape: 'circularImage',
+                shapeProperties: {
+                  useBorderWithImage:true
+                }
+              },
+              edges: {
+                color: 'lightgray',
+                font: {color:'#000000', size: 8, align: 'top'}
+              }
+            };
+            network = new vis.Network(container, data, options);
 
-        var nodeById = d3.map();
+            network.on("click", function(args) {
+              if (args.nodes.length > 0) {
+                var itemId = "Q" + args.nodes[0];
 
-        graph.nodes.forEach(function (node) {
-          nodeById.set(node.id, node);
-        });
-
-        graph.links.forEach(function (link) {
-          link.source = nodeById.get(link.source);
-          link.target = nodeById.get(link.target);
-        });
-
-        // TODO: Decide whether to enable
-        var drag = force.drag()
-            .on("dragstart", dragstart)
-            .on("drag", dragging);
-
-        force
-            .nodes(graph.nodes)
-            .links(graph.links)
-            .on("tick", tick)
-            .start();
-
-        // Per-type markers, as they don't inherit styles.
-        svg.append("defs").selectAll("marker")
-            .data(["default"])
-            .enter().append("marker")
-            .attr("id", String)
-            .attr("viewBox", "0 -5 10 10")
-            .attr("refX", 30)
-            .attr("refY", -4.5)
-            .attr("markerWidth", 6)
-            .attr("markerHeight", 6)
-            .attr("orient", "auto")
-            .append("path")
-            .attr("d", "M0,-5L10,0L0,5");
-
-        var path = svg.append("svg:g").selectAll("path")
-            .data(force.links())
-            .enter().append("svg:path")
-            .attr("class", function(d) { return "link " + d.type; })
-            .attr("id",function(d,i) { return "linkId_" + i; })
-            .attr("marker-end", function(d) { return "url(#" + "default" + ")"; });
-        var linktext = svg.append("svg:g").selectAll("g.linklabelholder").data(force.links());
-
-        linktext.enter().append("g").attr("class", "linklabelholder")
-            .append("text")
-            .attr("class", "linklabel")
-            .style("font-size", "8px")
-            .attr("x", "30")
-            .attr("y", "-20")
-            .attr("text-anchor", "start")
-            .style("fill","#000")
-            .append("textPath")
-            .attr("xlink:href",function(d,i) { return "#linkId_" + i;})
-            .text(function(d) {
-              return d.type;
+                if (shortestPathStartItemId.length > 0) {
+                  // There is a pending request to do a shortest path navigation
+                  shortestPathNavigation (shortestPathStartItemId, shortestPathStartPropId, shortestPathTravDirection, 0, itemId ,0);
+                  shortestPathStartItemId = "";
+                  shortestPathStartPropId = "";
+                  shortestPathTravDirection = "";
+                }
+                else {
+                  loadWikipediaPageByItemId(itemId, curLang);
+                }
+              }
             });
 
+          })
 
-        var circle = svg.append("g").selectAll("circle")
-            .data(force.nodes())
-            .enter().append("circle")
-            .attr("r", 20)
-            .on("click", handleMouseClick)
-            .on("touch", handleMouseClick)
-            .call(force.drag);
+          .error(function(err) {
+            //alert("error: " + err);
+          });
 
-        var text = svg.append("g").selectAll("text")
-            .data(force.nodes())
-            .enter().append("text")
-            .attr("x", -12)
-            .attr("y", ".31em")
-            .text(function (d) {
-              return d.title;
-            });
 
-        // Use elliptical arc path segments to doubly-encode directionality.
-        function tick() {
-          path.attr("d", linkArc);
-          circle.attr("transform", transform);
-          text.attr("transform", transform);
-        }
-
-        function linkArc(d) {
-          var dx = d.target.x - d.source.x,
-              dy = d.target.y - d.source.y,
-              dr = Math.sqrt(dx * dx + dy * dy);
-          return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
-        }
-
-        function transform(d) {
-          return "translate(" + d.x + "," + d.y + ")";
-        }
-
-        var isDragging = false;
-
-        function dragstart(d) {
-          d3.select(this).classed("fixed", d.fixed = true);
-        }
-
-        function dragging(d) {
-          isDragging = true;
-        }
-
-        function handleMouseClick(d) {
-          if (!isDragging) {
-            if (shortestPathStartItemId.length > 0) {
-              // There is a pending request to do a shortest path navigation
-              shortestPathNavigation (shortestPathStartItemId, shortestPathStartPropId, shortestPathTravDirection, 0, d.id ,0);
-              shortestPathStartItemId = "";
-              shortestPathStartPropId = "";
-              shortestPathTravDirection = "";
-            }
-            else {
-              loadWikipediaPageByItemId(d.id, curLang);
-            }
-          }
-          isDragging = false;
-        }
-      });
     }
 
 

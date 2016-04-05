@@ -64,32 +64,39 @@ public class WikiThumbnailController {
     String thumbnailUrlStr = null;
     if (!articleTitle.equals("")) {
       // Check cache for thumbnail
-      thumbnailUrlStr = ThumbnailCache.getThumbnailUrl(articleTitle, language);
+      thumbnailUrlStr = ThumbnailCache.getThumbnailUrlByTitle(articleTitle, language);
 
-      if (thumbnailUrlStr == null || thumbnailUrlStr.length() == 0) {
-        log.info("Thumbnail NOT found in cache for articleTitle: " + articleTitle + ", lang: " + lang);
+      if (thumbnailUrlStr == null) {
+        log.info("Thumbnail NOT previously requested for articleTitle: " + articleTitle + ", lang: " + lang);
 
         thumbnailUrlStr = title2Thumbnail(articleTitle, language);
-        ThumbnailCache.setThumbnailUrl(articleTitle, language, thumbnailUrlStr);
+        ThumbnailCache.setThumbnailUrlByTitle(articleTitle, language, thumbnailUrlStr);
       }
     }
     else if (!itemId.equals("")) {
       ItemInfoResponse itemInfoResponse = null;
 
-      try {
-        String url = this.wikiBrowserProperties.getLocatorServiceUrl(itemId, lang);
-        itemInfoResponse = new RestTemplate().getForObject(url,
-            ItemInfoResponse.class);
+      // Check cache for thumbnail
+      thumbnailUrlStr = ThumbnailCache.getThumbnailUrlById(itemId, language);
 
-        log.info(itemInfoResponse.toString());
-      }
-      catch (Exception e) {
-        e.printStackTrace();
-        log.info("Caught exception when calling /locator?id=" + itemId + " : " + e);
-      }
+      if (thumbnailUrlStr == null) {
+        try {
+          String url = this.wikiBrowserProperties.getLocatorServiceUrl(itemId, lang);
+          itemInfoResponse = new RestTemplate().getForObject(url,
+              ItemInfoResponse.class);
 
-      if (itemInfoResponse != null) {
-        thumbnailUrlStr = title2Thumbnail(itemInfoResponse.getArticleTitle(), language);
+          log.info(itemInfoResponse.toString());
+
+          if (itemInfoResponse != null) {
+            thumbnailUrlStr = title2Thumbnail(itemInfoResponse.getArticleTitle(), language);
+          }
+
+        }
+        catch (Exception e) {
+          e.printStackTrace();
+          log.info("Caught exception when calling /locator?id=" + itemId + " : " + e);
+        }
+
       }
     }
 
@@ -103,7 +110,7 @@ public class WikiThumbnailController {
     //TODO: Implement better way of creating the query represented by the following variables
     String n2iqa = "https://";
     String n2iqb = ""; // Some language code e.g. en
-    String n2iqc = ".wikipedia.org/w/api.php?action=query&format=json&prop=pageimages&formatversion=2&piprop=thumbnail&pithumbsize=200&titles=";
+    String n2iqc = ".wikipedia.org/w/api.php?action=query&format=json&prop=pageimages&formatversion=2&piprop=thumbnail&pithumbsize=200&redirects&titles=";
     String n2iqd = ""; // Some article name e.g. Ada Lovelace
 
     n2iqb = lang;

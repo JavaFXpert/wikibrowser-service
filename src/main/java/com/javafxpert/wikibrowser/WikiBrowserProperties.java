@@ -30,7 +30,8 @@ public class WikiBrowserProperties {
   private String locatorEndpoint;
   private String lang;
 
-  private String thumbnailEndpoint;
+  private String thumbnailByTitleEndpoint;
+  private String thumbnailByIdEndpoint;
 
   private String cypherUsername;
   private String cypherPassword;
@@ -57,12 +58,20 @@ public class WikiBrowserProperties {
     this.locatorEndpoint = locatorEndpoint;
   }
 
-  public String getThumbnailEndpoint() {
-    return thumbnailEndpoint;
+  public String getThumbnailByTitleEndpoint() {
+    return thumbnailByTitleEndpoint;
   }
 
-  public void setThumbnailEndpoint(String thumbnailEndpoint) {
-    this.thumbnailEndpoint = thumbnailEndpoint;
+  public void setThumbnailByTitleEndpoint(String thumbnailByTitleEndpoint) {
+    this.thumbnailByTitleEndpoint = thumbnailByTitleEndpoint;
+  }
+
+  public String getThumbnailByIdEndpoint() {
+    return thumbnailByIdEndpoint;
+  }
+
+  public void setThumbnailByIdEndpoint(String thumbnailByIdEndpoint) {
+    this.thumbnailByIdEndpoint = thumbnailByIdEndpoint;
   }
 
   public String getLang() {
@@ -147,8 +156,17 @@ public class WikiBrowserProperties {
    * Provide the URL to the thumbnail service method
    *
    */
-  public String getThumbnailServiceUrl(String articleTitle, String lang) {
-    String url = this.host + String.format(this.getThumbnailEndpoint(), articleTitle, computeLang(lang));
+  public String getThumbnailByTitleServiceUrl(String articleTitle, String lang) {
+    String url = this.host + String.format(this.getThumbnailByTitleEndpoint(), articleTitle, computeLang(lang));
+    return url;
+  }
+
+  /**
+   * Provide the URL to the thumbnail service method
+   *
+   */
+  public String getThumbnailByIdServiceUrl(String itemId, String lang) {
+    String url = this.host + String.format(this.getThumbnailByIdEndpoint(), itemId, computeLang(lang));
     return url;
   }
 
