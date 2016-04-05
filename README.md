@@ -95,6 +95,7 @@ Facility that browses Wikipedia augmented with semantic capabilities
 ## Items to Fix
 
 * [] Create unit tests
+* [] Fix issues that occur when an article title contains an ampersand (e.g. not finding article, and thumbnail lookup problems)
 * [] Handle issues like when SPARQL query failed more gracefully
 * If relationship is removed from Wikidata, delete it from Neo4j at the same point at which relationships are added (MERGE)
 * [] Add a language property to Item nodes stored in Neo4j that aren't currently in English, and use that property to invoke
