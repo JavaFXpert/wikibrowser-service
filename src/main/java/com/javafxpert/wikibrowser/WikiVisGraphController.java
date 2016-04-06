@@ -279,6 +279,7 @@ RETURN p
             String itemId = visGraphNodeNear.getItemId();
             String articleTitle = visGraphNodeNear.getTitle();
 
+
             // Retrieve the article's image
             String thumbnailUrl = null;
 
@@ -286,41 +287,44 @@ RETURN p
             // TODO: Add a language property to Item nodes stored in Neo4j that aren't currently in English,
             //       and use that property to mutate articleTitleLang
 
+            // First, try to get the thumbnail by ID from cache
+            thumbnailUrl = ThumbnailCache.getThumbnailUrlById(itemId, articleLang);
 
-            // First, try to get thumbnail by ID
-            try {
-              String thumbnailByIdUrl = this.wikiBrowserProperties.getThumbnailByIdServiceUrl(itemId, articleLang);
-              thumbnailUrl = new RestTemplate().getForObject(thumbnailByIdUrl,
-                  String.class);
+            if (thumbnailUrl == null) {
+              // If not available, try to get thumbnail by ID from ThumbnailService
+              try {
+                String thumbnailByIdUrl = this.wikiBrowserProperties.getThumbnailByIdServiceUrl(itemId, articleLang);
+                thumbnailUrl = new RestTemplate().getForObject(thumbnailByIdUrl,
+                    String.class);
 
-              if (thumbnailUrl != null) {
-                visGraphNodeNear.setImageUrl(thumbnailUrl);
-              }
-              else {
-                // If thumbnail isn't available by ID, try to get thumbnail by article title
-                try {
-                  String thumbnailByTitleUrl = this.wikiBrowserProperties.getThumbnailByTitleServiceUrl(articleTitle, articleLang);
-                  thumbnailUrl = new RestTemplate().getForObject(thumbnailByTitleUrl,
-                      String.class);
+                if (thumbnailUrl != null) {
+                  visGraphNodeNear.setImageUrl(thumbnailUrl);
+                } else {
+                  // If thumbnail isn't available by ID, try to get thumbnail by article title
+                  try {
+                    String thumbnailByTitleUrl = this.wikiBrowserProperties.getThumbnailByTitleServiceUrl(articleTitle, articleLang);
+                    thumbnailUrl = new RestTemplate().getForObject(thumbnailByTitleUrl,
+                        String.class);
 
-                  if (thumbnailUrl != null) {
-                    visGraphNodeNear.setImageUrl(thumbnailUrl);
+                    if (thumbnailUrl != null) {
+                      visGraphNodeNear.setImageUrl(thumbnailUrl);
+                    } else {
+                      visGraphNodeNear.setImageUrl("");
+                    }
+                    //log.info("thumbnailUrl:" + thumbnailUrl);
+                  } catch (Exception e) {
+                    e.printStackTrace();
+                    log.info("Caught exception when calling /thumbnail?title=" + articleTitle + " : " + e);
                   }
-                  else {
-                    visGraphNodeNear.setImageUrl("");
-                  }
-                  //log.info("thumbnailUrl:" + thumbnailUrl);
                 }
-                catch (Exception e) {
-                  e.printStackTrace();
-                  log.info("Caught exception when calling /thumbnail?title=" + articleTitle + " : " + e);
-                }
+                //log.info("thumbnailUrl:" + thumbnailUrl);
+              } catch (Exception e) {
+                e.printStackTrace();
+                log.info("Caught exception when calling /thumbnail?id=" + itemId + " : " + e);
               }
-              //log.info("thumbnailUrl:" + thumbnailUrl);
             }
-            catch (Exception e) {
-              e.printStackTrace();
-              log.info("Caught exception when calling /thumbnail?id=" + itemId + " : " + e);
+            else {
+              visGraphNodeNear.setImageUrl(thumbnailUrl);
             }
 
 

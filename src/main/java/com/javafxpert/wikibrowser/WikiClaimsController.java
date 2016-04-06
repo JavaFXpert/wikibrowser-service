@@ -108,7 +108,7 @@ public class WikiClaimsController {
   }
 
   private ClaimsSparqlResponse callClaimsSparqlQuery(String itemId, String lang) {
-    // Here is the SPARQL query that this method invokes (using Q42 as an example)
+    // OLD! Here is the SPARQL query that this method invokes (using Q42 as an example)
     /*
       PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema%23>
       PREFIX wikibase: <http://wikiba.se/ontology%23>
@@ -135,7 +135,61 @@ public class WikiClaimsController {
       ORDER BY ?propUrl ?valUrl LIMIT 200
     */
 
+    /*
     //TODO: Implement better way of creating the query represented by the following variables
+    String wdqa = "https://query.wikidata.org/bigdata/namespace/wdq/sparql?format=json&query=";
+    String wdqb = "PREFIX rdfs: %3Chttp://www.w3.org/2000/01/rdf-schema%23%3E ";
+    String wdqc = "PREFIX wikibase: %3Chttp://wikiba.se/ontology%23%3E ";
+    String wdqd = "PREFIX entity: %3Chttp://www.wikidata.org/entity/%3E ";
+    String wdqe = "PREFIX p: %3Chttp://www.wikidata.org/prop/direct/%3E ";
+    String wdqf = "SELECT ?propUrl ?propLabel ?valUrl ?valLabel ?picture ";
+    String wdqg = "WHERE %7B hint:Query hint:optimizer 'None' . entity:";
+    String wdqh = ""; // Some item ID e.g. Q7259
+    String wdqi = " ?propUrl ?valUrl . ?valUrl rdfs:label ?valLabel FILTER (LANG(?valLabel) = '";
+    String wdqj = ""; // Some language code e.g. en
+    String wdqk = "') . ?property ?ref ?propUrl . ?property a wikibase:Property . ";
+    String wdql = "?property rdfs:label ?propLabel FILTER (lang(?propLabel) = '";
+    String wdqm = ""; // Some language code e.g. en
+    String wdqn = "' ) ";
+    String wdqo =   "OPTIONAL %7B ";
+    String wdqp =   "  ?valUrl p:P18 ?picture .";
+    String wdqq =   "%7D ";
+    String wdqr = "%7D ORDER BY ?propLabel ?valLabel LIMIT 200";
+    */
+
+    // Here is the SPARQL query that this method invokes (using Q42 as an example).  Note that it also returns a row for Q42
+    /*
+      PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+       PREFIX wikibase: <http://wikiba.se/ontology#>
+       PREFIX entity: <http://www.wikidata.org/entity/>
+       PREFIX p: <http://www.wikidata.org/prop/direct/>
+
+       SELECT ?propUrl ?propLabel ?valUrl ?valLabel ?picture
+       WHERE {
+         hint:Query hint:optimizer 'None' .
+         { BIND(entity:Q42 AS ?valUrl) .
+           BIND("N/A" AS ?propUrl ) .
+           BIND("identity"@en AS ?propLabel ) .
+         }
+         UNION
+         { entity:Q42 ?propUrl ?valUrl .
+
+           ?property ?ref ?propUrl .
+           ?property a wikibase:Property .
+           ?property rdfs:label ?propLabel
+         }
+
+         ?valUrl rdfs:label ?valLabel
+         FILTER (LANG(?valLabel) = 'en') .
+
+         OPTIONAL{
+           ?valUrl p:P18 ?picture .
+         }
+         FILTER (lang(?propLabel) = 'en' )
+        }
+       ORDER BY ?propUrl ?valUrl LIMIT 200
+     */
+
     String wdqa = "https://query.wikidata.org/bigdata/namespace/wdq/sparql?format=json&query=";
     String wdqb = "PREFIX rdfs: %3Chttp://www.w3.org/2000/01/rdf-schema%23%3E ";
     String wdqc = "PREFIX wikibase: %3Chttp://wikiba.se/ontology%23%3E ";
