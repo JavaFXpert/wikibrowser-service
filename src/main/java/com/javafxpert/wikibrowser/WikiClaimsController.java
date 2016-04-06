@@ -19,6 +19,7 @@ package com.javafxpert.wikibrowser;
 import com.javafxpert.wikibrowser.model.claimsresponse.*;
 import com.javafxpert.wikibrowser.model.claimssparqlresponse.Bindings;
 import com.javafxpert.wikibrowser.model.claimssparqlresponse.ClaimsSparqlResponse;
+import com.javafxpert.wikibrowser.model.claimssparqlresponse.Picture;
 import com.javafxpert.wikibrowser.model.claimssparqlresponse.Results;
 import com.javafxpert.wikibrowser.model.conceptmap.ItemRepository;
 import com.javafxpert.wikibrowser.model.conceptmap.ItemServiceImpl;
@@ -114,7 +115,7 @@ public class WikiClaimsController {
       PREFIX entity: <http://www.wikidata.org/entity/>
       PREFIX p: <http://www.wikidata.org/prop/direct/>
 
-      SELECT ?propUrl ?propLabel ?valUrl ?valLabel
+      SELECT ?propUrl ?propLabel ?valUrl ?valLabel ?picture
       WHERE {
         hint:Query hint:optimizer 'None' .
         entity:Q42 ?propUrl ?valUrl .
@@ -127,32 +128,39 @@ public class WikiClaimsController {
         ?property rdfs:label ?propLabel
 
         FILTER (lang(?propLabel) = 'en' )
+        OPTIONAL{
+          ?valUrl p:P18 ?picture .
         }
+      }
       ORDER BY ?propUrl ?valUrl LIMIT 200
     */
 
     //TODO: Implement better way of creating the query represented by the following variables
     String wdqa = "https://query.wikidata.org/bigdata/namespace/wdq/sparql?format=json&query=";
-    String wdqb = "PREFIX%20rdfs:%20%3Chttp://www.w3.org/2000/01/rdf-schema%23%3E%20";
-    String wdqc = "PREFIX%20wikibase:%20%3Chttp://wikiba.se/ontology%23%3E%20";
-    String wdqd = "PREFIX%20entity:%20%3Chttp://www.wikidata.org/entity/%3E%20";
-    String wdqe = "PREFIX%20p:%20%3Chttp://www.wikidata.org/prop/direct/%3E%20";
-    String wdqf = "SELECT%20?propUrl%20?propLabel%20?valUrl%20?valLabel%20";
-    String wdqg = "WHERE%20%7B%20hint:Query%20hint:optimizer%20'None'%20.%20entity:";
+    String wdqb = "PREFIX rdfs: %3Chttp://www.w3.org/2000/01/rdf-schema%23%3E ";
+    String wdqc = "PREFIX wikibase: %3Chttp://wikiba.se/ontology%23%3E ";
+    String wdqd = "PREFIX entity: %3Chttp://www.wikidata.org/entity/%3E ";
+    String wdqe = "PREFIX p: %3Chttp://www.wikidata.org/prop/direct/%3E ";
+    String wdqf = "SELECT ?propUrl ?propLabel ?valUrl ?valLabel ?picture ";
+    String wdqg = "WHERE %7B hint:Query hint:optimizer 'None' . entity:";
     String wdqh = ""; // Some item ID e.g. Q7259
-    String wdqi = "%20?propUrl%20?valUrl%20.%20?valUrl%20rdfs:label%20?valLabel%20FILTER%20(LANG(?valLabel)%20=%20'";
+    String wdqi = " ?propUrl ?valUrl . ?valUrl rdfs:label ?valLabel FILTER (LANG(?valLabel) = '";
     String wdqj = ""; // Some language code e.g. en
-    String wdqk = "')%20.%20?property%20?ref%20?propUrl%20.%20?property%20a%20wikibase:Property%20.%20";
-    String wdql = "?property%20rdfs:label%20?propLabel%20FILTER%20(lang(?propLabel)%20=%20'";
+    String wdqk = "') . ?property ?ref ?propUrl . ?property a wikibase:Property . ";
+    String wdql = "?property rdfs:label ?propLabel FILTER (lang(?propLabel) = '";
     String wdqm = ""; // Some language code e.g. en
-    String wdqn = "'%20)%20%7D%20ORDER%20BY%20?propLabel%20?valLabel%20LIMIT%20200";
+    String wdqn = "' ) ";
+    String wdqo =   "OPTIONAL %7B ";
+    String wdqp =   "  ?valUrl p:P18 ?picture .";
+    String wdqq =   "%7D ";
+    String wdqr = "%7D ORDER BY ?propLabel ?valLabel LIMIT 200";
 
     ClaimsSparqlResponse claimsSparqlResponse = null;
 
     wdqh = itemId;
     wdqj = lang;
     wdqm = lang;
-    String wdQuery = wdqa + wdqb + wdqc + wdqd + wdqe + wdqf + wdqg + wdqh + wdqi + wdqj + wdqk + wdql + wdqm + wdqn;
+    String wdQuery = wdqa + wdqb + wdqc + wdqd + wdqe + wdqf + wdqg + wdqh + wdqi + wdqj + wdqk + wdql + wdqm + wdqn + wdqo + wdqp + wdqq + wdqr;
     wdQuery = wdQuery.replaceAll(" ", "%20");
     log.info("wdQuery: " + wdQuery);
 
@@ -223,6 +231,20 @@ public class WikiClaimsController {
       String nextPropId = nextPropUrl.substring(nextPropUrl.lastIndexOf("/") + 1);
       String nextValUrl = bindings.getValUrl().getValue();
       String nextValId = nextValUrl.substring(nextValUrl.lastIndexOf("/") + 1);
+
+      // Cache the picture for a thumbnail image
+      Picture picture = bindings.getPicture();
+      if (picture != null) {
+        String pic = bindings.getPicture().getValue();
+
+        // Compute the URL for the thumbnail image
+        String pictureUrl = computeThumbnailFromSparqlPicture(pic, THUMBNAIL_WIDTH);
+        log.info("pictureUrl from claims: " + pictureUrl);
+
+        // Cache the thumbnail image by item ID
+        ThumbnailCache.setThumbnailUrlById(nextValId, lang, pictureUrl);
+      }
+
       //log.info("lastPropId: " + lastPropId + ", nextPropId: " + nextPropId);
       if (!nextPropId.equals(lastPropId)) {
         wikidataClaim = new WikidataClaim();
@@ -285,7 +307,7 @@ public class WikiClaimsController {
       PREFIX wikibase: <http://wikiba.se/ontology%23>
       PREFIX entity: <http://www.wikidata.org/entity/>
       PREFIX p: <http://www.wikidata.org/prop/direct/>
-      SELECT ?propUrl ?propLabel ?valUrl ?valLabel
+      SELECT ?propUrl ?propLabel ?valUrl ?valLabel ?picture
       WHERE {
           hint:Query hint:optimizer 'None' .
           ?valUrl ?propUrl entity:Q42 .
@@ -591,6 +613,7 @@ public class WikiClaimsController {
       String nextItemUrl = bindings.getItemUrlFar().getValue();
       String nextItemId = nextItemUrl.substring(nextItemUrl.lastIndexOf("/") + 1);
 
+      // Cache the picture for a thumbnail image
       PictureFar pictureFar = bindings.getPictureFar();
       if (pictureFar != null) {
         String picture = bindings.getPictureFar().getValue();

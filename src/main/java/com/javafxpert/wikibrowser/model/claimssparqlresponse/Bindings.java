@@ -27,40 +27,57 @@ public class Bindings {
   private PropLabel propLabel;
   private ValUrl valUrl;
   private ValLabel valLabel;
+  private Picture picture;
 
   public Bindings() {
+  }
+
+  public Bindings(Picture picture, PropUrl propUrl, PropLabel propLabel, ValUrl valUrl, ValLabel valLabel) {
+    this.picture = picture;
+    this.propUrl = propUrl;
+    this.propLabel = propLabel;
+    this.valUrl = valUrl;
+    this.valLabel = valLabel;
   }
 
   public PropUrl getPropUrl() {
     return propUrl;
   }
 
-  public PropLabel getPropLabel() {
-    return propLabel;
-  }
-
-  public ValUrl getValUrl() {
-    return valUrl;
-  }
-
-  public ValLabel getValLabel() {
-    return valLabel;
-  }
-
   public void setPropUrl(PropUrl propUrl) {
     this.propUrl = propUrl;
+  }
+
+  public PropLabel getPropLabel() {
+    return propLabel;
   }
 
   public void setPropLabel(PropLabel propLabel) {
     this.propLabel = propLabel;
   }
 
+  public ValUrl getValUrl() {
+    return valUrl;
+  }
+
   public void setValUrl(ValUrl valUrl) {
     this.valUrl = valUrl;
   }
 
+  public ValLabel getValLabel() {
+    return valLabel;
+  }
+
   public void setValLabel(ValLabel valLabel) {
     this.valLabel = valLabel;
+  }
+
+  public Picture getPicture() {
+    return picture;
+  }
+
+  public void setPicture(Picture picture) {
+    this.picture = picture;
   }
 
   @Override
@@ -70,6 +87,7 @@ public class Bindings {
         ", propLabel=" + propLabel +
         ", valUrl=" + valUrl +
         ", valLabel=" + valLabel +
+        ", picture=" + picture +
         '}';
   }
 }
