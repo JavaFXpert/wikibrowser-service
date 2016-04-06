@@ -31,12 +31,16 @@ public class TraversalBindingsFar {
   @JsonProperty("itemLabel")
   private ItemLabelFar itemLabelFar;
 
+  @JsonProperty("picture")
+  private PictureFar pictureFar;
+
   public TraversalBindingsFar() {
   }
 
-  public TraversalBindingsFar(ItemUrlFar itemUrlFar, ItemLabelFar itemLabelFar) {
+  public TraversalBindingsFar(ItemUrlFar itemUrlFar, ItemLabelFar itemLabelFar, PictureFar pictureFar) {
     this.itemUrlFar = itemUrlFar;
     this.itemLabelFar = itemLabelFar;
+    this.pictureFar = pictureFar;
   }
 
   public ItemUrlFar getItemUrlFar() {
@@ -55,11 +59,20 @@ public class TraversalBindingsFar {
     this.itemLabelFar = itemLabelFar;
   }
 
+  public PictureFar getPictureFar() {
+    return pictureFar;
+  }
+
+  public void setPictureFar(PictureFar pictureFar) {
+    this.pictureFar = pictureFar;
+  }
+
   @Override
   public String toString() {
     return "TraversalBindingsFar{" +
         "itemUrlFar=" + itemUrlFar +
         ", itemLabelFar=" + itemLabelFar +
+        ", pictureFar=" + pictureFar +
         '}';
   }
 }

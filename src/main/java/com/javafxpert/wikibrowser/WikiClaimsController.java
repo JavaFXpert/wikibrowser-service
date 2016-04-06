@@ -23,10 +23,8 @@ import com.javafxpert.wikibrowser.model.claimssparqlresponse.Results;
 import com.javafxpert.wikibrowser.model.conceptmap.ItemRepository;
 import com.javafxpert.wikibrowser.model.conceptmap.ItemServiceImpl;
 import com.javafxpert.wikibrowser.model.locator.ItemInfoResponse;
-import com.javafxpert.wikibrowser.model.traversalresponse.TraversalBindingsFar;
-import com.javafxpert.wikibrowser.model.traversalresponse.TraversalResponse;
-import com.javafxpert.wikibrowser.model.traversalresponse.TraversalResultsFar;
-import com.javafxpert.wikibrowser.model.traversalresponse.TraversalSparqlResponse;
+import com.javafxpert.wikibrowser.model.thumbnail.ThumbnailCache;
+import com.javafxpert.wikibrowser.model.traversalresponse.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +52,10 @@ public class WikiClaimsController {
   public static String WIKIPEDIA_MOBILE_BASE_TEMPLATE = "https://%s.m.wikipedia.org/";
   private static String WIKIPEDIA_TEMPLATE = "https://%s.wikipedia.org/wiki/";
   public static String WIKIPEDIA_MOBILE_TEMPLATE = "https://%s.m.wikipedia.org/wiki/";
+  public static String WIKIPEDIA_COMMONS_THUMBNAIL_BASE = "https://commons.wikimedia.org/wiki/Special:Redirect/file/";
+
+  // TODO: Move to configuration file or service
+  public static int THUMBNAIL_WIDTH = 100;
 
   private Log log = LogFactory.getLog(getClass());
 
@@ -510,17 +512,20 @@ public class WikiClaimsController {
       PREFIX wikibase: <http://wikiba.se/ontology#>
       PREFIX gas: <http://www.bigdata.com/rdf/gas#>
 
-      SELECT ?item ?itemLabel {
+      SELECT ?item ?itemLabel ?picture {
         { SERVICE gas:service {
            gas:program gas:gasClass "com.bigdata.rdf.graph.analytics.SSSP" ;
-                       gas:in wd:Q1;
-                       gas:target wd:Q323;
-                       gas:traversalDirection "Forward";
+                       gas:in wd:Q40475;
+                       gas:target wd:Q3811608;
+                       gas:traversalDirection "Undirected";
                        gas:out ?item;
                        gas:out1 ?depth;
                        gas:maxIterations 200;
-                       gas:linkType wdt:P793 .
+                       gas:linkType wdt:P161 .
           }
+        }
+        OPTIONAL{
+          ?item wdt:P18 ?picture .
         }
         SERVICE wikibase:label {bd:serviceParam wikibase:language "en" }
       }
@@ -532,7 +537,7 @@ public class WikiClaimsController {
     String wdqc = "PREFIX wdt: %3Chttp://www.wikidata.org/prop/direct/%3E ";
     String wdqd = "PREFIX wikibase: %3Chttp://wikiba.se/ontology%23%3E ";
     String wdqe = "PREFIX gas: %3Chttp://www.bigdata.com/rdf/gas%23%3E ";
-    String wdqf = "SELECT ?item ?itemLabel %7B";
+    String wdqf = "SELECT ?item ?itemLabel ?picture %7B";
     String wdqg =   "%7B SERVICE gas:service %7B";
     String wdqh =     "gas:program gas:gasClass 'com.bigdata.rdf.graph.analytics.SSSP';";
     String wdqi =       "gas:in wd:" + itemId + ";";
@@ -544,14 +549,17 @@ public class WikiClaimsController {
     String wdqo =       "gas:linkType wdt:" + propId + " .";
     String wdqp =     "%7D ";
     String wdqq =   "%7D ";
-    String wdqr =   "SERVICE wikibase%3Alabel %7Bbd%3AserviceParam wikibase%3Alanguage %22" + lang + "%22 %7D ";
-    String wdqs = "%7D ";
-    String wdqt = "LIMIT " + limit;
+    String wdqr =   "OPTIONAL %7B ";
+    String wdqs =   "  ?item wdt:P18 ?picture .";
+    String wdqt =   "%7D ";
+    String wdqu =   "SERVICE wikibase%3Alabel %7Bbd%3AserviceParam wikibase%3Alanguage %22" + lang + "%22 %7D ";
+    String wdqv = "%7D ";
+    String wdqw = "LIMIT " + limit;
 
     TraversalSparqlResponse traversalSparqlResponse = null;
 
     String wdQuery = wdqa + wdqb + wdqc + wdqd + wdqe + wdqf + wdqg + wdqh + wdqi + wdqj + wdqk + wdql + wdqm + wdqn +
-                     wdqo + wdqp + wdqq + wdqr + wdqs + wdqt;
+                     wdqo + wdqp + wdqq + wdqr + wdqs + wdqt + wdqu + wdqv + wdqw;
     wdQuery = wdQuery.replaceAll(" ", "%20");
     log.info("wdQuery: " + wdQuery);
 
@@ -583,11 +591,35 @@ public class WikiClaimsController {
       String nextItemUrl = bindings.getItemUrlFar().getValue();
       String nextItemId = nextItemUrl.substring(nextItemUrl.lastIndexOf("/") + 1);
 
+      PictureFar pictureFar = bindings.getPictureFar();
+      if (pictureFar != null) {
+        String picture = bindings.getPictureFar().getValue();
+
+        // Compute the URL for the thumbnail image
+        String pictureUrl = computeThumbnailFromSparqlPicture(picture, THUMBNAIL_WIDTH);
+        log.info("pictureUrl from traversal: " + pictureUrl);
+
+        // Cache the thumbnail image by item ID
+        ThumbnailCache.setThumbnailUrlById(nextItemId, lang, pictureUrl);
+      }
+
       WikidataItem wikidataItem = new WikidataItem(nextItemId, bindings.getItemLabelFar().getValue());
       traversalResponse.addItem(wikidataItem);
 
     }
     return traversalResponse;
+  }
+
+  /**
+   * Computes the URL to a thumbnail image from a SPARQL query
+   * @param picture similar to http://commons.wikimedia.org/wiki/Special:FilePath/Python-Foot.png
+   * @return URL similar to https://commons.wikimedia.org/wiki/Special:Redirect/file/Python-Foot.png?width=100px
+   */
+  private String computeThumbnailFromSparqlPicture(String picture, int thumbnailwidth) {
+    // Input
+    String filename = picture.substring(picture.lastIndexOf("/") + 1);
+    String pictureUrl = WIKIPEDIA_COMMONS_THUMBNAIL_BASE + filename + "?width=" + thumbnailwidth + "px";
+    return pictureUrl;
   }
 }
 

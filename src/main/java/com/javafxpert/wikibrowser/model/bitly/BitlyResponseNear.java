@@ -19,12 +19,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonRootName;
-import com.javafxpert.wikibrowser.model.conceptmap.GraphLinkNear;
-import com.javafxpert.wikibrowser.model.conceptmap.GraphNodeNear;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by jamesweaver on 1/2/16.

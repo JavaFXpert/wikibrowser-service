@@ -42,6 +42,10 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/thumbnail")
 public class WikiThumbnailController {
+
+  // TODO: Move to configuration file or service
+  public static int THUMBNAIL_WIDTH = 100;
+
   private Log log = LogFactory.getLog(getClass());
 
   private final WikiBrowserProperties wikiBrowserProperties;
@@ -110,7 +114,7 @@ public class WikiThumbnailController {
     //TODO: Implement better way of creating the query represented by the following variables
     String n2iqa = "https://";
     String n2iqb = ""; // Some language code e.g. en
-    String n2iqc = ".wikipedia.org/w/api.php?action=query&format=json&prop=pageimages&formatversion=2&piprop=thumbnail&pithumbsize=200&redirects&titles=";
+    String n2iqc = ".wikipedia.org/w/api.php?action=query&format=json&prop=pageimages&formatversion=2&piprop=thumbnail&pithumbsize=" + THUMBNAIL_WIDTH + "&redirects&titles=";
     String n2iqd = ""; // Some article name e.g. Ada Lovelace
 
     n2iqb = lang;
