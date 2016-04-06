@@ -84,16 +84,23 @@ public class WikiThumbnailController {
       thumbnailUrlStr = ThumbnailCache.getThumbnailUrlById(itemId, language);
 
       if (thumbnailUrlStr == null) {
+        log.info("Thumbnail NOT previously requested for itemId: " + itemId + ", lang: " + lang);
+
         try {
           String url = this.wikiBrowserProperties.getLocatorServiceUrl(itemId, lang);
           itemInfoResponse = new RestTemplate().getForObject(url,
               ItemInfoResponse.class);
 
-          log.info(itemInfoResponse.toString());
+          //log.info(itemInfoResponse.toString());
 
           if (itemInfoResponse != null) {
             thumbnailUrlStr = title2Thumbnail(itemInfoResponse.getArticleTitle(), language);
           }
+          else {
+            thumbnailUrlStr = "";
+          }
+
+          ThumbnailCache.setThumbnailUrlById(itemId, language, thumbnailUrlStr);
 
         }
         catch (Exception e) {

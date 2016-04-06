@@ -282,56 +282,102 @@ RETURN p
             // Retrieve the article's image
             String thumbnailUrl = null;
 
-            String articleTitleLang = "en";
+            String articleLang = "en";
             // TODO: Add a language property to Item nodes stored in Neo4j that aren't currently in English,
             //       and use that property to mutate articleTitleLang
 
-            // Check cache for thumbnail
-            thumbnailUrl = ThumbnailCache.getThumbnailUrlByTitle(articleTitle, articleTitleLang);
 
-            if (thumbnailUrl == null) {
-              log.info("Thumbnail not previously requested for articleTitle: " + articleTitle + ", lang: " + articleTitleLang);
+            // First, try to get thumbnail by ID
+            try {
+              String thumbnailByIdUrl = this.wikiBrowserProperties.getThumbnailByIdServiceUrl(itemId, articleLang);
+              thumbnailUrl = new RestTemplate().getForObject(thumbnailByIdUrl,
+                  String.class);
+
+              if (thumbnailUrl != null) {
+                visGraphNodeNear.setImageUrl(thumbnailUrl);
+              }
+              else {
+                // If thumbnail isn't available by ID, try to get thumbnail by article title
+                try {
+                  String thumbnailByTitleUrl = this.wikiBrowserProperties.getThumbnailByTitleServiceUrl(articleTitle, articleLang);
+                  thumbnailUrl = new RestTemplate().getForObject(thumbnailByTitleUrl,
+                      String.class);
+
+                  if (thumbnailUrl != null) {
+                    visGraphNodeNear.setImageUrl(thumbnailUrl);
+                  }
+                  else {
+                    visGraphNodeNear.setImageUrl("");
+                  }
+                  //log.info("thumbnailUrl:" + thumbnailUrl);
+                }
+                catch (Exception e) {
+                  e.printStackTrace();
+                  log.info("Caught exception when calling /thumbnail?title=" + articleTitle + " : " + e);
+                }
+              }
+              //log.info("thumbnailUrl:" + thumbnailUrl);
+            }
+            catch (Exception e) {
+              e.printStackTrace();
+              log.info("Caught exception when calling /thumbnail?id=" + itemId + " : " + e);
+            }
+
+
+
+
+            /*
+            // Check cache for thumbnail
+            thumbnailUrl = ThumbnailCache.getThumbnailUrlById(itemId, articleLang);
+
+            if (thumbnailUrl != null && thumbnailUrl.length() > 0) {
+              // Thumbnail image found in cache by ID, which is the preferred location
+              visGraphNodeNear.setImageUrl(thumbnailUrl);
+            }
+            else {
+              // Thumbnail image not found in cache by ID, so look with Wikimedia API by article title
+              log.info("Thumbnail not found in cache for itemId: " + itemId + ", lang: " + articleLang + " so looking with Wikimedia API by article title");
 
               try {
-                String url = this.wikiBrowserProperties.getThumbnailByTitleServiceUrl(articleTitle, articleTitleLang);
+                String url = this.wikiBrowserProperties.getThumbnailByTitleServiceUrl(articleTitle, articleLang);
                 thumbnailUrl = new RestTemplate().getForObject(url,
                     String.class);
 
+                if (thumbnailUrl != null && thumbnailUrl.length() > 0) {
+                  visGraphNodeNear.setImageUrl(thumbnailUrl);
+                }
+                else {
+                  log.info("Thumbnail not found for articleTitle: " + articleTitle + ", trying by itemId: " + itemId);
+
+                  try {
+                    String url = this.wikiBrowserProperties.getThumbnailByIdServiceUrl(itemId, articleLang);
+                    thumbnailUrl = new RestTemplate().getForObject(url,
+                        String.class);
+
+                    if (thumbnailUrl != null) {
+                      visGraphNodeNear.setImageUrl(thumbnailUrl);
+
+                      // Because successful, cache by article title
+                      ThumbnailCache.setThumbnailUrlByTitle(articleTitle, articleLang, thumbnailUrl);
+                    }
+                    else {
+                      visGraphNodeNear.setImageUrl("");
+                    }
+                    //log.info("thumbnailUrl:" + thumbnailUrl);
+                  }
+                  catch (Exception e) {
+                    e.printStackTrace();
+                    log.info("Caught exception when calling /thumbnail?id=" + itemId + " : " + e);
+                  }
+
+                }
                 //log.info("thumbnailUrl:" + thumbnailUrl);
               } catch (Exception e) {
                 e.printStackTrace();
                 log.info("Caught exception when calling /thumbnail?title=" + articleTitle + " : " + e);
               }
             }
-
-            if (thumbnailUrl != null) {
-              visGraphNodeNear.setImageUrl(thumbnailUrl);
-            }
-            else {
-              log.info("Thumbnail not found for articleTitle: " + articleTitle + ", trying by itemId: " + itemId);
-
-              try {
-                String url = this.wikiBrowserProperties.getThumbnailByIdServiceUrl(itemId, articleTitleLang);
-                thumbnailUrl = new RestTemplate().getForObject(url,
-                    String.class);
-
-                if (thumbnailUrl != null) {
-                  visGraphNodeNear.setImageUrl(thumbnailUrl);
-
-                  // Because successful, cache by article title
-                  ThumbnailCache.setThumbnailUrlByTitle(articleTitle, articleTitleLang, thumbnailUrl);
-                }
-                else {
-                  visGraphNodeNear.setImageUrl("");
-                }
-                //log.info("thumbnailUrl:" + thumbnailUrl);
-              }
-              catch (Exception e) {
-                e.printStackTrace();
-                log.info("Caught exception when calling /thumbnail?id=" + itemId + " : " + e);
-              }
-
-            }
+            */
 
             // Note: The key in the graphNodeNearMap is the Neo4j node id, not the Wikidata item ID
             visGraphNodeNearMap.put(graphNodeFar.getId(), visGraphNodeNear);
