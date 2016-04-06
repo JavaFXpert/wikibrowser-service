@@ -84,6 +84,13 @@ public class WikiVisGraphController {
       */
 
       /*
+MATCH (a:Item), (b:Item)
+WHERE a.itemId IN ['Q2', 'Q24', 'Q30'] AND b.itemId IN ['Q2', 'Q24', 'Q30']
+WITH a, b
+OPTIONAL MATCH (a)-[rel]-(b)
+RETURN a, b, collect(rel)
+
+was:
 MATCH (a:Item)
 WHERE a.itemId IN ['Q2', 'Q24', 'Q30']
 OPTIONAL MATCH (a:Item)-[rel]-(b:Item)
@@ -91,12 +98,21 @@ WHERE b.itemId IN ['Q2', 'Q24', 'Q30']
 RETURN a, b, collect(rel)
      */
 
+      String qa = "{\"statements\":[{\"statement\":\"MATCH (a:Item), (b:Item) WHERE a.itemId IN [";
+      String qb = argStr; // Item IDs
+      String qc = "] AND b.itemId IN [";
+      String qd = argStr; // Item IDs
+      String qe = "] WITH a, b OPTIONAL MATCH (a)-[rel]-(b) RETURN a, b, collect(rel)\",";
+      String qf = "\"resultDataContents\":[\"graph\"]}]}";
+
+      /*
       String qa = "{\"statements\":[{\"statement\":\"MATCH (a:Item) WHERE a.itemId IN [";
       String qb = argStr; // Item IDs
       String qc = "] OPTIONAL MATCH (a:Item)-[rel]-(b:Item) WHERE b.itemId IN [";
       String qd = argStr; // Item IDs
       String qe = "] RETURN a, b, collect(rel)\",";
       String qf = "\"resultDataContents\":[\"graph\"]}]}";
+      */
 
       String postString = qa + qb + qc + qd + qe + qf;
 
@@ -144,8 +160,8 @@ RETURN p LIMIT 200
     String qb = itemId; // starting item ID
     String qc = "'})-[*..2]-(b:Item {itemId:'";
     String qd = targetId; // target item ID
-    String qe = "'}) ) WHERE NONE(x IN NODES(p) WHERE x:Item AND x.itemId = 'Q5') "; // Don't return paths that contain human item ID, or gender/described by relationships (slows query down)
-    String qf = "AND NONE(y IN RELATIONSHIPS(p) WHERE y.propId = 'P21') AND NONE(y IN RELATIONSHIPS(p) WHERE y.propId = 'P1343') RETURN p LIMIT 200\",";
+    String qe = "'}) ) WHERE NONE(x IN NODES(p) WHERE x:Item AND x.itemId = 'Q5') "; // Don't return paths that contain human item ID, or described by relationships
+    String qf = "AND NONE(y IN RELATIONSHIPS(p) WHERE y.propId = 'P1343') RETURN p LIMIT 200\",";
     String qg = "\"resultDataContents\":[\"graph\"]}]}";
 
     String postString = qa + qb + qc + qd + qe + qf + qg;

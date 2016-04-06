@@ -2,6 +2,9 @@
 Facility that browses Wikipedia augmented with semantic capabilities
 
 ## Enhancements to consider
+* Order of checking for cached image:  By ID using Wikidata image (new), then by article name, then Wikipedia API by ID.  Consider running process on startup to cache all image URLs 
+  in the Wikidata dump file.  Use https://commons.wikimedia.org/wiki/Special:Redirect/file/Python-Foot.png?width=100px
+
 * Add spu, spf, spr, exp1, exp* buttons to the two top-level relationship headings
   * Perhaps the spu button could return all shortest paths, or just one shortest path that exclude obvious connections.  Here are a couple of queries for reference:
   
@@ -123,6 +126,7 @@ Facility that browses Wikipedia augmented with semantic capabilities
   * Add @JsonProperty("foo") to all JSON deserialize classes, adjusting singular/plural as makes sense
 * Change IdLocator endpoint parameter from name to title
 * Move WIKIDATA_ITEM_BASE, etc. to WikiBrowserProperties class
+* Remove D3js related code
 
 ## I18N considerations:
 * Make WikiPageController#generateWikiBrowserPage() write the lang in generated links e.g. href=wikipage?name=Terre&lang=fr
