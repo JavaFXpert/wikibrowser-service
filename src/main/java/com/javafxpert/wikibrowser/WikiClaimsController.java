@@ -138,7 +138,7 @@ public class WikiClaimsController {
          }
          FILTER (lang(?propLabel) = 'en' )
         }
-       ORDER BY ?propUrl ?valUrl LIMIT 200
+       ORDER BY ?propLabel ?valLabel LIMIT 200
      */
 
     String wdqa = "https://query.wikidata.org/bigdata/namespace/wdq/sparql?format=json&query=";
@@ -163,7 +163,7 @@ public class WikiClaimsController {
     String wdqt = "FILTER (lang(?propLabel) = '";
     String wdqu = ""; // Some language code e.g. en
     String wdqv = "' ) ";
-    String wdqw = "%7D ORDER BY ?propUrl ?valUrl LIMIT 200";
+    String wdqw = "%7D ORDER BY ?propLabel ?valLabel LIMIT 200";
 
     ClaimsSparqlResponse claimsSparqlResponse = null;
 
@@ -207,7 +207,7 @@ public class WikiClaimsController {
       itemInfoResponse = new RestTemplate().getForObject(url,
           ItemInfoResponse.class);
 
-      log.info(itemInfoResponse.toString());
+      //log.info(itemInfoResponse.toString());
     }
     catch (Exception e) {
       e.printStackTrace();
@@ -334,9 +334,12 @@ public class WikiClaimsController {
           ?property a wikibase:Property .
           ?property rdfs:label ?propLabel
 
+          OPTIONAL{
+            ?valUrl p:P18 ?picture .
+          }
           FILTER (lang(?propLabel) = 'en' )
       }
-      ORDER BY ?propUrl ?valUrl LIMIT 200
+      ORDER BY ?propLabel ?valLabel LIMIT 200
     */
 
     //TODO: Implement better way of creating the query represented by the following variables
@@ -345,22 +348,26 @@ public class WikiClaimsController {
     String wdqc = "PREFIX%20wikibase:%20%3Chttp://wikiba.se/ontology%23%3E%20";
     String wdqd = "PREFIX%20entity:%20%3Chttp://www.wikidata.org/entity/%3E%20";
     String wdqe = "PREFIX%20p:%20%3Chttp://www.wikidata.org/prop/direct/%3E%20";
-    String wdqf = "SELECT%20?propUrl%20?propLabel%20?valUrl%20?valLabel%20";
+    String wdqf = "SELECT%20?propUrl%20?propLabel%20?valUrl%20?valLabel%20?picture%20";
     String wdqg = "WHERE%20%7B%20hint:Query%20hint:optimizer%20'None'%20.%20?valUrl%20?propUrl%20entity:";
     String wdqh = ""; // Some item ID e.g. Q7259
     String wdqi = "%20.%20?valUrl%20rdfs:label%20?valLabel%20.%20FILTER%20(LANG(?valLabel)%20=%20'";
     String wdqj = ""; // Some language code e.g. en
     String wdqk = "')%20.%20?property%20?ref%20?propUrl%20.%20?property%20a%20wikibase:Property%20.%20";
-    String wdql = "?property%20rdfs:label%20?propLabel%20FILTER%20(lang(?propLabel)%20=%20'";
-    String wdqm = ""; // Some language code e.g. en
-    String wdqn = "'%20)%20%7D%20ORDER%20BY%20?propLabel%20?valLabel%20LIMIT%20200";
+    String wdql = "?property%20rdfs:label%20?propLabel%20";
+    String wdqm =   "OPTIONAL %7B ";
+    String wdqn =   "  ?valUrl p:P18 ?picture . ";
+    String wdqo =   "%7D ";
+    String wdqp = "FILTER%20(lang(?propLabel)%20=%20'";
+    String wdqq = ""; // Some language code e.g. en
+    String wdqr = "'%20)%20%7D%20ORDER%20BY%20?propLabel%20?valLabel%20LIMIT%20200";
 
     ClaimsSparqlResponse claimsSparqlResponse = null;
 
     wdqh = itemId;
     wdqj = lang;
-    wdqm = lang;
-    String wdQuery = wdqa + wdqb + wdqc + wdqd + wdqe + wdqf + wdqg + wdqh + wdqi + wdqj + wdqk + wdql + wdqm + wdqn;
+    wdqq = lang;
+    String wdQuery = wdqa + wdqb + wdqc + wdqd + wdqe + wdqf + wdqg + wdqh + wdqi + wdqj + wdqk + wdql + wdqm + wdqn + wdqo + wdqp + wdqq + wdqr;
     wdQuery = wdQuery.replaceAll(" ", "%20");
     log.info("wdQuery: " + wdQuery);
 
@@ -394,7 +401,7 @@ public class WikiClaimsController {
       itemInfoResponse = new RestTemplate().getForObject(url,
           ItemInfoResponse.class);
 
-      log.info(itemInfoResponse.toString());
+      //log.info(itemInfoResponse.toString());
     }
     catch (Exception e) {
       e.printStackTrace();
@@ -425,6 +432,31 @@ public class WikiClaimsController {
       String nextPropId = nextPropUrl.substring(nextPropUrl.lastIndexOf("/") + 1);
       String nextValUrl = bindings.getValUrl().getValue();
       String nextValId = nextValUrl.substring(nextValUrl.lastIndexOf("/") + 1);
+
+      // Cache the picture for a thumbnail image
+      Picture picture = bindings.getPicture();
+      if (picture != null) {
+        String pic = bindings.getPicture().getValue();
+
+        // Compute the URL for the thumbnail image
+        String pictureUrl = computeThumbnailFromSparqlPicture(pic, THUMBNAIL_WIDTH);
+        log.info("pictureUrl from RELATEDclaims: " + pictureUrl);
+
+        // Cache the thumbnail image by item ID
+        ThumbnailCache.setThumbnailUrlById(nextValId, lang, pictureUrl);
+      }
+
+      //log.info("lastPropId: " + lastPropId + ", nextPropId: " + nextPropId);
+      if (!nextPropId.equals(lastPropId)) {
+        wikidataClaim = new WikidataClaim();
+        wikidataClaim.setProp(new WikidataProperty(nextPropId, bindings.getPropLabel().getValue()));
+        claimsResponse.getClaims().add(wikidataClaim);
+        lastPropId = nextPropId;
+      }
+
+
+
+
       //log.info("lastPropId: " + lastPropId + ", nextPropId: " + nextPropId);
       if (!nextPropId.equals(lastPropId)) {
         wikidataClaim = new WikidataClaim();
