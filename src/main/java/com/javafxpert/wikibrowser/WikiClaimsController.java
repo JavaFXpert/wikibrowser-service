@@ -108,55 +108,6 @@ public class WikiClaimsController {
   }
 
   private ClaimsSparqlResponse callClaimsSparqlQuery(String itemId, String lang) {
-    // OLD! Here is the SPARQL query that this method invokes (using Q42 as an example)
-    /*
-      PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema%23>
-      PREFIX wikibase: <http://wikiba.se/ontology%23>
-      PREFIX entity: <http://www.wikidata.org/entity/>
-      PREFIX p: <http://www.wikidata.org/prop/direct/>
-
-      SELECT ?propUrl ?propLabel ?valUrl ?valLabel ?picture
-      WHERE {
-        hint:Query hint:optimizer 'None' .
-        entity:Q42 ?propUrl ?valUrl .
-        ?valUrl rdfs:label ?valLabel
-
-        FILTER (LANG(?valLabel) = 'en') .
-
-        ?property ?ref ?propUrl .
-        ?property a wikibase:Property .
-        ?property rdfs:label ?propLabel
-
-        FILTER (lang(?propLabel) = 'en' )
-        OPTIONAL{
-          ?valUrl p:P18 ?picture .
-        }
-      }
-      ORDER BY ?propUrl ?valUrl LIMIT 200
-    */
-
-    /*
-    //TODO: Implement better way of creating the query represented by the following variables
-    String wdqa = "https://query.wikidata.org/bigdata/namespace/wdq/sparql?format=json&query=";
-    String wdqb = "PREFIX rdfs: %3Chttp://www.w3.org/2000/01/rdf-schema%23%3E ";
-    String wdqc = "PREFIX wikibase: %3Chttp://wikiba.se/ontology%23%3E ";
-    String wdqd = "PREFIX entity: %3Chttp://www.wikidata.org/entity/%3E ";
-    String wdqe = "PREFIX p: %3Chttp://www.wikidata.org/prop/direct/%3E ";
-    String wdqf = "SELECT ?propUrl ?propLabel ?valUrl ?valLabel ?picture ";
-    String wdqg = "WHERE %7B hint:Query hint:optimizer 'None' . entity:";
-    String wdqh = ""; // Some item ID e.g. Q7259
-    String wdqi = " ?propUrl ?valUrl . ?valUrl rdfs:label ?valLabel FILTER (LANG(?valLabel) = '";
-    String wdqj = ""; // Some language code e.g. en
-    String wdqk = "') . ?property ?ref ?propUrl . ?property a wikibase:Property . ";
-    String wdql = "?property rdfs:label ?propLabel FILTER (lang(?propLabel) = '";
-    String wdqm = ""; // Some language code e.g. en
-    String wdqn = "' ) ";
-    String wdqo =   "OPTIONAL %7B ";
-    String wdqp =   "  ?valUrl p:P18 ?picture .";
-    String wdqq =   "%7D ";
-    String wdqr = "%7D ORDER BY ?propLabel ?valLabel LIMIT 200";
-    */
-
     // Here is the SPARQL query that this method invokes (using Q42 as an example).  Note that it also returns a row for Q42
     /*
       PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -196,25 +147,33 @@ public class WikiClaimsController {
     String wdqd = "PREFIX entity: %3Chttp://www.wikidata.org/entity/%3E ";
     String wdqe = "PREFIX p: %3Chttp://www.wikidata.org/prop/direct/%3E ";
     String wdqf = "SELECT ?propUrl ?propLabel ?valUrl ?valLabel ?picture ";
-    String wdqg = "WHERE %7B hint:Query hint:optimizer 'None' . entity:";
+    String wdqg = "WHERE %7B hint:Query hint:optimizer 'None' . %7B BIND(entity:";
     String wdqh = ""; // Some item ID e.g. Q7259
-    String wdqi = " ?propUrl ?valUrl . ?valUrl rdfs:label ?valLabel FILTER (LANG(?valLabel) = '";
+    String wdqi = " AS ?valUrl) . BIND('N/A' AS ?propUrl ) . BIND('identity'%40";
     String wdqj = ""; // Some language code e.g. en
-    String wdqk = "') . ?property ?ref ?propUrl . ?property a wikibase:Property . ";
-    String wdql = "?property rdfs:label ?propLabel FILTER (lang(?propLabel) = '";
-    String wdqm = ""; // Some language code e.g. en
-    String wdqn = "' ) ";
-    String wdqo =   "OPTIONAL %7B ";
-    String wdqp =   "  ?valUrl p:P18 ?picture .";
-    String wdqq =   "%7D ";
-    String wdqr = "%7D ORDER BY ?propLabel ?valLabel LIMIT 200";
+    String wdqk = " AS ?propLabel ) . %7D UNION %7B entity:";
+    String wdql = ""; // Some item ID e.g. Q7259
+    String wdqm = " ?propUrl ?valUrl . ?property ?ref ?propUrl . ?property a wikibase:Property . ";
+    String wdqn = "?property rdfs:label ?propLabel %7D ?valUrl rdfs:label ?valLabel FILTER (lang(?valLabel) = '";
+    String wdqo = ""; // Some language code e.g. en
+    String wdqp = "' ) . ";
+    String wdqq =   "OPTIONAL %7B ";
+    String wdqr =   "  ?valUrl p:P18 ?picture . ";
+    String wdqs =   "%7D ";
+    String wdqt = "FILTER (lang(?propLabel) = '";
+    String wdqu = ""; // Some language code e.g. en
+    String wdqv = "' ) ";
+    String wdqw = "%7D ORDER BY ?propUrl ?valUrl LIMIT 200";
 
     ClaimsSparqlResponse claimsSparqlResponse = null;
 
     wdqh = itemId;
     wdqj = lang;
-    wdqm = lang;
-    String wdQuery = wdqa + wdqb + wdqc + wdqd + wdqe + wdqf + wdqg + wdqh + wdqi + wdqj + wdqk + wdql + wdqm + wdqn + wdqo + wdqp + wdqq + wdqr;
+    wdql = itemId;
+    wdqo = lang;
+    wdqu = lang;
+    String wdQuery = wdqa + wdqb + wdqc + wdqd + wdqe + wdqf + wdqg + wdqh + wdqi + wdqj + wdqk + wdql + wdqm + wdqn +
+        wdqo + wdqp + wdqq + wdqr + wdqs + wdqt + wdqu + wdqv + wdqw;
     wdQuery = wdQuery.replaceAll(" ", "%20");
     log.info("wdQuery: " + wdQuery);
 
@@ -314,6 +273,8 @@ public class WikiClaimsController {
       if (itemId != null &&
           wikidataItem.getId() != null &&
           wikidataClaim.getProp().getId() != null &&
+          wikidataClaim.getProp().getId().length() > 0 &&
+          wikidataClaim.getProp().getId().substring(0,1).equalsIgnoreCase("P") &&
           wikidataClaim.getProp().getLabel() != null) {
 
         // Write item
