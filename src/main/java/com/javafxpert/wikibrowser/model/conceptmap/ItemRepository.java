@@ -132,6 +132,9 @@ public interface ItemRepository extends GraphRepository<GraphItem> {
 
   // Newly discovered properties
 
+  @Query("MATCH (a:Item {itemId:{itemIdA}}), (b:Item {itemId:{itemIdB}}) MERGE (a)-[:SUPERHUMAN_FEATURE_OR_ABILITY {propId:{propId}, label:{propLabel}}]->(b)")
+  void addRelP2563(@Param("itemIdA") String itemIdA, @Param("itemIdB") String itemIdB, @Param("propId") String propId, @Param("propLabel") String propLabel);
+
   @Query("MATCH (a:Item {itemId:{itemIdA}}), (b:Item {itemId:{itemIdB}}) MERGE (a)-[:HAS_PARTS_OF_THE_CLASS {propId:{propId}, label:{propLabel}}]->(b)")
   void addRelP2670(@Param("itemIdA") String itemIdA, @Param("itemIdB") String itemIdB, @Param("propId") String propId, @Param("propLabel") String propLabel);
 
