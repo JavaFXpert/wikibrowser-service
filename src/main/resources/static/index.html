@@ -399,7 +399,7 @@
       $('#pinSwitch').prop('checked', true); // In case pin checkbox isn't already set
 
       $.ajax({
-            url: '/rootpaths',
+            url: '/visrootpaths',
             data: "id=" + id + "",
             dataType: 'json',
           })
@@ -407,7 +407,7 @@
             var nodes = results.nodes;
             if (nodes.length > 0) {
               for (var idx in nodes) {
-                var itemId = nodes[idx].id;
+                var itemId = nodes[idx].itemId;
                 addItemId(itemId);
               }
               loadConceptMap();
@@ -491,7 +491,7 @@
       }
       else {
         $.ajax({
-              url: '/shortpaths',
+              url: '/visshortpaths',
               data: "id=" + id + "&target=" + target + "",
               dataType: 'json',
             })
@@ -499,7 +499,7 @@
               var nodes = results.nodes;
               if (nodes.length > 0) {
                 for (var idx in nodes) {
-                  var itemId = nodes[idx].id;
+                  var itemId = nodes[idx].itemId;
                   addItemId(itemId);
                 }
                 loadConceptMap();
