@@ -2,9 +2,9 @@
 Facility that browses Wikipedia augmented with semantic capabilities
 
 ## Enhancements to consider
-* Order of checking for cached image:  By ID using Wikidata image (new), then by article name, then Wikipedia API by ID.  Consider running process on startup to cache all image URLs 
-  in the Wikidata dump file.  Use https://commons.wikimedia.org/wiki/Special:Redirect/file/Python-Foot.png?width=100px
-
+* In claims and relatedclaims return enough items to show 100 items in every property
+* Fix /claims service issue in which when an item has multiple pictures, one row per pictures is returned.   For example, 
+  Douglas Adam's alma mater Q691283 appears four times in the results.
 * Add spu, spf, spr, exp1, exp* buttons to the two top-level relationship headings
   * Perhaps the spu button could return all shortest paths, or just one shortest path that exclude obvious connections.  Here are a couple of queries for reference:
   
@@ -23,7 +23,6 @@ Facility that browses Wikipedia augmented with semantic capabilities
       WHERE NONE(x IN NODES(p) WHERE x:Item AND x.itemId = "Q5") AND NONE(y IN RELATIONSHIPS(p) WHERE y.propId = "P1343")
       RETURN p;
   
-* Sort the languages that appear in the language selection slide-out menu
 * Include all items (not just ones with English labels) in WikidataNeo4jProcessor, by using getLabels() if findLabel() returns null
   * http://wikidata.github.io/Wikidata-Toolkit/org/wikidata/wdtk/datamodel/interfaces/TermedDocument.html#getLabels()
 * Make query limits (# of rows returned in a given query) configurable, or at least a constant that may be changed one place
