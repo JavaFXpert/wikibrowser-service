@@ -26,7 +26,17 @@ Facility that browses Wikipedia augmented with semantic capabilities
 * Include all items (not just ones with English labels) in WikidataNeo4jProcessor, by using getLabels() if findLabel() returns null
   * http://wikidata.github.io/Wikidata-Toolkit/org/wikidata/wdtk/datamodel/interfaces/TermedDocument.html#getLabels()
 * Make query limits (# of rows returned in a given query) configurable, or at least a constant that may be changed one place
-* Implement in SPARQL a query similar to the Neo4j query that returns results necessary to disply pinned nodes and their relationship.  This could potentially eliminate the need for such a large Neo4j DB.
+* Implement in SPARQL a query similar to the Neo4j query that returns results necessary to disply pinned nodes and their relationship.  
+  This could potentially eliminate the need for such a large Neo4j DB.  Here is a start for such a query:
+  PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+  PREFIX wikibase: <http://wikiba.se/ontology#>
+  PREFIX wd: <http://www.wikidata.org/entity/>
+  PREFIX p: <http://www.wikidata.org/prop/direct/>
+  SELECT ?from ?rel ?to WHERE {
+    VALUES ?from {wd:Q2 wd:Q5 wd:Q405 wd:Q525 } .
+    VALUES ?to {wd:Q2 wd:Q5 wd:Q405 wd:Q525 } .
+  }
+  
 * Move Wikidata relationships to left side, and concept map to middle?
 * Add ?parent to results from traversal sparql query & merge into neo4j?  (or just do a batch load periodically) 
 * [] Implement authentication
