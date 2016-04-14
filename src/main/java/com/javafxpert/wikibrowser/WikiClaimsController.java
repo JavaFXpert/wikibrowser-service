@@ -57,6 +57,7 @@ public class WikiClaimsController {
 
   // TODO: Move to configuration file or service
   public static int THUMBNAIL_WIDTH = 100;
+  private static int MAX_VALS_FOR_PROP = 25;
 
   private Log log = LogFactory.getLog(getClass());
 
@@ -163,7 +164,7 @@ public class WikiClaimsController {
     String wdqt = "FILTER (lang(?propLabel) = '";
     String wdqu = ""; // Some language code e.g. en
     String wdqv = "' ) ";
-    String wdqw = "%7D ORDER BY ?propLabel ?valLabel LIMIT 200";
+    String wdqw = "%7D ORDER BY ?propLabel ?valLabel LIMIT 500";
 
     ClaimsSparqlResponse claimsSparqlResponse = null;
 
@@ -236,6 +237,7 @@ public class WikiClaimsController {
 
     String lastPropId = "";
     String lastValId = "";
+    int valsForProp = 0;
 
     WikidataClaim wikidataClaim = null; //TODO: Consider using exception handling to make null assignment unnecessary
     while (bindingsIter.hasNext()) {
@@ -265,9 +267,13 @@ public class WikiClaimsController {
         wikidataClaim = new WikidataClaim();
         wikidataClaim.setProp(new WikidataProperty(nextPropId, bindings.getPropLabel().getValue()));
         claimsResponse.getClaims().add(wikidataClaim);
+
+        valsForProp = 0;
       }
 
-      if ((nextPropId.equals(lastPropId) && !nextValId.equals(lastValId)) || !nextPropId.equals(lastPropId)) {
+      if (((nextPropId.equals(lastPropId) && !nextValId.equals(lastValId)) || !nextPropId.equals(lastPropId)) &&
+          valsForProp < MAX_VALS_FOR_PROP) {
+        valsForProp++;
         WikidataItem wikidataItem = new WikidataItem(nextValId, bindings.getValLabel().getValue());
         wikidataClaim.addItem(wikidataItem);
 
@@ -367,7 +373,7 @@ public class WikiClaimsController {
     String wdqo =   "%7D ";
     String wdqp = "FILTER%20(lang(?propLabel)%20=%20'";
     String wdqq = ""; // Some language code e.g. en
-    String wdqr = "'%20)%20%7D%20ORDER%20BY%20?propLabel%20?valLabel%20LIMIT%20200";
+    String wdqr = "'%20)%20%7D%20ORDER%20BY%20?propLabel%20?valLabel%20LIMIT%20500";
 
     ClaimsSparqlResponse claimsSparqlResponse = null;
 
@@ -430,6 +436,8 @@ public class WikiClaimsController {
     Iterator bindingsIter = results.getBindings().iterator();
 
     String lastPropId = "";
+    int valsForProp = 0;
+
     WikidataClaim wikidataClaim = null; //TODO: Consider using exception handling to make null assignment unnecessary
     while (bindingsIter.hasNext()) {
       Bindings bindings = (Bindings)bindingsIter.next(); //TODO: Consider renaming Bindings to Binding
@@ -459,22 +467,15 @@ public class WikiClaimsController {
         wikidataClaim.setProp(new WikidataProperty(nextPropId, bindings.getPropLabel().getValue()));
         claimsResponse.getClaims().add(wikidataClaim);
         lastPropId = nextPropId;
+
+        valsForProp = 0;
       }
 
-
-
-
-      //log.info("lastPropId: " + lastPropId + ", nextPropId: " + nextPropId);
-      if (!nextPropId.equals(lastPropId)) {
-        wikidataClaim = new WikidataClaim();
-        wikidataClaim.setProp(new WikidataProperty(nextPropId, bindings.getPropLabel().getValue()));
-        claimsResponse.getClaims().add(wikidataClaim);
-        lastPropId = nextPropId;
+      if (valsForProp < MAX_VALS_FOR_PROP) {
+        valsForProp++;
+        WikidataItem wikidataItem = new WikidataItem(nextValId, bindings.getValLabel().getValue());
+        wikidataClaim.addItem(wikidataItem);
       }
-
-      WikidataItem wikidataItem = new WikidataItem(nextValId, bindings.getValLabel().getValue());
-      wikidataClaim.addItem(wikidataItem);
-
     }
     return claimsResponse;
   }
