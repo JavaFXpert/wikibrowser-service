@@ -235,6 +235,8 @@ public class WikiClaimsController {
     Iterator bindingsIter = results.getBindings().iterator();
 
     String lastPropId = "";
+    String lastValId = "";
+
     WikidataClaim wikidataClaim = null; //TODO: Consider using exception handling to make null assignment unnecessary
     while (bindingsIter.hasNext()) {
       Bindings bindings = (Bindings)bindingsIter.next(); //TODO: Consider renaming Bindings to Binding
@@ -263,35 +265,40 @@ public class WikiClaimsController {
         wikidataClaim = new WikidataClaim();
         wikidataClaim.setProp(new WikidataProperty(nextPropId, bindings.getPropLabel().getValue()));
         claimsResponse.getClaims().add(wikidataClaim);
-        lastPropId = nextPropId;
       }
 
-      WikidataItem wikidataItem = new WikidataItem(nextValId, bindings.getValLabel().getValue());
-      wikidataClaim.addItem(wikidataItem);
+      if ((nextPropId.equals(lastPropId) && !nextValId.equals(lastValId)) || !nextPropId.equals(lastPropId)) {
+        WikidataItem wikidataItem = new WikidataItem(nextValId, bindings.getValLabel().getValue());
+        wikidataClaim.addItem(wikidataItem);
 
-      // MERGE item and relationships into Neo4j graph
-      if (itemId != null &&
-          wikidataItem.getId() != null &&
-          wikidataClaim.getProp().getId() != null &&
-          wikidataClaim.getProp().getId().length() > 0 &&
-          wikidataClaim.getProp().getId().substring(0,1).equalsIgnoreCase("P") &&
-          wikidataClaim.getProp().getLabel() != null) {
+        // MERGE item and relationships into Neo4j graph
+        if (itemId != null &&
+            wikidataItem.getId() != null &&
+            wikidataClaim.getProp().getId() != null &&
+            wikidataClaim.getProp().getId().length() > 0 &&
+            wikidataClaim.getProp().getId().substring(0, 1).equalsIgnoreCase("P") &&
+            wikidataClaim.getProp().getLabel() != null) {
 
-        // Write item
-        //log.info("++++++ itemRepository.addItem: " + wikidataItem.getId() + ", " + wikidataItem.getLabel());
-        itemRepository.addItem(wikidataItem.getId(), wikidataItem.getLabel());
+          // Write item
+          //log.info("++++++ itemRepository.addItem: " + wikidataItem.getId() + ", " + wikidataItem.getLabel());
+          itemRepository.addItem(wikidataItem.getId(), wikidataItem.getLabel());
 
-        // Write relationship
-        //log.info("------ itemRepository.addRelationship: " + itemId + ", " +
-        //                 wikidataItem.getId() + ", " +
-        //                 wikidataClaim.getProp().getId() + ", " +
-        //                 wikidataClaim.getProp().getLabel());
+          // Write relationship
+          //log.info("------ itemRepository.addRelationship: " + itemId + ", " +
+          //                 wikidataItem.getId() + ", " +
+          //                 wikidataClaim.getProp().getId() + ", " +
+          //                 wikidataClaim.getProp().getLabel());
 
-        itemRepository.addRelationship(itemId,
-            wikidataItem.getId(),
-            wikidataClaim.getProp().getId(),
-            wikidataClaim.getProp().getLabel());
+          itemRepository.addRelationship(itemId,
+              wikidataItem.getId(),
+              wikidataClaim.getProp().getId(),
+              wikidataClaim.getProp().getLabel());
+        }
       }
+
+      lastPropId = nextPropId;
+      lastValId = nextValId;
+
     }
     return claimsResponse;
   }
