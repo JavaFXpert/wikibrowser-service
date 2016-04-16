@@ -220,6 +220,7 @@
     var shortestPathStartItemId = "";
     var shortestPathStartPropId = "";
     var shortestPathTravDirection = "";
+    var shortestPathAllOrOne = "";
 
     // TODO: Examine usefulness of, and possibly refactor, functionality in this handler
     window.addEventListener('load', function() {
@@ -463,7 +464,7 @@
      * @param target Wikidata property ID for end of path
      * @param limit maximum number of items to return (0 defaults to a reasonable maximum)
      */
-    function shortestPathNavigation (id, prop, direction, depth, target, limit) {
+    function shortestPathNavigation (id, prop, direction, depth, target, limit, allOrOne) {
       $('#pinSwitch').prop('checked', true); // In case pin checkbox isn't already set
 
       if (prop.length > 0) {
@@ -490,35 +491,59 @@
             });
       }
       else {
-        $.ajax({
-              url: '/visshortpaths',
-              data: "id=" + id + "&target=" + target + "",
-              dataType: 'json',
-            })
-            .done(function (results) { // Variable data contains the data we get from serverside
-              var nodes = results.nodes;
-              if (nodes.length > 0) {
-                for (var idx in nodes) {
-                  var itemId = nodes[idx].itemId;
-                  addItemId(itemId);
+        if (allOrOne === "all") {
+          $.ajax({
+                url: '/visshortpaths',
+                data: "id=" + id + "&target=" + target + "",
+                dataType: 'json',
+              })
+              .done(function (results) { // Variable data contains the data we get from serverside
+                var nodes = results.nodes;
+                if (nodes.length > 0) {
+                  for (var idx in nodes) {
+                    var itemId = nodes[idx].itemId;
+                    addItemId(itemId);
+                  }
+                  loadConceptMap();
                 }
-                loadConceptMap();
-              }
-              else {
-                $('#noTraversalPathDialog').foundation('reveal', 'open');
-              }
-            })
-            .error(function (err) {
-              //alert("error: " + err);
-            });
-
+                else {
+                  $('#noTraversalPathDialog').foundation('reveal', 'open');
+                }
+              })
+              .error(function (err) {
+                //alert("error: " + err);
+              });
+        }
+        else {
+          $.ajax({
+                url: '/visshortpath',
+                data: "id=" + id + "&target=" + target + "",
+                dataType: 'json',
+              })
+              .done(function (results) { // Variable data contains the data we get from serverside
+                var nodes = results.nodes;
+                if (nodes.length > 0) {
+                  for (var idx in nodes) {
+                    var itemId = nodes[idx].itemId;
+                    addItemId(itemId);
+                  }
+                  loadConceptMap();
+                }
+                else {
+                  $('#noTraversalPathDialog').foundation('reveal', 'open');
+                }
+              })
+              .error(function (err) {
+                //alert("error: " + err);
+              });
+        }
       }
     }
 
     /*
      * Note the most recent item ID, property ID, and direction for the start node of a shortest path request
      */
-    function noteShortestPathStartInfo(itemId, propId, travDirection) {
+    function noteShortestPathStartInfo(itemId, propId, travDirection, allOrOne) {
       //$('#pinSwitch').prop('checked', true); // In case pin checkbox isn't already set
 
       // Scroll the main page to the top
@@ -527,6 +552,7 @@
       shortestPathStartItemId = itemId;
       shortestPathStartPropId = propId;
       shortestPathTravDirection = travDirection;
+      shortestPathAllOrOne = allOrOne;
     }
 
     // Supply id and lang
@@ -587,7 +613,8 @@
 
       // Create button that enables user to find the items in common between two item IDs that aren't already directly related.  Note that an empty property is passed
       // into noteShortestPathStartInfo() to indicate that any paths may consist of any relationships.  Paths computed will be maximum of two hops.
-      $('#offCanvasList').append("<input type='button' value='ic' onclick='noteShortestPathStartInfo(curItemId,\"\", \"u\")' title='Find all items directly in common'></input>");
+      $('#offCanvasList').append("<input type='button' value='ic' onclick='noteShortestPathStartInfo(curItemId,\"\", \"u\", \"all\")' title='Find all items directly in common'></input>" + "&nbsp;");
+      $('#offCanvasList').append("<input type='button' value='sp' onclick='noteShortestPathStartInfo(curItemId,\"\", \"u\", \"one\")' title='Find shortest path between items, up to 3 degrees of separation'></input>" + "&nbsp;");
       $('#offCanvasList').append("<input type='button' value='rp' onclick='retrieveShortestPathsToRoot(curItemId)' title='Find shortest paths to root (Entity)'></input>");
 
       $('#offCanvasList').append("&nbsp;" + "<b>Wikidata Relationships:</b><br/><br/>"); //TODO: Internationalize this label
@@ -617,8 +644,8 @@
             $('#offCanvasList').append("<li>" +
                 "<input type='button' value='x1' onclick='traverseItems(curItemId,\"" + propId + "\", \"f\", 1, 0)' title='Expand items to one level'></input>" + "&nbsp;" +
                 "<input type='button' value='x*' onclick='traverseItems(curItemId,\"" + propId + "\", \"f\", 0, 0)' title='Expand items to multiple levels'></input>" + "&nbsp;" +
-                "<input type='button' value='pu' onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"u\")' title='Find shortest path undirected'></input>" + "&nbsp;" +
-                "<input type='button' value='pf' onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"f\")' title='Find shortest path in forward direction'></input>" +
+                "<input type='button' value='pu' onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"u\", \"one\")' title='Find shortest path undirected'></input>" + "&nbsp;" +
+                "<input type='button' value='pf' onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"f\", \"one\")' title='Find shortest path in forward direction'></input>" +
                 "<label onclick='popOffCanvasList(\"" + propId + "\")'><b>" +
                 ((propId === chosenPropId) ? ("- ") : ("+ ")) + "</b>" +
                 resp.claim[cIdx].prop.label + (dispIds ? (" :" + propId) : "+") + "</label></li>");
@@ -637,8 +664,8 @@
             $('#offCanvasList').append("<li>" +
                 "<input type='button' value='x1' onclick='traverseItems(curItemId,\"" + propId + "\", \"f\", 1, 0)' title='Expand items to one level'></input>" + "&nbsp;" +
                 "<input type='button' value='x*' onclick='traverseItems(curItemId,\"" + propId + "\", \"f\", 0, 0)' title='Expand items to multiple levels'></input>" + "&nbsp;" +
-                "<input type='button' value='pu' onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"u\")' title='Find shortest path undirected'></input>" + "&nbsp;" +
-                "<input type='button' value='pf' onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"f\")' title='Find shortest path in forward direction'></input>" +
+                "<input type='button' value='pu' onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"u\", \"one\")' title='Find shortest path undirected'></input>" + "&nbsp;" +
+                "<input type='button' value='pf' onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"f\", \"one\")' title='Find shortest path in forward direction'></input>" +
                 "<label onclick='popOffCanvasList(\"" + propId + "\")'><b>" +
                 ((propId === chosenPropId) ? ("- ") : ("+ ")) + "</b>" +
                 resp.claim[cIdx].prop.label + (dispIds ? (" :" + propId) : "+") + "</label></li>");
@@ -697,8 +724,8 @@
           $('#fromRelatedItemsList').append("<li>" +
               "<input type='button' value='x1' onclick='traverseItems(curItemId,\"" + propId + "\", \"r\", 1, 0)' title='Expand items to one level'></input>" + "&nbsp;" +
               "<input type='button' value='x*' onclick='traverseItems(curItemId,\"" + propId + "\", \"r\", 0, 0)' title='Expand items to multiple levels'></input>" + "&nbsp;" +
-              "<input type='button' value='pu' onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"u\")' title='Find shortest path undirected'></input>" + "&nbsp;" +
-              "<input type='button' value='pr' onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"r\")' title='Find shortest path in reverse direction'></input>" +
+              "<input type='button' value='pu' onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"u\", \"one\")' title='Find shortest path undirected'></input>" + "&nbsp;" +
+              "<input type='button' value='pr' onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"r\", \"one\")' title='Find shortest path in reverse direction'></input>" +
               "<i><label onclick='popFromRelatedItemsList(\"" + propId + "\")'><b>" +
               ((propId === chosenRelatedPropId) ? ("- ") : ("+ ")) + "</b>" +
               resp.claim[cIdx].prop.label + (dispIds ? (" :" + propId) : "+") + "</label></i></li>");
@@ -716,8 +743,8 @@
           $('#fromRelatedItemsList').append("<li>" +
               "<input type='button' value='x1' onclick='traverseItems(curItemId,\"" + propId + "\", \"r\", 1, 0)' title='Expand items to one level'></input>" + "&nbsp;" +
               "<input type='button' value='x*' onclick='traverseItems(curItemId,\"" + propId + "\", \"r\", 0, 0)' title='Expand items to multiple levels'></input>" + "&nbsp;" +
-              "<input type='button' value='pu' onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"u\")' title='Find shortest path undirected'></input>" + "&nbsp;" +
-              "<input type='button' value='pr' onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"r\")' title='Find shortest path in reverse direction'></input>" +
+              "<input type='button' value='pu' onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"u\", \"one\")' title='Find shortest path undirected'></input>" + "&nbsp;" +
+              "<input type='button' value='pr' onclick='noteShortestPathStartInfo(curItemId,\"" + propId + "\", \"r\", \"one\")' title='Find shortest path in reverse direction'></input>" +
               "<i><label onclick='popFromRelatedItemsList(\"" + propId + "\")'><b>" +
               ((propId === chosenRelatedPropId) ? ("- ") : ("+ ")) + "</b>" +
               resp.claim[cIdx].prop.label + (dispIds ? (" :" + propId) : "+") + "</label></i></li>");
@@ -917,7 +944,7 @@
 
                 if (shortestPathStartItemId.length > 0) {
                   // There is a pending request to do a shortest path navigation
-                  shortestPathNavigation (shortestPathStartItemId, shortestPathStartPropId, shortestPathTravDirection, 0, itemId ,0);
+                  shortestPathNavigation (shortestPathStartItemId, shortestPathStartPropId, shortestPathTravDirection, 0, itemId, 0, shortestPathAllOrOne);
                   shortestPathStartItemId = "";
                   shortestPathStartPropId = "";
                   shortestPathTravDirection = "";
