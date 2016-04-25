@@ -125,55 +125,6 @@ RETURN a, b, collect(rel)
   }
 
   /**
-   * Retrieve shortest path through any properties between two given item IDs.
-   * TODO: Consider adding a LIMIT parameter
-   * @param itemId
-   * @param targetId
-   * @return
-   */
-  @RequestMapping(value = "/visshortpath", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Object> retrieveShortPath(@RequestParam(value = "id", defaultValue="Q1")
-                                                   String itemId,
-                                                   @RequestParam(value = "target", defaultValue="Q323")
-                                                   String targetId) {
-    // Example endpoint usage is shortpath?id=Q23&target=Q9696
-
-    VisGraphResponseNear visGraphResponseNear = null;
-
-    String neoCypherUrl = wikiBrowserProperties.getNeoCypherUrl();
-
-    /*  Example Cypher query POST
-    {
-      "statements" : [ {
-        "statement" : "MATCH p=shortestPath( (a:Item {itemId:'Q23'})-[*..3]-(b:Item {itemId:'Q9696'}) ) RETURN p",
-        "resultDataContents" : ["graph" ]
-      } ]
-    }
-    */
-
-    /*
-MATCH p=shortestPath( (a:Item {itemId:'Q23'})-[*..4]-(b:Item {itemId:'Q9696'}) )
-RETURN p LIMIT 200
-   */
-
-    String qa = "{\"statements\":[{\"statement\":\"MATCH p=shortestPath( (a:Item {itemId:'";
-    String qb = itemId; // starting item ID
-    String qc = "'})-[*..5]-(b:Item {itemId:'";
-    String qd = targetId; // target item ID
-    String qe = "'}) ) WHERE NONE(x IN NODES(p) WHERE x:Item AND x.itemId = 'Q4167836') "; // Don't return paths that contain Wikipedia:Categories, or described by relationships
-    String qf = "AND NONE(y IN RELATIONSHIPS(p) WHERE y.propId = 'P1343') RETURN p LIMIT 200\",";
-    String qg = "\"resultDataContents\":[\"graph\"]}]}";
-
-    String postString = qa + qb + qc + qd + qe + qf + qg;
-
-    visGraphResponseNear = queryProcessSearchResponse(neoCypherUrl, postString);
-
-    return Optional.ofNullable(visGraphResponseNear)
-        .map(cr -> new ResponseEntity<>((Object)cr, HttpStatus.OK))
-        .orElse(new ResponseEntity<>("visshortpath query unsuccessful", HttpStatus.INTERNAL_SERVER_ERROR));
-  }
-
-  /**
    * Retrieve all paths through any properties, with a length of one or two hops, between two given item IDs.
    * TODO: Consider adding a LIMIT parameter
    * @param itemId
@@ -201,18 +152,19 @@ RETURN p LIMIT 200
     */
 
     /*
-MATCH p=allShortestPaths( (a:Item {itemId:'Q23'})-[*..3]-(b:Item {itemId:'Q9696'}) )
+MATCH p=allShortestPaths( (a:Item {itemId:'Q23'})-[*..2]-(b:Item {itemId:'Q9696'}) )
 RETURN p LIMIT 200
    */
 
     String qa = "{\"statements\":[{\"statement\":\"MATCH p=allShortestPaths( (a:Item {itemId:'";
     String qb = itemId; // starting item ID
-    String qc = "'})-[*..3]-(b:Item {itemId:'";
+    String qc = "'})-[*..2]-(b:Item {itemId:'";
     String qd = targetId; // target item ID
-    String qe = "'}) ) WHERE NONE(y IN RELATIONSHIPS(p) WHERE y.propId = 'P1343') RETURN p LIMIT 200\",";
-    String qf = "\"resultDataContents\":[\"graph\"]}]}";
+    String qe = "'}) ) WHERE NONE(x IN NODES(p) WHERE x:Item AND x.itemId = 'Q5') "; // Don't return paths that contain human item ID, or described by relationships
+    String qf = "AND NONE(y IN RELATIONSHIPS(p) WHERE y.propId = 'P1343') RETURN p LIMIT 200\",";
+    String qg = "\"resultDataContents\":[\"graph\"]}]}";
 
-    String postString = qa + qb + qc + qd + qe + qf;
+    String postString = qa + qb + qc + qd + qe + qf + qg;
 
     visGraphResponseNear = queryProcessSearchResponse(neoCypherUrl, postString);
 
