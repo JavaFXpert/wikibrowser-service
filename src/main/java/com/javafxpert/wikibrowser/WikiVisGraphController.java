@@ -199,7 +199,7 @@ RETURN p LIMIT 200
     */
 
     /*
-MATCH p=shortestPath( (a:Item {itemId:'Q319'})-[*]->(b:Item {itemId:'Q35120'}) )
+MATCH p=allShortestPaths( (a:Item {itemId:'Q319'})-[*]->(b:Item {itemId:'Q35120'}) )
 WHERE NONE(x IN RELATIONSHIPS(p) WHERE (x.propId <> 'P279') AND (x.propId <> 'P31') AND (x.propId <> 'P361'))
 RETURN p
    */
