@@ -251,11 +251,13 @@ public class WikiClaimsController {
 
       // Cache the picture for a thumbnail image
       Picture picture = bindings.getPicture();
+      String pictureUrl = "";
+
       if (picture != null) {
         String pic = bindings.getPicture().getValue();
 
         // Compute the URL for the thumbnail image
-        String pictureUrl = computeThumbnailFromSparqlPicture(pic, THUMBNAIL_WIDTH);
+        pictureUrl = computeThumbnailFromSparqlPicture(pic, THUMBNAIL_WIDTH);
         log.info("pictureUrl from claims: " + pictureUrl);
 
         // Cache the thumbnail image by item ID
@@ -274,7 +276,7 @@ public class WikiClaimsController {
       if (((nextPropId.equals(lastPropId) && !nextValId.equals(lastValId)) || !nextPropId.equals(lastPropId)) &&
           valsForProp < MAX_VALS_FOR_PROP) {
         valsForProp++;
-        WikidataItem wikidataItem = new WikidataItem(nextValId, bindings.getValLabel().getValue());
+        WikidataItem wikidataItem = new WikidataItem(nextValId, bindings.getValLabel().getValue(), pictureUrl);
         wikidataClaim.addItem(wikidataItem);
 
         // MERGE item and relationships into Neo4j graph
@@ -450,11 +452,13 @@ public class WikiClaimsController {
 
       // Cache the picture for a thumbnail image
       Picture picture = bindings.getPicture();
+      String pictureUrl = "";
+
       if (picture != null) {
         String pic = bindings.getPicture().getValue();
 
         // Compute the URL for the thumbnail image
-        String pictureUrl = computeThumbnailFromSparqlPicture(pic, THUMBNAIL_WIDTH);
+        pictureUrl = computeThumbnailFromSparqlPicture(pic, THUMBNAIL_WIDTH);
         log.info("pictureUrl from RELATEDclaims: " + pictureUrl);
 
         // Cache the thumbnail image by item ID
@@ -473,7 +477,7 @@ public class WikiClaimsController {
 
       if (valsForProp < MAX_VALS_FOR_PROP) {
         valsForProp++;
-        WikidataItem wikidataItem = new WikidataItem(nextValId, bindings.getValLabel().getValue());
+        WikidataItem wikidataItem = new WikidataItem(nextValId, bindings.getValLabel().getValue(), pictureUrl);
         wikidataClaim.addItem(wikidataItem);
       }
     }
@@ -670,18 +674,19 @@ public class WikiClaimsController {
 
       // Cache the picture for a thumbnail image
       PictureFar pictureFar = bindings.getPictureFar();
+      String pictureUrl = "";
+
       if (pictureFar != null) {
         String picture = bindings.getPictureFar().getValue();
-
         // Compute the URL for the thumbnail image
-        String pictureUrl = computeThumbnailFromSparqlPicture(picture, THUMBNAIL_WIDTH);
+        pictureUrl = computeThumbnailFromSparqlPicture(picture, THUMBNAIL_WIDTH);
         log.info("pictureUrl from traversal: " + pictureUrl);
 
         // Cache the thumbnail image by item ID
         ThumbnailCache.setThumbnailUrlById(nextItemId, lang, pictureUrl);
       }
 
-      WikidataItem wikidataItem = new WikidataItem(nextItemId, bindings.getItemLabelFar().getValue());
+      WikidataItem wikidataItem = new WikidataItem(nextItemId, bindings.getItemLabelFar().getValue(), pictureUrl);
       traversalResponse.addItem(wikidataItem);
 
     }

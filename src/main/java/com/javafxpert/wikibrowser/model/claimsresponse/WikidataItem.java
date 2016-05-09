@@ -27,10 +27,12 @@ import java.io.Serializable;
 public class WikidataItem implements Serializable {
   private String id;
   private String label;
+  private String picture;
 
-  public WikidataItem(String id, String label) {
+  public WikidataItem(String id, String label, String picture) {
     this.id = id;
     this.label = label;
+    this.picture = picture;
   }
 
   public WikidataItem() {
@@ -52,11 +54,20 @@ public class WikidataItem implements Serializable {
     this.label = label;
   }
 
+  public String getPicture() {
+    return picture;
+  }
+
+  public void setPicture(String picture) {
+    this.picture = picture;
+  }
+
   @Override
   public String toString() {
     return "WikidataItem{" +
         "id='" + id + '\'' +
         ", label='" + label + '\'' +
+        ", picture='" + picture + '\'' +
         '}';
   }
 }
